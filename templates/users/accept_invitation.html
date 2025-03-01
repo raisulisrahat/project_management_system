@@ -1,0 +1,11 @@
+
+
+{% block content %}
+  <h2>Accept Invitation</h2>
+  <p>You have been invited by {{ invitation.invited_by.username }}. Please create your account below:</p>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Create Account</button>
+  </form>
+{% endblock %}

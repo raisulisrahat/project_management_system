@@ -1,0 +1,7 @@
+.idea
+.venv
+.mockup
+.env
+db.sqlite3
+*/migrations/*.py
+media

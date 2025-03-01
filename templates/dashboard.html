@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <p class="fs-3 mt-4 py-3">Welcome to Dashboard, <span style="color: #20c997">{{ user.first_name }}</span></p> 
+    <img src="{{ peoples.image.url }}">
+
+    <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center bg-white shadow-sm rounded gap-3">
+            <div class="d-flex align-items-center p-3 gap-2">
+                <i class="fa fa-project-diagram"></i> Total Project {{ projects.count }}
+            </div>
+            <div class="d-flex align-items-center p-3 gap-2">
+                <i class="fa-solid fa-list-check"></i> Total Task {{ tasks.count }}
+            </div>
+            <div class="d-flex align-items-center p-3 gap-2">
+                <i class="fa-solid fa-user-group"></i> Team {{ members.count }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex mt-5 gap-3">
+        <div class="p-5 rounded bg-white shadow-sm">
+            <canvas id="barChart" width="450" height="300"></canvas>
+        </div>
+        <div class="p-4 rounded bg-white shadow-sm">
+            <canvas id="lineChart" width="480" height="330"></canvas>
+        </div>
+        <div class="p-5 rounded bg-white shadow-sm">
+            <canvas id="doughnutChart"></canvas>
+        </div>
+    </div>
+
+<!-- Script for Chart.js -->
+        <script>
+            // Bar Chart
+            var ctx = document.getElementById('barChart').getContext('2d');
+            var barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Projects', 'Tasks'],  // Labels for x-axis
+                    datasets: [{
+                        label: 'Counts',
+                        data: [{{ prj_no }}, {{ ts_no }}],  // Dynamic data for the chart
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.2)',  // Project bar color
+                            'rgba(153, 102, 255, 0.2)'  // Task bar color
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',  // Project border color
+                            'rgba(153, 102, 255, 1)'  // Task border color
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true  // Ensure y-axis starts at zero
+                        }
+                    }
+                }
+            });
+
+            // Doughnut Chart
+            const doughnutData = {
+                labels: ['Projects', 'Tasks'],  // Labels for doughnut chart
+                datasets: [{
+                    label: 'Count',
+                    data: [{{ prj_no }}, {{ ts_no }}],  // Dynamic data
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',  // Project color
+                        'rgb(54, 162, 235)'   // Task color
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+
+            const doughnutConfig = {
+                type: 'doughnut',
+                data: doughnutData,
+            };
+
+            var doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+            var doughnutChart = new Chart(doughnutCtx, doughnutConfig);
+
+            // Line Chart
+            const lineData = {
+                labels: ['Project', 'Task'],  // Labels for line chart
+                datasets: [{
+                    label: 'Count',
+                    data: [{{ prj_no }}, {{ ts_no }}],  // Dynamic data
+                    borderColor:[
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',], // Line color
+                    tension: 0.1,  // Smoothness of the line
+                    fill: false  // No fill under the line
+                }]
+            };
+
+            const lineConfig = {
+                type: 'line',
+                data: lineData,
+            };
+
+            var lineCtx = document.getElementById('lineChart').getContext('2d');
+            var lineChart = new Chart(lineCtx, lineConfig);
+        </script>
+
+
+  <div class="gap-5 justify-content-center mt-5">
+    <div class="row">
+    <div class="col">
+        <h3 class="p-2 bg-white shadow-sm rounded">Ongoing Projects</h3>
+        <table class="table table-striped shadow-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Project Name</th>
+                    <th scope="col">Key</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Lead</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for project in projects %}
+                <tr>
+                    <td style="font-weight: 500;"><a href="{% url 'project_detail' project.label %}" class="text-decoration-none" style="color: #3e98ff;">{{ project.name }}</a></td>
+                    <td style="color: #dc3545; font-weight: 500;">{{ project.label }}</td>
+                    <td style="color: #f900ff; font-weight: 500;">{{ project.type }}</td>
+                    <td style="font-weight: 500;">
+                        <a href="#" class="text-decoration-none" style="color: #f0b942;">
+                            {{ project.lead }}
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No projects found yet.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="col">
+        <h3 class="p-2 bg-white shadow-sm rounded">Ongoing Tasks</h3>
+        <table class="table table-hover table-striped shadow-sm">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Task Name</th>
+                    <th scope="col">Priority</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Assignment</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <th scope="row" style="font-weight: 500;"><a href="{% url 'task_detail' task.unique_id %}" class="text-decoration-none" style="color: rgb(54, 162, 235);">{{ task.unique_id }}</a></th>
+                    <td style="font-weight: 500;"><a href="{% url 'task_detail' task.unique_id %}" class="text-decoration-none" style="color: rgb(255,92,132);">{{ task.summery }}</a></td>
+                    <td style="color: rgb(54, 162, 235); font-weight: 500;">{{ task.priority }}</td>
+                    <td style="color: #1b9e3e; font-weight: 500;">{{ task.status }}</td>
+                    <td style="font-weight: 500;">
+                        <a href="#" class="text-decoration-none" style="color: rgb(62,152,255);">
+                            {{ task.assigned_to.full_name }}
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No tasks found yet.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+{#{% url 'profile' project.lead.full_name %}#}
+{#{% url 'profile' task.assigned_to.full_name %}#}
