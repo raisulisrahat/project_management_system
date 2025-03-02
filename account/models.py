@@ -32,28 +32,24 @@ class Member(models.Model):
     role_id = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='members')
     user_id = models.ManyToManyField(User, related_name='members')
 
-
-class People(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profile')
-    image = models.ImageField(upload_to='images/', null=True, blank=True)
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    profile_image = models.ImageField(upload_to='images/', null=True, blank=True)
     country = models.ForeignKey('cities_light.Country', on_delete=models.SET_NULL, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
 
-
     def validate_image(self):
-        if not self.image.name.endswith(('.png', '.jpg', '.jpeg')):
+        if not self.profile_image.name.endswith(('.png', '.jpg', '.jpeg')):
             raise ValidationError('Invalid file format. Only PNG and JPG allowed.')
 
     def full_name(self):
         return f'{self.user.first_name} {self.user.last_name}'
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.full_name())  # Automatically generate slug
-        super(People, self).save(*args, **kwargs)
+        self.slug = slugify(self.full_name())  # Automatically generate slug
+        super(Profile, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.full_name()

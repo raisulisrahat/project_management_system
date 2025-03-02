@@ -1,0 +1,7 @@
+.venv
+**/__pycache__
+media
+.mockup
+.git
+.idea
+.gitignore

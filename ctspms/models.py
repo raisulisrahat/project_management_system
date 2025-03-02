@@ -1,7 +1,7 @@
 import uuid
 from django.contrib.auth.models import User
 from django.db import models
-from account.models import People
+from account.models import Profile
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
@@ -42,7 +42,7 @@ class PriorityList(models.Model):
 class Project(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, validators=[RegexValidator(regex=r'^[A-Za-z\s]+$', message='Name can only contain letters and spaces.', code='invalid_name')])
-    lead = models.ForeignKey(People, on_delete=models.CASCADE)
+    lead = models.ForeignKey(Profile, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
     type = models.ForeignKey(ProjectType, on_delete=models.CASCADE)
     start_date = models.DateTimeField(auto_now_add=True)
@@ -67,8 +67,8 @@ class Task(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
     summery = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    reporter = models.ForeignKey(People, on_delete=models.CASCADE, related_name='reporter_tasks')
-    assigned_to = models.ForeignKey(People, on_delete=models.CASCADE, related_name='assigned_tasks')
+    reporter = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='reporter_tasks')
+    assigned_to = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='assigned_tasks')
     priority = models.ForeignKey(PriorityList, on_delete=models.CASCADE)
     status = models.ForeignKey(StatusList, on_delete=models.SET_NULL, null=True, blank=True)
     tag = models.ManyToManyField(TagList, blank=True)
@@ -104,7 +104,7 @@ class Attachment(models.Model):
 
 class Timelog(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    people = models.ForeignKey(People, on_delete=models.CASCADE, related_name='timelog')
+    people = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='timelog')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='timelog')
     log_date = models.DateTimeField(auto_now_add=True)
     hours = models.IntegerField()
@@ -128,7 +128,7 @@ class Notification(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
-    people = models.ForeignKey(People, on_delete=models.CASCADE, related_name='notifications')
+    people = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='notifications')
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='notifications')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='notifications')
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='notifications')

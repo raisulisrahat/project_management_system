@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse_lazy
 from django.contrib import messages
-from account.models import People, Role, Department, Member, PasswordResetOTP, Invitation
+from account.models import Profile, Role, Department, Member, PasswordResetOTP, Invitation
 from account.forms import InvitationForm, PasswordResetRequestForm, OTPVerificationForm, SignUpForm
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import RedirectView, DetailView, UpdateView, CreateView, DeleteView
@@ -108,25 +108,17 @@ def dashboard_view(request):
     # Fetching data for the dashboard
     projects = Project.objects.order_by('-start_date')[:4]  # Example: Fetching all projects
     tasks = Task.objects.all()  # Example: Fetching all tasks
-    peoples = People.objects.all()
-    users = User.objects.all()
+    peoples = Profile.objects.all()
     members = Member.objects.all()
     timelog = Timelog.objects.all()
 
     # add chart
     ts_no = Task.objects.count()
     prj_no = Project.objects.count()
+    # tkpro_no = Task.objects.filter(status__task='').count()
 
     return render(request, 'dashboard.html', {
-        'prj_no': prj_no, 'ts_no': ts_no, 'projects': projects, 'tasks': tasks, 'peoples': peoples, 'users': users, 'timelog': timelog, 'members': members
-    })
-
-@login_required
-def nav_view(request):
-    users = request.user
-    people = get_object_or_404(People, user=users)
-    return render(request, 'navbar.html', {
-        'peoples': people, 'users': users
+        'prj_no': prj_no, 'ts_no': ts_no, 'projects': projects,  'tasks': tasks, 'peoples': peoples, 'timelog': timelog, 'members': members
     })
 
 
@@ -186,7 +178,7 @@ def password_reset_success(request):
 
 
 class PeopleView(DetailView):
-    model = People
+    model = Profile
     context_object_name = 'peoples'
     template_name = 'peoples/profile.html'
 
@@ -194,4 +186,4 @@ class PeopleView(DetailView):
         context = super().get_context_data(**kwargs)
 
 class PeopleModify(UpdateView):
-    model = People
+    model = Profile

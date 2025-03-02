@@ -30,8 +30,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <p>{{ people.full_name }}</p> <!-- Show the user's full name -->
-                        <img src="{{ people.image.url }}" alt="{{ people.full_name }}" class="rounded-circle" height="60px">
+                        <img src="{{ request.user.people.image.url }}" alt="{{ people.full_name }}" class="rounded-circle" height="60px">
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">

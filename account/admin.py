@@ -1,5 +1,5 @@
 from django.contrib import admin
-from account.models import Role, Department, People, Member, PasswordResetOTP, Invitation
+from account.models import Role, Department, Profile, Member, PasswordResetOTP, Invitation
 
 
 admin.site.register(Invitation)
@@ -14,9 +14,9 @@ class RoleAdmin(admin.ModelAdmin):
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = ('department_name', 'created_by')
 
-@admin.register(People)
+@admin.register(Profile)
 class PeoplesAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'image', 'department', 'role', 'address', 'country']
+    list_display = ['full_name', 'profile_image', 'department', 'role', 'address', 'country']
 
 @admin.register(Member)
 class MembersAdmin(admin.ModelAdmin):
