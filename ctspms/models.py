@@ -47,13 +47,17 @@ class Project(models.Model):
     type = models.ForeignKey(ProjectType, on_delete=models.CASCADE)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(null=True, blank=True)
+    code = models.CharField(max_length=10, unique=True, null=True, blank=True)  # Unique project code field
 
     def label(self):
-        words = self.name.split()
-        if len(words) == 1:
-            return words[0].upper()
+        if self.code:  # If project code exists, use it
+            return self.code.upper()
         else:
-            return ''.join([word[0].upper() for word in words])
+            words = self.name.split()
+            if len(words) == 1:
+                return words[0].upper()
+            else:
+                return ''.join([word[0].upper() for word in words])
 
     def clean(self):
         if not self.name.replace(' ', '').isalpha():
@@ -62,10 +66,12 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+
+
 class Task(models.Model):
     id = models.AutoField(primary_key=True)  # Automatically increments for each task
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
-    summery = models.CharField(max_length=100)
+    summary = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     reporter = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='reporter_tasks')
     assigned_to = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='assigned_tasks')
@@ -76,14 +82,28 @@ class Task(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField(null=True, blank=True)
 
+    project_task_number = models.PositiveIntegerField(null=True, blank=True)  # Task number within project
+
     def __str__(self):
-        return self.summery
+        return self.summary
 
     def save(self, *args, **kwargs):
+        # Automatically set project-specific task number if not already set
+        if not self.project_task_number:
+            # Find the last task for the project, ordered by project_task_number
+            last_task = Task.objects.filter(project=self.project).order_by('-id').first()
+
+            # If a last task exists, increment its project_task_number, else start at 1
+            if last_task:
+                self.project_task_number = last_task.project_task_number + 1
+            else:
+                self.project_task_number = 1
+
         super(Task, self).save(*args, **kwargs)  # Call the real save() method
 
     def unique_id(self):
-        return f'{self.project.label()}-{self.id}'
+        # Use the project's label (HMS, PMS, etc.) and the project_task_number
+        return f'{self.project.label()}-{self.project_task_number}'
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

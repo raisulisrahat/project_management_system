@@ -154,12 +154,27 @@ id,group_id,permission_id
 152,2,74
 153,2,76
 
+id,type_name
+1,Bundles
+2,Software development
+3,Service management
+4,Work management
+5,Product management
+6,Marketing
+7,Human resources
+8,Finance
+9,Design
+10,Personal
+11,Operations
+12,Legal
+13,Sales
+14,Analytics
+15,IT
+16,Facilities
+17,Nonprofit
 
 
 
-id,name
-1,Admin
-2,Developer
 
 
 

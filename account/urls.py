@@ -1,12 +1,12 @@
 from django.urls import path
-from account.views import CustomLoginView, LogoutView, PeopleView, PeopleModify, dashboard_view, invite_user, accept_invitation, invitation_success, request_password_reset, verify_otp, password_reset_success
+from account.views import CustomLoginView, CustomLogoutView, PeopleView, PeopleModify, dashboard_view, invite_user, accept_invitation, invitation_success, request_password_reset, verify_otp, password_reset_success
 
 # Create your tests here.
 
 urlpatterns = [
     # Authentication
     path('', CustomLoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    path('logout/', CustomLogoutView.as_view(), name='logout'),
 
     # Dashboard
     path('dashboard/', dashboard_view, name='dashboard'),

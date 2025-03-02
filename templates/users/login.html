@@ -5,6 +5,7 @@
     {% load bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
 
 <body class="vh-100">
 
@@ -23,13 +24,11 @@
             <div class="col-md-6 right d-flex align-items-center justify-content-center">
                 <div class="w-100" style="max-width: 400px;">
                     {% if messages %}
-                        {% for message in messages %}
-                            {% if message.tags == 'error' %}
-                                <h4 style="color: firebrick;" class="text-center">{{message}}</h4>
-                            {% else %}
-                                <h4 style="color: dodgerblue;" class="text-center">{{message}}</h4>
-                            {% endif %}
-                        {% endfor %}
+                        <ul class="messages list-unstyled">
+                            {% for message in messages %}
+                                <li class="alert {{ message.tags }}" style="color: #3d99f5">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
                     {% endif %}
                     <form method="POST" action="{% url 'login' %}">
                         {% csrf_token %}

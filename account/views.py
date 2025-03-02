@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -83,42 +83,62 @@ def verify_otp(request, user_id):
 
 # 3. Custom login view
 class CustomLoginView(LoginView):
-    template_name = 'users/login.html'  # The template to display the login form
-    redirect_authenticated_user = True  # Redirect if the user is already authenticated
-    success_url = reverse_lazy('dashboard')  # Redirect to dashboard after login
+    template_name = 'users/login.html'
+    redirect_authenticated_user = True
+    success_url = reverse_lazy('dashboard')
 
     def get_success_url(self):
-        # Return the success URL after login
+        # Clear old messages (if any) before setting the new one
         return self.success_url
+
+    def form_invalid(self, form):
+        """Handles invalid login attempts (e.g., wrong credentials)."""
+        messages.error(self.request, "Invalid username or password. Please try again.")
+        return super().form_invalid(form)
 
 
 # 4. Logout view
-class LogoutView(RedirectView):
-    url = reverse_lazy('login')
+class CustomLogoutView(LogoutView):
+    next_page = reverse_lazy('login')  # Redirect to login page after logout
 
-    def get_redirect_url(self, *args, **kwargs):
-        logout(self.request)
-        messages.success(self.request, 'You have successfully logged out.')
-        return super().get_redirect_url(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        # Display a logout success message
+        messages.success(request, "You have successfully logged out.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 # 5. Dashboard view
 @login_required  # Ensure that only logged-in users can access the dashboard
 def dashboard_view(request):
     # Fetching data for the dashboard
-    projects = Project.objects.order_by('-start_date')[:4]  # Example: Fetching all projects
-    tasks = Task.objects.all()  # Example: Fetching all tasks
+    projects = Project.objects.order_by('-start_date')[:4]
+    tasks = Task.objects.all()
     peoples = Profile.objects.all()
     members = Member.objects.all()
     timelog = Timelog.objects.all()
 
-    # add chart
+    # Get counts for projects and tasks
     ts_no = Task.objects.count()
     prj_no = Project.objects.count()
-    # tkpro_no = Task.objects.filter(status__task='').count()
+
+    # Status counts (example: count tasks with no status)
+    tk_status_no = Task.objects.filter(status__isnull=True).count()
+
+    # Get project labels and task statuses as lists
+    project_labels = [project.label() for project in projects]  # Make sure to call the label() method
+    task_statuses = [task.status.status_name if task.status else 'No Status' for task in tasks]
 
     return render(request, 'dashboard.html', {
-        'prj_no': prj_no, 'ts_no': ts_no, 'projects': projects,  'tasks': tasks, 'peoples': peoples, 'timelog': timelog, 'members': members
+        'tk_status_no': tk_status_no,
+        'prj_no': prj_no,
+        'ts_no': ts_no,
+        'projects': projects,
+        'tasks': tasks,
+        'peoples': peoples,
+        'timelog': timelog,
+        'members': members,
+        'project_labels': project_labels,  # Pass project labels
+        'task_statuses': task_statuses  # Pass task statuses
     })
 
 

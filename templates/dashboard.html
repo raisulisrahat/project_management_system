@@ -3,11 +3,6 @@
 
 {% block content %}
     <p class="fs-3 mt-4 py-3 fw-semibold">Welcome to Dashboard, <span style="color: #20c997; font-weight: 500;">{{ user.first_name }}</span></p>
-
-    {% if user.is_authenticated %}
-        <img src="{{ user.people.image.url }}">
-    {% endif %}
-
     <div class="d-flex justify-content-center">
         <div class="d-flex justify-content-center bg-white shadow-sm rounded gap-3 fw-semibold">
             <div class="d-flex align-items-center p-3 gap-2">
@@ -36,80 +31,84 @@
     </div>
 
 <!-- Script for Chart.js -->
-        <script>
-            // Bar Chart
-            var ctx = document.getElementById('barChart').getContext('2d');
-            var barChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Projects', 'Tasks'],  // Labels for x-axis
-                    datasets: [{
-                        label: 'Counts',
-                        data: [{{ prj_no }}, {{ ts_no }}],  // Dynamic data for the chart
-                        backgroundColor: [
-                            'rgba(75, 192, 192, 0.2)',  // Project bar color
-                            'rgba(153, 102, 255, 0.2)'  // Task bar color
-                        ],
-                        borderColor: [
-                            'rgba(75, 192, 192, 1)',  // Project border color
-                            'rgba(153, 102, 255, 1)'  // Task border color
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true  // Ensure y-axis starts at zero
+    <script>
+        // Bar Chart
+        var ctx = document.getElementById('barChart').getContext('2d');
+        var barChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ project_labels|safe }},  // Safely pass the project labels
+                datasets: [{
+                    label: 'Project Count',
+                    data: {{ project_labels|length }},  // Use the number of project labels as dynamic data
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Bar color
+                    borderColor: 'rgba(75, 192, 192, 1)',  // Bar border color
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return Number.isInteger(value) ? value : null;
+                            },
+                            stepSize: 1
                         }
                     }
                 }
-            });
+            }
+        });
 
-            // Doughnut Chart
-            const doughnutData = {
-                labels: ['Projects', 'Tasks'],  // Labels for doughnut chart
+        // Doughnut Chart
+        var doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+        var doughnutChart = new Chart(doughnutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ task_statuses|safe }},  // Safely pass task statuses as labels
                 datasets: [{
-                    label: 'Count',
-                    data: [{{ prj_no }}, {{ ts_no }}],  // Dynamic data
+                    data: [{{ tk_status_no }}],  // Status count from Django
                     backgroundColor: [
-                        'rgb(255, 99, 132)',  // Project color
-                        'rgb(54, 162, 235)'   // Task color
+                        'rgb(255, 99, 132)',  // Status color 1
+                        'rgb(54, 162, 235)'   // Status color 2
                     ],
                     hoverOffset: 4
                 }]
-            };
+            }
+        });
 
-            const doughnutConfig = {
-                type: 'doughnut',
-                data: doughnutData,
-            };
-
-            var doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
-            var doughnutChart = new Chart(doughnutCtx, doughnutConfig);
-
-            // Line Chart
-            const lineData = {
-                labels: ['Project', 'Task'],  // Labels for line chart
+        // Line Chart
+        var lineCtx = document.getElementById('lineChart').getContext('2d');
+        var lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: ['Project', 'Task'],
                 datasets: [{
                     label: 'Count',
-                    data: [{{ prj_no }}, {{ tk_no }}],  // Dynamic data
-                    borderColor:[
-                        'rgb(75, 192, 192)',
-                        'rgb(54, 162, 235)',], // Line color
-                    tension: 0.1,  // Smoothness of the line
-                    fill: false  // No fill under the line
+                    data: [{{ prj_no }}, {{ ts_no }}],  // Dynamic data from Django
+                    borderColor: 'rgb(75, 192, 192)',  // Line color
+                    tension: 0.1,
+                    fill: false
                 }]
-            };
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return Number.isInteger(value) ? value : null;
+                            },
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 
-            const lineConfig = {
-                type: 'line',
-                data: lineData,
-            };
 
-            var lineCtx = document.getElementById('lineChart').getContext('2d');
-            var lineChart = new Chart(lineCtx, lineConfig);
-        </script>
 
 
   <div class="gap-5 justify-content-center mt-5">

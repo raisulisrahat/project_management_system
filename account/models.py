@@ -9,6 +9,20 @@ from django.core.exceptions import ValidationError
 
 
 # Create your models here.
+class OrgType(models.Model):
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
+
+class Organization(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    type = models.OneToOneField(OrgType, on_delete=models.CASCADE, max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
 class Role(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     role_name = models.CharField(max_length=100)
@@ -33,6 +47,7 @@ class Member(models.Model):
     user_id = models.ManyToManyField(User, related_name='members')
 
 class Profile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     profile_image = models.ImageField(upload_to='images/', null=True, blank=True)
     country = models.ForeignKey('cities_light.Country', on_delete=models.SET_NULL, null=True, blank=True)

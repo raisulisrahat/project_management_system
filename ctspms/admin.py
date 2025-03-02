@@ -9,7 +9,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('unique_id', 'summery', 'priority', 'status', 'reporter', 'assigned_to')
+    list_display = ('unique_id', 'priority', 'status', 'reporter', 'assigned_to')
 
 @admin.register(Timelog)
 class TimelogAdmin(admin.ModelAdmin):
