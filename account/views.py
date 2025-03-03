@@ -13,7 +13,7 @@ from account.models import Profile, Role, Department, Member, PasswordResetOTP, 
 from account.forms import InvitationForm, PasswordResetRequestForm, OTPVerificationForm, SignUpForm
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import RedirectView, DetailView, UpdateView, CreateView, DeleteView
-
+from django.db.models import Count
 from ctspms.models import Project, Task, Timelog
 
 # Create your views here.
@@ -111,7 +111,7 @@ class CustomLogoutView(LogoutView):
 @login_required  # Ensure that only logged-in users can access the dashboard
 def dashboard_view(request):
     # Fetching data for the dashboard
-    projects = Project.objects.order_by('-start_date')[:4]
+    projects = Project.objects.order_by('-start_date')[:7]  # Limiting to 4 recent projects
     tasks = Task.objects.all()
     peoples = Profile.objects.all()
     members = Member.objects.all()
@@ -124,9 +124,11 @@ def dashboard_view(request):
     # Status counts (example: count tasks with no status)
     tk_status_no = Task.objects.filter(status__isnull=True).count()
 
-    # Get project labels and task statuses as lists
-    project_labels = [project.label() for project in projects]  # Make sure to call the label() method
-    task_statuses = [task.status.status_name if task.status else 'No Status' for task in tasks]
+    # Get project labels and task counts for each project
+    project_labels = [project.label() for project in projects]  # Project labels (e.g., 'HMS', 'PMS')
+
+    # Aggregating task counts per project
+    project_task_counts = [Task.objects.filter(project=project).count() for project in projects]
 
     return render(request, 'dashboard.html', {
         'tk_status_no': tk_status_no,
@@ -138,7 +140,7 @@ def dashboard_view(request):
         'timelog': timelog,
         'members': members,
         'project_labels': project_labels,  # Pass project labels
-        'task_statuses': task_statuses  # Pass task statuses
+        'project_task_counts': project_task_counts,  # Pass project task counts
     })
 
 

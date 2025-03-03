@@ -37,12 +37,28 @@
         var barChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: {{ project_labels|safe }},  // Safely pass the project labels
+                labels: {{ project_labels|safe }},  // Safely pass the project labels as a JS array
                 datasets: [{
-                    label: 'Project Count',
-                    data: {{ project_labels|length }},  // Use the number of project labels as dynamic data
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Bar color
-                    borderColor: 'rgba(75, 192, 192, 1)',  // Bar border color
+                    label: 'Project Task Count',
+                    data: {{ project_task_counts|safe }},  // Safely pass the project task counts as a JS array
+                    backgroundColor: [
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 159, 64, 0.2)',
+                      'rgba(255, 205, 86, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(153, 102, 255, 0.2)',
+                      'rgba(201, 203, 207, 0.2)'
+                    ],
+                    borderColor: [
+                      'rgb(255, 99, 132)',
+                      'rgb(255, 159, 64)',
+                      'rgb(255, 205, 86)',
+                      'rgb(75, 192, 192)',
+                      'rgb(54, 162, 235)',
+                      'rgb(153, 102, 255)',
+                      'rgb(201, 203, 207)'
+                    ],
                     borderWidth: 1
                 }]
             },
@@ -66,27 +82,30 @@
         var doughnutChart = new Chart(doughnutCtx, {
             type: 'doughnut',
             data: {
-                labels: {{ task_statuses|safe }},  // Safely pass task statuses as labels
+                labels: {{ project_labels|safe }},  // Safely pass project labels as labels
                 datasets: [{
-                    data: [{{ tk_status_no }}],  // Status count from Django
+                    data: {{ project_task_counts|safe }},  // Task counts per project (ensure it's an array)
                     backgroundColor: [
-                        'rgb(255, 99, 132)',  // Status color 1
-                        'rgb(54, 162, 235)'   // Status color 2
+                        'rgb(255, 99, 132)',   // Color for the first project
+                        'rgb(54, 162, 235)',   // Color for the second project
+                        'rgb(255, 205, 86)',   // Color for the third project
+                        // Add more colors if there are more projects
                     ],
                     hoverOffset: 4
                 }]
             }
         });
 
+
         // Line Chart
         var lineCtx = document.getElementById('lineChart').getContext('2d');
         var lineChart = new Chart(lineCtx, {
             type: 'line',
             data: {
-                labels: ['Project', 'Task'],
+                labels: {{ project_labels|safe }},  // Project names as labels on x-axis
                 datasets: [{
-                    label: 'Count',
-                    data: [{{ prj_no }}, {{ ts_no }}],  // Dynamic data from Django
+                    label: 'Task Count per Project',
+                    data: {{ project_task_counts|safe }},  // Task counts per project
                     borderColor: 'rgb(75, 192, 192)',  // Line color
                     tension: 0.1,
                     fill: false
@@ -106,6 +125,7 @@
                 }
             }
         });
+
     </script>
 
 
