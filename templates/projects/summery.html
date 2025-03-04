@@ -1,21 +1,45 @@
 {% extends "base.html" %}
-{% block title %}Project{% endblock %}
+{% block title %}{{ project.name }}{% endblock %}
 
 {% block content %}
 <div class="container container-fluid">
     <div class="my-5">
-        <div class="d-flex align-items-center justify-content-sm-start gap-2 my-5">
-            <a href="{% url 'projects' %}" class="text-decoration-none fw-semibold">Project</a>
-            <i class="fa-solid fa-angle-right"></i>
-            <a href="{% url 'project_detail' project.label %}" class="text-decoration-none fw-semibold"> {{ project.name }}</a>
+        <div class="d-flex justify-content-sm-between">
+            <div class="d-flex align-items-center justify-content-sm-start gap-2 my-5">
+                <a href="{% url 'projects' %}" class="text-decoration-none fw-semibold">Projects</a>
+                <i class="fa-solid fa-angle-right"></i>
+                <a href="{% url 'project_detail' project.label %}" class="text-decoration-none fw-semibold"> {{ project.name }}</a>
+            </div>
+            <button class="btn btn-primary my-5">Create Task</button>
         </div>
-
         <div class="row">
             <!-- Donut Chart -->
             <div class="col">
                 <div class="p-4 bg-white shadow-sm rounded">
-                    <h4>Project Status</h4>
-                    <canvas id="donChart"></canvas>
+                    <h5>{{ project.name }} Task Status</h5>
+                    <canvas id="doughnutChart" class="w-100 h-100"></canvas>
+                    <script>
+                        var doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+                        var doughnutChart = new Chart(doughnutCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: {{ task_statuses|safe }},  // Pass task statuses safely as JS array
+                                datasets: [{
+                                    data: {{ task_counts|safe }},  // Pass task status counts safely as JS array
+                                    backgroundColor: [
+                                        'rgb(255,99,132)',
+                                        'rgb(48,205,106)',
+                                        'rgba(255, 205, 86)',
+                                        'rgba(75, 192, 192)',
+                                        'rgba(54, 162, 235)',
+                                        'rgba(153, 102, 255)',
+                                        'rgba(201, 203, 207)'
+                                    ],
+                                    hoverOffset: 4
+                                }]
+                            }
+                        });
+                    </script>
                 </div>
             </div>
 
@@ -30,16 +54,126 @@
             <!-- Recent Comments -->
             <div class="col">
                 <div class="p-4 bg-white shadow-sm rounded w-100 h-100">
-                    <h4>Recent comments</h4>
+                    <h4>Recent Comments</h4>
                     <ul class="list-group list-group-flush">
                         {% for task in project.tasks.all %}
-                            {% for comment in task.comments.all %}
+                            {% for comment in task.comments %}
                                 <li class="list-group-item">
-                                    <span class="fw-semibold" style="color: #3d99f5">{{ task.unique_id }}</span>: {{ comment.comment }}
+                                    <span class="fw-semibold" style="color: #3d99f5">{{ task.unique_id }}</span>: {{ comment.comment }} by {{ comment.user.first_name }}
                                 </li>
                             {% endfor %}
                         {% endfor %}
                     </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex mt-5 gap-5">
+            <div class="col">
+                <div class="p-4 bg-white shadow-sm rounded">
+                    <h4>Priority breakdown</h4>
+                    <canvas id="barChart" class="w-100 h-100"></canvas>
+                    <script>
+                        var ctx = document.getElementById('barChart').getContext('2d');
+                        var barChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: {{ task_priorities|safe }},  // Safely pass task priority labels
+                                datasets: [{
+                                    label: 'Task Priorities',  // Provide a meaningful label for the bar chart
+                                    data: {{ task_priority_counts|safe }},  // Safely pass priority counts as JS array
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)',
+                                        'rgba(255, 205, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(201, 203, 207, 0.2)'
+                                    ],
+                                    borderColor: [
+                                        'rgb(255, 99, 132)',
+                                        'rgb(255, 159, 64)',
+                                        'rgb(255, 205, 86)',
+                                        'rgb(75, 192, 192)',
+                                        'rgb(54, 162, 235)',
+                                        'rgb(153, 102, 255)',
+                                        'rgb(201, 203, 207)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return Number.isInteger(value) ? value : null;
+                                            },
+                                            stepSize: 1
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
+
+            <!-- Team workload -->
+            <div class="col">
+                <div class="row p-4 bg-white shadow-sm rounded">
+                    <h4>Team workload</h4>
+                    <div class="col">
+                        <canvas id="barChart2" class="w-100 h-100"></canvas>
+                        <script>
+                        var ctx2 = document.getElementById('barChart2').getContext('2d');
+                        var barChart2 = new Chart(ctx2, {
+                            type: 'bar',  // Horizontal bar chart
+                            data: {
+                                labels: [
+                                    {% for user in unique_assigned_users %}
+                                        '{{ user }}',
+                                    {% endfor %}
+                                ],
+                                datasets: [{
+                                    label: 'Task Assignment (%)',
+                                    data: [
+                                        {% for user, percentage in user_task_percentages %}
+                                            {{ percentage }},
+                                        {% endfor %}
+                                    ],
+                                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',  // Horizontal chart
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return value + '%';  // Show percentage
+                                            }
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(tooltipItem) {
+                                                return tooltipItem.raw + '%';  // Display percentage in tooltip
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                    </div>
                 </div>
             </div>
         </div>

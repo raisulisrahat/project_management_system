@@ -77,23 +77,58 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
 
     def get_object(self):
         label = self.kwargs.get('label')
-
-        # Try to find project by code
         project = Project.objects.filter(code__iexact=label).first()
 
-        # If no project is found by code, try to generate the label from the name
         if not project:
-            projects = Project.objects.all()  # Fetch all projects
+            projects = Project.objects.all()
             for proj in projects:
-                if proj.label() == label:  # Compare the generated label
+                if proj.label() == label:
                     project = proj
                     break
 
-        if project is None:
+        if not project:
             raise Http404("Project does not exist")
 
         return project
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Task status breakdown for doughnut chart
+        task_statuses = context['project'].tasks.values_list('status__status_name', flat=True).distinct()
+        task_counts = [context['project'].tasks.filter(status__status_name=status).count() for status in task_statuses]
+
+        # Task priority breakdown for bar chart
+        task_priorities = context['project'].tasks.values_list('priority__priority_name', flat=True).distinct()
+        task_priority_counts = [context['project'].tasks.filter(priority__priority_name=priority).count() for priority
+                                in task_priorities]
+
+        # Generate a list of unique assigned users for the team workload section
+        assigned_users = set()
+        user_task_count = {}  # To store task count per user
+
+        for task in context['project'].tasks.all():
+            assigned_users.add(task.assigned_to)
+            user_task_count[task.assigned_to] = user_task_count.get(task.assigned_to, 0) + 1
+
+        # Calculate total tasks and percentage for each user
+        total_tasks = context['project'].tasks.count()
+        user_task_percentages = {user: (count / total_tasks) * 100 for user, count in user_task_count.items()}
+
+        # Create a list of tuples (user, percentage) instead of a dictionary
+        user_task_percentages_list = [(user, user_task_percentages.get(user, 0)) for user in assigned_users]
+
+        # Pass data to the template
+        context['unique_assigned_users'] = list(assigned_users)
+        context['user_task_percentages'] = user_task_percentages_list  # Pass as list of tuples
+
+        # Pass chart data to template context
+        context['task_statuses'] = list(task_statuses)
+        context['task_counts'] = task_counts
+        context['task_priorities'] = list(task_priorities)
+        context['task_priority_counts'] = task_priority_counts
+
+        return context
 
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
