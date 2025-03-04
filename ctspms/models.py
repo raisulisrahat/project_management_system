@@ -104,16 +104,6 @@ class Task(models.Model):
     def unique_id(self):
         # Use the project's label (HMS, PMS, etc.) and the project_task_number
         return f'{self.project.label()}-{self.project_task_number}'
-
-class Comment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
-    comment = models.TextField(null=True, blank=True)
-    note = models.TextField()
-
-    def __str__(self):
-        return self.note
-
 class Attachment(models.Model):
     file_path = models.FileField(upload_to="upload/data")  # Use FileField for uploaded files
     task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True, related_name='attachments')
@@ -121,6 +111,18 @@ class Attachment(models.Model):
 
     def __str__(self):
         return self.file_path.name
+
+class Comment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
+    comment = models.TextField(null=True, blank=True)
+    attachment = models.ForeignKey(Attachment, on_delete=models.CASCADE)
+    note = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.note
+
+
 
 class Timelog(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -158,15 +160,15 @@ class Notification(models.Model):
     def __str__(self):
         # Return a readable description based on the type of notification
         if self.notification_type == 'task_assigned':
-            return f'{self.people.full_name()} assigned to Task: {self.task.summery}'
+            return f'{self.people.full_name()} assigned to Task: {self.task.summary}'
         elif self.notification_type == 'comment_added':
-            return f'New comment added on Task: {self.task.summery}'
+            return f'New comment added on Task: {self.task.summary}'
         elif self.notification_type == 'task_updated':
-            return f'Task {self.task.summery} updated'
+            return f'Task {self.task.summary} updated'
         elif self.notification_type == 'task_due':
-            return f'Task {self.task.summery} is due soon'
+            return f'Task {self.task.summary} is due soon'
         elif self.notification_type == 'project_updated':
-            return f'Project {self.project.title} updated'
+            return f'Project {self.project.name} updated'
         else:
             return f'Notification: {self.notification_type}'
 

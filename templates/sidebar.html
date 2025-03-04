@@ -26,7 +26,7 @@
 
         <!-- Projects link (Dropdown) -->
         <li>
-            <a class="d-flex align-items-center fs-6 text-decoration-none" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" style="font-weight: 500; color: #3d99f5;">
+            <a class="d-flex align-items-center text-decoration-none fs-6 " data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" style="font-weight: 500; color: #3d99f5;">
                 <i class="fas fa-project-diagram me-2"></i> Projects
             </a>
             <ul class="collapse list-group list-group-flush" id="collapseExample">
@@ -35,8 +35,14 @@
                     <a href="{% url 'project_detail' project.label %}" class="dropdown-item" style="font-weight: 500; color: #dc3545;">
                         <i class="fa-solid fa-square-caret-right"></i> {{ project.label }}
                     </a>
+
                 </li>
                 {% endfor %}
+                <li class="list-group-item">
+                    <a href="{% url 'projects' %}" class="text-decoration-none fw-semibold">
+                        View Projects
+                    </a>
+                </li>
             </ul>
         </li>
     </ul>

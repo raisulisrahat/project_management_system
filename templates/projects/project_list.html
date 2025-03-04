@@ -7,7 +7,7 @@
     <h3 class="">Projects</h3>
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Create Project</button>
 </div>
-        <table class="table shadow-sm">
+        <table class="table table-hover shadow-sm">
             <thead>
                 <tr>
                     <th scope="col">Project Name</th>
@@ -19,10 +19,14 @@
             <tbody>
             {% for project in projects %}
                 <tr>
-                    <td style="font-weight: 400;"><a href="{% url 'project_detail' project.label %}" class="text-decoration-none" style="color: #3e98ff;">{{ project.name }}</a></td>
-                    <td style="color: #3e98ff; font-weight: 400;">{{ project.label }}</td>
-                    <td style="color: #3e98ff; font-weight: 400;">{{ project.type }}</td>
-                    <td style="font-weight: 400;">
+                    <td class="fw-semibold">
+                        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none" style="color: #3e98ff;">
+                            {{ project.name }}
+                        </a>
+                    </td>
+                    <td class="fw-semibold text-secondary">{{ project.label }}</td>
+                    <td class="fw-semibold text-secondary">{{ project.type }}</td>
+                    <td class="fw-semibold">
                         <a href="#" class="text-decoration-none gap-2" style="color: #3e98ff;">
                             <img src="{{ project.lead.user.profile.profile_image.url }}" alt="{{ project.lead }}" class="rounded-circle" width="30" height="30">  {{ project.lead }}
                         </a>

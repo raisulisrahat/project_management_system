@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse,Http404
 from django.views.decorators.http import require_GET
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
@@ -18,12 +18,12 @@ def ajax_search(request):
 
         # 1. Search for projects
         project_queryset = Project.objects.filter(name__icontains=query)
-        project_results = [{'label': project.label, 'title': project.title} for project in project_queryset]
+        project_results = [{'label': project.label, 'title': project.name} for project in project_queryset]
         results['projects'] = project_results
 
         # 2. Search for tasks
         task_queryset = Task.objects.filter(task_name__icontains=query)
-        task_results = [{'summary': task.summery, 'unique_id': task.unique_id()} for task in task_queryset]
+        task_results = [{'summary': task.summary, 'unique_id': task.unique_id()} for task in task_queryset]
         results['tasks'] = task_results
 
         # 3. Search for issues
@@ -73,7 +73,28 @@ class TaskListView(LoginRequiredMixin, ListView):
 class ProjectDetailView(LoginRequiredMixin, DetailView):
     model = Project
     template_name = 'projects/summery.html'
-    context_object_name = 'project'  # Context variable for the template
+    context_object_name = 'project'
+
+    def get_object(self):
+        label = self.kwargs.get('label')
+
+        # Try to find project by code
+        project = Project.objects.filter(code__iexact=label).first()
+
+        # If no project is found by code, try to generate the label from the name
+        if not project:
+            projects = Project.objects.all()  # Fetch all projects
+            for proj in projects:
+                if proj.label() == label:  # Compare the generated label
+                    project = proj
+                    break
+
+        if project is None:
+            raise Http404("Project does not exist")
+
+        return project
+
+
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
     model = Task
