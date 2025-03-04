@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container container-fluid">
-    <div class="my-5">
+    <div class="my-4">
         <div class="d-flex justify-content-sm-between">
             <div class="d-flex align-items-center justify-content-sm-start gap-2 my-5">
                 <a href="{% url 'projects' %}" class="text-decoration-none fw-semibold">Projects</a>
@@ -57,9 +57,9 @@
                     <h4>Recent Comments</h4>
                     <ul class="list-group list-group-flush">
                         {% for task in project.tasks.all %}
-                            {% for comment in task.comments %}
-                                <li class="list-group-item">
-                                    <span class="fw-semibold" style="color: #3d99f5">{{ task.unique_id }}</span>: {{ comment.comment }} by {{ comment.user.first_name }}
+                            {% for comment in task.comments.all %}
+                                <span class="list-group-item">
+                                <span class="fw-semibold" style="color: #3d99f5">{{ task.unique_id }}</span>: {{ comment.comment }} <span style="font-size: 13px; font-style: italic;">comment by <a href="#" class="text-primary text-decoration-none">{{ comment.user.first_name }}</a></span>
                                 </li>
                             {% endfor %}
                         {% endfor %}
