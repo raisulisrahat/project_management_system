@@ -111,8 +111,8 @@ class CustomLogoutView(LogoutView):
 @login_required  # Ensure that only logged-in users can access the dashboard
 def dashboard_view(request):
     # Fetching data for the dashboard
-    projects = Project.objects.order_by('-start_date')[:7]  # Limiting to 4 recent projects
-    tasks = Task.objects.all()
+    projects = Project.objects.order_by('-start_date')[:5]  # Limiting to 4 recent projects
+    tasks = Task.objects.order_by('-start_date')[:5]
     peoples = Profile.objects.all()
     members = Member.objects.all()
     timelog = Timelog.objects.all()

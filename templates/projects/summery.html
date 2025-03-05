@@ -58,7 +58,7 @@
                     <ul class="list-group list-group-flush">
                         {% for task in project.tasks.all %}
                             {% for comment in task.comments.all %}
-                                <span class="list-group-item">
+                                <li class="list-group-item">
                                 <span class="fw-semibold" style="color: #3d99f5">{{ task.unique_id }}</span>: {{ comment.comment }} <span style="font-size: 13px; font-style: italic;">comment by <a href="#" class="text-primary text-decoration-none">{{ comment.user.first_name }}</a></span>
                                 </li>
                             {% endfor %}
