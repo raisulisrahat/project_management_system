@@ -1,5 +1,5 @@
 from django.urls import path
-from account.views import CustomLoginView, CustomLogoutView, PeopleView, PeopleModify, dashboard_view, invite_user, accept_invitation, invitation_success, request_password_reset, verify_otp, password_reset_success
+from account.views import CustomLoginView, CustomLogoutView, PeopleView, PeopleModify, dashboard_view, settings_view, invite_user, accept_invitation, invitation_success, request_password_reset, verify_otp, password_reset_success
 
 # Create your tests here.
 
@@ -10,6 +10,7 @@ urlpatterns = [
 
     # Dashboard
     path('dashboard/', dashboard_view, name='dashboard'),
+    path('settings/', settings_view, name='settings'),
     path('invite/', invite_user, name='invite_user'),
     path('accept-users/<str:code>/', accept_invitation, name='accept_invitation'),
     path('users-success/', invitation_success, name='invitation_success'),

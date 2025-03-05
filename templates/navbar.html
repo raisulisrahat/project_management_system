@@ -2,11 +2,10 @@
 <script src="{% static 'js/scripts.js' %}" type="text/javascript"></script>
     <div class="container-fluid">
         <!-- Logo Section -->
-        <a class="d-flex gap-2 text-decoration-none" href="{% url 'dashboard' %}">
-            <img src="{% static 'image/cts-icon.png' %}" alt="Logo" height="50">
-            <div class="text-white">
-                <p class="fw-bold mb-0">Cyber and Tech</p>
-                <p class="fw-bold mb-0">Solution</p>
+        <a class="text-decoration-none" href="{% url 'dashboard' %}">
+            <div class="d-flex gap-2 text-white">
+                <img src="{% static 'image/Flowtrex-icon.png' %}" alt="Logo" height="40">
+                <span class="fw-bold align-content-center fs-3">Flowtrex</span>
             </div>
         </a>
 
@@ -19,23 +18,28 @@
         <!-- Navbar Content -->
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <div class="navbar-nav d-flex align-items-center gap-3">
+                            <!-- Search Box -->
+                <div class="nav-item">
+                    <form id="search-form" class="d-flex align-items-center position-relative">
+                        <i class="fa fa-search position-absolute top-50 translate-middle-y"
+                           style="left: 10px;"></i>
+                        <input type="text" id="search_input" class="form-control form-input shadow-sm" style="text-indent: 30px;" placeholder="Search"/>
+                    </form>
+                    <div id="search-results"></div>
+                </div>
                 <!-- Notifications Icon -->
                 <div class="nav-item">
                     <a class="nav-link" href="{% url 'dashboard' %}">
                         <i class="fas fa-bell fs-4 text-white shadow-sm"></i>
                     </a>
                 </div>
-
-                <!-- Search Box -->
                 <div class="nav-item">
-                    <form id="search-form" class="d-flex align-items-center position-relative">
-                        <i class="fa fa-search position-absolute top-50 translate-middle-y"
-                           style="left: 10px;"></i>
-                        <input type="text" id="search_input" class="form-control form-input shadow-sm"
-                               style="text-indent: 30px;" placeholder="Search">
-                    </form>
-                    <div id="search-results"></div>
+                    <a class="nav-link" href="{% url 'settings' %}">
+                        <i class="fa-solid fa-gear fs-4 text-white shadow-sm"></i>
+                    </a>
                 </div>
+
+
 
                 <!-- User Profile and Dropdown -->
                 <div class="nav-item dropdown">
