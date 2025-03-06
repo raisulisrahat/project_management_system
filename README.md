@@ -10,9 +10,11 @@
 ###### Install packages: 
     pip install -r requirements.txt
 
-#### Migrate and Migration Model -
-* Migration: `python manage.py makeigration`
-* Migrate:`python manage.py migrate`
+#### Migrate and Migration Model:
+* Migration: 
+    `python manage.py makeigration`
+* Migrate:
+    `python manage.py migrate`
 
 #### Rename `.env.example` with `.env`
 #### Generate a Django Secret key

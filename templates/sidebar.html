@@ -2,21 +2,21 @@
     <ul class="list-unstyled p-3">
         <!-- Home link -->
         <li class="py-2">
-            <a href="{% url 'dashboard' %}" class="d-flex align-items-center fs-6 text-decoration-none fw-semibold text-primary">
+            <a href="{% url 'dashboard' %}" class="d-flex align-items-center text-decoration-none text-secondary-emphasis">
                 <i class="fa-solid fa-house me-2"></i> Home
             </a>
         </li>
 
         <!-- My tasks link -->
         <li class="py-2">
-            <a href="#" class="d-flex align-items-center fs-6 text-decoration-none fw-semibold text-primary">
+            <a href="#" class="d-flex align-items-center text-decoration-none text-secondary-emphasis">
                 <i class="fa-solid fa-list-check me-2"></i> My Tasks
             </a>
         </li>
 
         <!-- Messages link -->
         <li class="py-2">
-            <a href="#" class="d-flex align-items-center fs-6 text-decoration-none fw-semibold text-primary">
+            <a href="#" class="d-flex align-items-center text-decoration-none text-secondary-emphasis">
                 <i class="fa-solid fa-message me-2"></i> Messages
             </a>
         </li>
@@ -26,20 +26,19 @@
 
         <!-- Projects link (Dropdown) -->
         <li>
-            <a class="d-flex align-items-center text-decoration-none fs-6 fw-semibold text-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fas fa-project-diagram me-2"></i> Projects
             </a>
             <ul class="collapse list-group list-group-flush" id="collapseExample">
                 {% for project in projects %}
                 <li class="list-group-item">
-                    <a href="{% url 'project_detail' project.label %}" class="dropdown-item fw-semibold text-secondary">
+                    <a href="{% url 'project_detail' project.label %}" class="dropdown-item text-secondary-emphasis">
                         <i class="fa-solid fa-square-caret-right"></i> {{ project.label }}
                     </a>
-
                 </li>
                 {% endfor %}
                 <li class="list-group-item">
-                    <a href="{% url 'projects' %}" class="text-decoration-none fw-semibold">
+                    <a href="{% url 'projects' %}" class="text-decoration-none text-secondary-emphasis">
                         View Projects
                     </a>
                 </li>

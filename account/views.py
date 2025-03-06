@@ -137,7 +137,7 @@ def dashboard_view(request):
         'ts_no': ts_no,
         'projects': projects,
         'tasks': tasks,
-        'peoples': peoples,
+        'profile': peoples,
         'timelog': timelog,
         'members': members,
         'project_labels': project_labels,  # Pass project labels
@@ -235,11 +235,12 @@ def password_reset_success(request):
 
 class PeopleView(DetailView):
     model = Profile
-    context_object_name = 'peoples'
-    template_name = 'peoples/profile.html'
+    context_object_name = 'profile'
+    template_name = 'profile/profile.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_object(self):
+        profile = Profile.objects.get(pk=self.kwargs['id'])
+        return {'profile': profile}
 
 class PeopleModify(UpdateView):
     model = Profile

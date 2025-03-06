@@ -18,6 +18,6 @@ urlpatterns = [
     path('reset-password/', request_password_reset, name='request_password_reset'),
     path('verify-otp/<int:user_id>/', verify_otp, name='verify_otp'),
     path('password-reset-success/', password_reset_success, name='password_reset_success'),
-    path('profile/', PeopleView.as_view(), name='profile'),
+    path('profile/<str:id>', PeopleView.as_view(), name='profile'),
     path('profile/edit/', PeopleModify.as_view(), name='profile-edit')
 ]
