@@ -1,5 +1,6 @@
 .idea
 .venv
+.pyenv
 .mockup
 .env
 db.sqlite3
