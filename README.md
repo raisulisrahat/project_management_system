@@ -4,15 +4,15 @@
 
 ##### Creat a python virtual environment and active environment
 
-* Create pyenv: `python -m venv .pyenv`
-* Active pyenv: `.pyenv\Scripts\Activate.ps1`
+* Create pyenv: `python -m venv .venv`
+* Active pyenv: `.venv\Scripts\Activate.ps1`
 
 ###### Install packages: 
     pip install -r requirements.txt
 
 #### Migrate and Migration Model:
 * Migration: 
-    `python manage.py makeigration`
+    `python manage.py makemigration`
 * Migrate:
     `python manage.py migrate`
 
