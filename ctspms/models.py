@@ -105,7 +105,7 @@ class Task(models.Model):
         # Use the project's label (HMS, PMS, etc.) and the project_task_number
         return f'{self.project.label()}-{self.project_task_number}'
 class Attachment(models.Model):
-    file_path = models.FileField(upload_to="upload/data")  # Use FileField for uploaded files
+    file_path = models.FileField(upload_to="upload/data", null=True, blank=True)  # Use FileField for uploaded files
     task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True, related_name='attachments')
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True, related_name='documents')
 
@@ -113,10 +113,10 @@ class Attachment(models.Model):
         return self.file_path.name
 
 class Comment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
     comment = models.TextField(null=True, blank=True)
-    attachment = models.ForeignKey(Attachment, on_delete=models.CASCADE)
+    attachment = models.ForeignKey(Attachment, on_delete=models.CASCADE, null=True, blank=True)
     note = models.TextField(null=True, blank=True)
 
     def __str__(self):

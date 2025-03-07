@@ -6,10 +6,12 @@ from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
+from django.utils import timezone as tz
+from django.utils.translation import activate, get_language
 from django.conf import settings
 from django.urls import reverse_lazy
 from django.contrib import messages
-from account.models import Profile, Role, Department, Member, PasswordResetOTP, Invitation
+from account.models import Profile, Role, Department, Member, PasswordResetOTP, Invitation, OrgType, Organization
 from account.forms import InvitationForm, PasswordResetRequestForm, OTPVerificationForm, SignUpForm
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import RedirectView, DetailView, UpdateView, CreateView, DeleteView
@@ -80,7 +82,6 @@ def verify_otp(request, user_id):
 
     return render(request, 'users/verify_otp.html', {'form': form, 'user': user})
 
-
 # 3. Custom login view
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'
@@ -111,8 +112,8 @@ class CustomLogoutView(LogoutView):
 @login_required  # Ensure that only logged-in users can access the dashboard
 def dashboard_view(request):
     # Fetching data for the dashboard
-    projects = Project.objects.order_by('-start_date')[:7]  # Limiting to 4 recent projects
-    tasks = Task.objects.all()
+    projects = Project.objects.order_by('-start_date')[:5]  # Limiting to 4 recent projects
+    tasks = Task.objects.order_by('-start_date')[:5]
     peoples = Profile.objects.all()
     members = Member.objects.all()
     timelog = Timelog.objects.all()
@@ -136,13 +137,46 @@ def dashboard_view(request):
         'ts_no': ts_no,
         'projects': projects,
         'tasks': tasks,
-        'peoples': peoples,
+        'profile': peoples,
         'timelog': timelog,
         'members': members,
         'project_labels': project_labels,  # Pass project labels
         'project_task_counts': project_task_counts,  # Pass project task counts
     })
 
+@login_required
+def settings_view(request):
+    organizations = OrgType.objects.all()
+
+    # if request.method == 'POST':
+    #     # Get the selected timezone and language from the form
+    #     selected_timezone = request.POST.get('timezone')
+    #     selected_language = request.POST.get('language')
+    #
+    #     # Set the timezone in the user's session
+    #     request.session['django_timezone'] = selected_timezone
+    #     tz.activate(selected_timezone)  # Apply the timezone for this request
+    #
+    #     # Set the language in the user's session
+    #     request.session[settings.LANGUAGE_COOKIE_NAME] = selected_language
+    #     activate(selected_language)  # Apply the language for this request
+    #
+    #     # Redirect to the same page or any other page
+    #     return redirect('your_page')
+    #
+    # # For GET requests, display the form
+    # timezones = tz.common_timezones
+    # languages = settings.LANGUAGES
+    # current_timezone = tz.get_current_timezone_name()
+    # current_language = get_language()
+
+    return render(request, 'setting.html', {
+        'organizations': organizations,
+        # 'timezones': timezones,
+        # 'languages': languages,
+        # 'current_timezone': current_timezone,
+        # 'current_language': current_language
+    })
 
 # 6. Invite user view
 @login_required
@@ -201,11 +235,12 @@ def password_reset_success(request):
 
 class PeopleView(DetailView):
     model = Profile
-    context_object_name = 'peoples'
-    template_name = 'peoples/profile.html'
+    context_object_name = 'profile'
+    template_name = 'profile/profile.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_object(self):
+        profile = Profile.objects.get(pk=self.kwargs['id'])
+        return {'profile': profile}
 
 class PeopleModify(UpdateView):
     model = Profile

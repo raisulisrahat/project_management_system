@@ -17,16 +17,20 @@
     <script src="{% static 'js/scripts.js' %}" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" type="text/javascript"></script>
     <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 </head>
-<body style="background-color: rgb(246,248,255);">
+<body class="emx3">
 
-    <nav class="navbar navbar-expand-lg navbar-light px-3 fixed-top navbg" style="background-color: #4a566d;">
+    <nav class="emx44 navbar navbar-expand-lg navbar-light px-1 fixed-top navbg">
         {% include "navbar.html" %}
     </nav>
     <div class="container-fluid h-100">
         <div class="row h-100">
             <div class="col-2">
-            {% include "sidebar.html" %}
+                {% include "sidebar.html" %}
+
         </div>
 
 
@@ -35,6 +39,6 @@
             {% endblock %}
         </main>
     </div>
-
+    </div>
 </body>
 </html>

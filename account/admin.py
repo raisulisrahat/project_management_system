@@ -1,7 +1,7 @@
 from django.contrib import admin
-from account.models import Role, Department, Profile, Member, PasswordResetOTP, Invitation
+from account.models import Role, Department, OrgType, Profile, Member, PasswordResetOTP, Invitation
 
-
+admin.site.register(OrgType)
 admin.site.register(Invitation)
 admin.site.register(PasswordResetOTP)
 

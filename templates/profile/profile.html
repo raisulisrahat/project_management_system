@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+    {% block title %} {{ user.profile.full_name }} - Profile View {% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-1 w-25">
+                <div class="p-4 bg-white shadow rounded">
+                    {% if user.is_authenticated %}
+                        {% if user.profile.profile_image and user.profile.profile_image.url %}
+                            <img src="{{ user.profile.profile_image.url }}" class="rounded-circle img-fluid mx-auto d-block w-25" alt="{{ user.full_name }}" width="200px" height="200px">
+                        {% else %}
+                            <img src="{% static 'image/user.png' %}" alt="{{ user.profile.full_name }}" class="rounded-circle img-fluid mx-auto d-block w-25" height="200px" width="200px">
+                        {% endif %}
+                    {% endif %}
+                    <div class="mt-2 text-center fw-semibold text-secondary">{{ user.profile.full_name }}</div>
+                    <div class="text-center fw-light text-secondary">{{ user.profile.department }}</div>
+                </div>
+            </div>
+            <div class="col-2 w-75">
+                <div class="p-3 m-auto bg-white shadow rounded">
+                    <p class="fw-semibold">Full Name: <span class="fw-medium">{{ user.profile.full_name }}</span></p>
+                    <hr>
+                    <p class="fw-semibold">Eamil: <span class="fw-medium">{{ user.email }}</span></p>
+                    <hr>
+                    <p class="fw-semibold">Address: <span class="fw-medium">{{ user.profile.address }}, {{ user.profile.country.code2 }}</span></p>
+                    <hr>
+                    <p class="fw-semibold">Role: <span class="fw-medium">{{ user.profile.role }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
