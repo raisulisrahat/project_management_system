@@ -11,7 +11,7 @@ from django.utils.translation import activate, get_language
 from django.conf import settings
 from django.urls import reverse_lazy
 from django.contrib import messages
-from account.models import Profile, Role, Department, Member, PasswordResetOTP, Invitation, OrgType, Organization
+from account.models import Profile, Role, Department, Team, PasswordResetOTP, Invitation, OrgType, Organization
 from account.forms import InvitationForm, PasswordResetRequestForm, OTPVerificationForm, SignUpForm
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import RedirectView, DetailView, UpdateView, CreateView, DeleteView
@@ -115,7 +115,7 @@ def dashboard_view(request):
     projects = Project.objects.order_by('-start_date')[:5]  # Limiting to 4 recent projects
     tasks = Task.objects.order_by('-start_date')[:5]
     peoples = Profile.objects.all()
-    members = Member.objects.all()
+    teams = Team.objects.all()
     timelog = Timelog.objects.all()
 
     # Get counts for projects and tasks
@@ -139,7 +139,7 @@ def dashboard_view(request):
         'tasks': tasks,
         'profile': peoples,
         'timelog': timelog,
-        'members': members,
+        'team': teams,
         'project_labels': project_labels,  # Pass project labels
         'project_task_counts': project_task_counts,  # Pass project task counts
     })
@@ -233,14 +233,16 @@ def password_reset_success(request):
     return render(request, 'users/password_reset_success.html')
 
 
-class PeopleView(DetailView):
+class ProfileDetailView(DetailView):
     model = Profile
     context_object_name = 'profile'
     template_name = 'profile/profile.html'
 
     def get_object(self):
+        # Fetch profile by user UUID (assuming you're passing user_id in the URL)
         profile = Profile.objects.get(pk=self.kwargs['id'])
-        return {'profile': profile}
+        team = Team.objects.all()
+        return {'profile': profile, 'team': team}
 
 class PeopleModify(UpdateView):
     model = Profile

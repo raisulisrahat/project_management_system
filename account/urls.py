@@ -1,5 +1,5 @@
 from django.urls import path
-from account.views import CustomLoginView, CustomLogoutView, PeopleView, PeopleModify, dashboard_view, settings_view, invite_user, accept_invitation, invitation_success, request_password_reset, verify_otp, password_reset_success
+from account.views import CustomLoginView, CustomLogoutView, ProfileDetailView, PeopleModify, dashboard_view, settings_view, invite_user, accept_invitation, invitation_success, request_password_reset, verify_otp, password_reset_success
 
 # Create your tests here.
 
@@ -18,6 +18,6 @@ urlpatterns = [
     path('reset-password/', request_password_reset, name='request_password_reset'),
     path('verify-otp/<int:user_id>/', verify_otp, name='verify_otp'),
     path('password-reset-success/', password_reset_success, name='password_reset_success'),
-    path('profile/<str:id>', PeopleView.as_view(), name='profile'),
+    path('profile/<str:id>', ProfileDetailView.as_view(), name='profile'),
     path('profile/edit/', PeopleModify.as_view(), name='profile-edit')
 ]

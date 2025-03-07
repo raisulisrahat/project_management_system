@@ -1,5 +1,5 @@
 from django.contrib import admin
-from account.models import Role, Department, OrgType, Profile, Member, PasswordResetOTP, Invitation
+from account.models import Role, Department, OrgType, Profile, Team, PasswordResetOTP, Invitation
 
 admin.site.register(OrgType)
 admin.site.register(Invitation)
@@ -18,10 +18,10 @@ class DepartmentAdmin(admin.ModelAdmin):
 class PeoplesAdmin(admin.ModelAdmin):
     list_display = ['full_name', 'profile_image', 'department', 'role', 'address', 'country']
 
-@admin.register(Member)
+@admin.register(Team)
 class MembersAdmin(admin.ModelAdmin):
-    fields = ('user_id', 'department_id', 'role_id')
-    list_display = ('department_id', 'role_id', 'get_user_id')
+    fields = ('user_id', 'name', 'role_id')
+    list_display = ('name', 'role_id', 'get_user_id')
 
     def get_user_id(self, obj):
         return ", ".join([d.username for d in obj.user_id.all()])
