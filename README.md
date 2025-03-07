@@ -12,7 +12,7 @@
 
 #### Migrate and Migration Model:
 * Migration: 
-    `python manage.py makemigration`
+    `python manage.py makemigrations`
 * Migrate:
     `python manage.py migrate`
 
