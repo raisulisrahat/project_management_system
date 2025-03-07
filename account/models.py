@@ -35,25 +35,27 @@ class Department(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     department_name = models.CharField(max_length=100)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='departments')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.department_name
 
-class Member(models.Model):
+class Team(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    department_id = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='members')
-    role_id = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='members')
-    user_id = models.ManyToManyField(User, related_name='members')
+    name = models.CharField(max_length=100)
+    role_id = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='teams')
+    user_id = models.ManyToManyField(User, related_name='teams')
+
+    def __str__(self):
+        return self.name
 
 class Profile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    profile_image = models.ImageField(upload_to='images/', null=True, blank=True)
+    profile_image = models.ImageField(upload_to='upload/images/', null=True, blank=True, default='/images/user.png')
     country = models.ForeignKey('cities_light.Country', on_delete=models.SET_NULL, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
+    teams = models.ManyToManyField(Team, blank=True)
 
     def validate_image(self):
         if not self.profile_image.name.endswith(('.png', '.jpg', '.jpeg')):
@@ -61,10 +63,6 @@ class Profile(models.Model):
 
     def full_name(self):
         return f'{self.user.first_name} {self.user.last_name}'
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.full_name())  # Automatically generate slug
-        super(Profile, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.full_name()

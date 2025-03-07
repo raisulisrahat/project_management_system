@@ -1,7 +1,7 @@
 import uuid
 from django.contrib.auth.models import User
 from django.db import models
-from account.models import Profile
+from account.models import Profile, Team
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
@@ -42,6 +42,7 @@ class PriorityList(models.Model):
 class Project(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, validators=[RegexValidator(regex=r'^[A-Za-z\s]+$', message='Name can only contain letters and spaces.', code='invalid_name')])
+    lead_team = models.ForeignKey(Team, on_delete=models.PROTECT)
     lead = models.ForeignKey(Profile, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
     type = models.ForeignKey(ProjectType, on_delete=models.CASCADE)
