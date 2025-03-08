@@ -2,8 +2,8 @@
 <script src="{% static 'js/scripts.js' %}" type="text/javascript"></script>
 <div class="container-fluid">
     <!-- Logo Section -->
-    <a class="text-decoration-none" href="{% url 'dashboard' %}">
-        <div class="d-flex gap-2 text-white">
+    <a class="text-decoration-none text-secondary-emphasis" href="{% url 'dashboard' %}">
+        <div class="d-flex gap-2">
             <img src="{% static 'image/Flowtrex-icon.png' %}" alt="Flowtrex" height="30">
             <span class="fw-bold align-content-center fs-5">Flowtrex</span>
         </div>
@@ -23,19 +23,19 @@
                 <form id="search-form" class="d-flex align-items-center position-relative">
                     <i class="fa fa-search position-absolute top-50 translate-middle-y"
                        style="left: 10px;"></i>
-                    <input type="text" id="search_input" class="form-control border-0 form-input shadow-sm" style="text-indent: 30px;" placeholder=" Search "/>
+                    <input type="text" id="search_input" class="form-control border-1 form-input shadow-sm" style="text-indent: 30px;" placeholder=" Search "/>
                 </form>
                 <div id="search-results"></div>
             </div>
             <!-- Notifications Icon -->
             <div class="nav-item mt-1">
                 <a class="nav-link" href="{% url 'dashboard' %}">
-                    <i class="fas fa-bell fs-5 text-white shadow-sm"></i>
+                    <i class="fas fa-bell fs-5"></i>
                 </a>
             </div>
             <div class="nav-item mt-1">
                 <a class="nav-link" href="{% url 'settings' %}">
-                    <i class="fa-solid fa-gear fs-5 text-white shadow-sm"></i>
+                    <i class="fa-solid fa-gear fs-5"></i>
                 </a>
             </div>
 

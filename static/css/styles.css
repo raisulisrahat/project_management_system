@@ -3,9 +3,6 @@
 
     background-color: rgb(246,248,255);
 }
-.emx44{
-    background-color: rgb(82, 82, 110);
-}
 
 .sidebar {
     position: fixed;
@@ -21,7 +18,5 @@
     width: 100%;
     padding: 15px;
     text-align: center;
-    background-color: rgb(82, 82, 110);
-    color: #ffffff;
     font-size: 0.8rem;
 }
