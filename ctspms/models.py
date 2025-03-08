@@ -42,7 +42,7 @@ class PriorityList(models.Model):
 class Project(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, validators=[RegexValidator(regex=r'^[A-Za-z\s]+$', message='Name can only contain letters and spaces.', code='invalid_name')])
-    lead_team = models.ForeignKey(Team, on_delete=models.PROTECT)
+    lead_team = models.ForeignKey(Team, on_delete=models.PROTECT, null=True, blank=True)
     lead = models.ForeignKey(Profile, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
     type = models.ForeignKey(ProjectType, on_delete=models.CASCADE)
@@ -105,6 +105,7 @@ class Task(models.Model):
     def unique_id(self):
         # Use the project's label (HMS, PMS, etc.) and the project_task_number
         return f'{self.project.label()}-{self.project_task_number}'
+
 class Attachment(models.Model):
     file_path = models.FileField(upload_to="upload/data", null=True, blank=True)  # Use FileField for uploaded files
     task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True, related_name='attachments')

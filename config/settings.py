@@ -1,10 +1,13 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv, find_dotenv
 from django.contrib.messages import constants as messages
+
+load_dotenv(find_dotenv('.env'))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-+)8ummd6_u-5c#7+c)!q*!%dibsq7+@=05g=cycpu&7#-mu%%9'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 DEBUG = True
 

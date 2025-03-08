@@ -15,7 +15,7 @@ urlpatterns = [
     path('accept-users/<str:code>/', accept_invitation, name='accept_invitation'),
     path('users-success/', invitation_success, name='invitation_success'),
 
-    path('reset-password/', request_password_reset, name='request_password_reset'),
+    path('reset-password/', request_password_reset, name='password_reset'),
     path('verify-otp/<int:user_id>/', verify_otp, name='verify_otp'),
     path('password-reset-success/', password_reset_success, name='password_reset_success'),
     path('profile/<str:id>', ProfileDetailView.as_view(), name='profile'),

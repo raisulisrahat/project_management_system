@@ -2,7 +2,7 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <p class="fs-4 py-3 fw-semibold">Welcome to Dashboard, <span style="color: #20c997; font-weight: 500;">{{ user.first_name }}</span></p>
+    <p class="fs-4 py-3 fw-semibold">Welcome to Dashboard, <span class="fw-medium fs-5 text-info">{{ user.first_name }}</span></p>
     <div class="d-flex justify-content-center">
         <div class="d-flex justify-content-center bg-white shadow-sm rounded gap-3 fw-semibold">
             <div class="d-flex align-items-center p-3 gap-2">
@@ -137,7 +137,7 @@
   <div class="gap-5 justify-content-center mt-5">
     <div class="row">
     <div class="col">
-        <h3 class="p-2 bg-white shadow-sm rounded">Ongoing Projects</h3>
+        <h4 class="p-2 bg-white shadow-sm rounded">Ongoing Projects</h4>
         <table class="table table-hover table-striped shadow-sm">
             <thead>
                 <tr>
@@ -150,19 +150,19 @@
             <tbody>
             {% for project in projects %}
                 <tr>
-                    <td class="fw-semibold">
+                    <td class="fw-medium eme01">
                         <a href="{% url 'project_detail' project.label %}" class="text-decoration-none" style="color: #3e98ff;">
                             {{ project.name }}
                         </a>
                     </td>
-                    <td class="fw-semibold">
+                    <td class="fw-medium eme01">
                         <a href="{% url 'project_detail' project.label %}" class="text-decoration-none">
                             {{ project.label }}
                         </a>
                     </td>
-                    <td class="fw-semibold">{{ project.type }}</td>
-                    <td class="fw-semibold">
-                        <a href="#" class="text-decoration-none" style="color: #3e98ff;">
+                    <td class="fw-medium eme01">{{ project.type }}</td>
+                    <td class="fw-medium eme01">
+                        <a href="{% url 'profile' user.profile.id %}" class="text-decoration-none" style="color: #3e98ff;">
                             {{ project.lead }}
                         </a>
                     </td>
@@ -178,7 +178,7 @@
 
 
     <div class="col">
-        <h3 class="p-2 bg-white shadow-sm rounded">Ongoing Tasks</h3>
+        <h4 class="p-2 bg-white shadow-sm rounded">Ongoing Tasks</h4>
         <table class="table table-hover table-striped shadow-sm">
             <thead>
                 <tr>
@@ -192,20 +192,20 @@
             <tbody>
             {% for task in tasks %}
                 <tr>
-                    <th scope="row" style="font-weight: 500;">
+                    <th scope="row" class="fw-medium eme01">
                         <a href="{% url 'task_detail' task.unique_id %}" class="text-decoration-none" style="color: rgb(54, 162, 235);">
                             {{ task.unique_id }}
                         </a>
                     </th>
-                    <td style="font-weight: 500;">
+                    <td class="fw-medium eme01">
                         <a href="{% url 'task_detail' task.unique_id %}" class="text-decoration-none" style="color: rgb(92,174,255);">
-                            {{ task.summery }}
+                            {{ task.summary }}
                         </a>
                     </td>
-                    <td class="fw-semibold text-secondary">{{ task.priority }}</td>
-                    <td class="fw-semibold text-secondary">{{ task.status }}</td>
-                    <td class="fw-semibold text-secondary">
-                        <a href="#" class="text-decoration-none" style="color: #3e98ff;">
+                    <td class="fw-medium eme01 text-secondary">{{ task.priority }}</td>
+                    <td class="fw-medium eme01 text-secondary">{{ task.status }}</td>
+                    <td class="fw-medium eme01 text-secondary">
+                        <a href="{% url 'profile' user.profile.id %}" class="text-decoration-none" style="color: #3e98ff;">
                             {{ task.assigned_to.full_name }}
                         </a>
                     </td>

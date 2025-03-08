@@ -49,20 +49,16 @@
                              class="rounded-circle" height="38px" width="38px">
                     
                 </a>
-                <ul class="dropdown-menu round-0 dropdown-menu-end" aria-labelledby="profileDropdown">
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li>
                         <a class="dropdown-item" href="{% url 'profile' user.profile.id %}">
-                            <span style="color: blueviolet;">
-                                <i class="fa-solid fa-user" aria-hidden="true"></i> Profile
-                            </span>
+                            <i class="fa-solid fa-user" aria-hidden="true"></i><span class="ms-2 fs-6">Profile</span>
                         </a>
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <a class="dropdown-item" href="{% url 'logout' %}">
-                            <span style="color: cornflowerblue;">
-                                <i class="fa fa-sign-out" aria-hidden="true"></i> Logout
-                            </span>
+                            <i class="fa fa-sign-out" aria-hidden="true"></i><span class="ms-2 fs-6">Logout</span>
                         </a>
                     </li>
                 </ul>

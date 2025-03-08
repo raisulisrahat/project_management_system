@@ -9,9 +9,29 @@
 
         <!-- My tasks link -->
         <li class="py-2">
-            <a href="#" class="d-flex align-items-center text-decoration-none text-secondary-emphasis">
+            <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseTask" role="button" aria-expanded="false" aria-controls="collapseTask">
                 <i class="fa-solid fa-list-check me-2"></i> My Tasks
             </a>
+            <ul class="collapse list-group list-group-flush" id="collapseTask">
+                <li class="list-group-item">
+                    <a href="" class="dropdown-item text-secondary-emphasis">
+                        <i class="fa-solid fa-columns me-2"></i>
+                        <span class="eme01">Boards</span>
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a href="" class="dropdown-item text-secondary-emphasis">
+                        <i class="fa-solid fa-bug me-2"></i>
+                        <span class="eme01">Issues</span>
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a href="" class="dropdown-item text-secondary-emphasis">
+                        <i class="fa-solid fa-calendar-days me-2"></i>
+                        <span class="eme01">Calendar</span>
+                    </a>
+                </li>
+            </ul>
         </li>
 
         <!-- Messages link -->
@@ -25,21 +45,23 @@
         <hr>
 
         <!-- Projects link (Dropdown) -->
-        <li>
-            <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        <li class="py-2">
+            <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseProject" role="button" aria-expanded="false" aria-controls="collapseProject">
                 <i class="fas fa-project-diagram me-2"></i> Projects
             </a>
-            <ul class="collapse list-group list-group-flush" id="collapseExample">
+            <ul class="collapse list-group list-group-flush" id="collapseProject">
                 {% for project in projects %}
                 <li class="list-group-item">
                     <a href="{% url 'project_detail' project.label %}" class="dropdown-item text-secondary-emphasis">
-                        <i class="fa-solid fa-square-caret-right"></i> {{ project.label }}
+                        <i class="fa-solid fa-square-caret-right me-2"></i>
+                        <span class="eme01">{{ project.label }}</span>
                     </a>
                 </li>
                 {% endfor %}
                 <li class="list-group-item">
                     <a href="{% url 'projects' %}" class="text-decoration-none text-secondary-emphasis">
-                        View Projects
+                        <i class="fa-solid fa-folder-open me-2"></i>
+                        <span class="eme01">View Projects</span>
                     </a>
                 </li>
             </ul>
@@ -48,6 +70,7 @@
 
     <!-- Footer -->
     <div class="sidebar-footer border-top">
-        <p class="ms-3 mb-0 fw-semibold">Version 1.0.1</p>
+        <p class="ms-3 mb-0 fw-semibold">Version 1.0.2</p>
     </div>
 </div>
+

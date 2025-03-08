@@ -11,9 +11,9 @@
         <div class="col-md-6 d-flex flex-column d-none d-md-flex align-items-center justify-content-center bg-success">
             <div class="text-center">
                 <!-- Replace with your logo path -->
-                <img src="{% static 'image/flowtrex-icon.png' %}" alt="Flowtrex" width="120">
+                <img src="{% static 'image/flowtrex-icon-lg.png' %}" alt="Flowtrex" width="120">
                 <p class="mb-1 fw-bold fs-2 text-white">Flowtrex</p>
-                <p class="mt-1 text-white">CTS Employee Login</p>
+                <p class="fw-normal text-white">Next Gen ERP System</p>
             </div>
         </div>
 
@@ -44,9 +44,11 @@
                     </div>
                     
                     <!-- Sign In Button -->
-                    <div class="">
-                        <input type="submit" value="Log In" class="btn btn-success btn-block my-4">
+                    <div class="d-flex my-3 justify-content-between">
+                        <a href="#" class="text-secondary-emphasis text-decoration-none">Register a user</a>
+                        <a href="{% url 'password_reset' %}" class="text-secondary-emphasis text-decoration-none">Forgot Password?</a>
                     </div>
+                    <input type="submit" value="Log In" class="btn btn-primary btn-ghost-primary btn-block ">
                 </form>
             </div>
         </div>
