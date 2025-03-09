@@ -10,8 +10,9 @@ urlpatterns = [
     # path('projects/<str:label>/edit/', ProjectUpdateView.as_view(), name='project_edit'),
     #
     # # Task URLs
-    path('projects/<str:lable>/boards', TaskListView.as_view(), name='task_list'),
-    path('boards/<str:unique_id>/', TaskDetailView.as_view(), name='task_detail'),
+    path('projects/<str:lable>/boards/', TaskListView.as_view(), name='kanban_board'),
+    # Correct URL pattern
+    path('projects/<str:label>/boards/<str:unique_id>/', TaskDetailView.as_view(), name='task_detail'),
     path('projects/<str:lable>/tasks/create/', TaskCreateView.as_view(), name='task_create'),
     # path('tasks/<str:uniqe_id>/edit/', TaskUpdateView.as_view(), name='task_edit'),
 

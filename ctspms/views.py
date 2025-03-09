@@ -1,11 +1,14 @@
-from django.http import JsonResponse,Http404
+from enum import unique
+
+from django.http import JsonResponse,Http404, HttpResponseForbidden
 from django.views.decorators.http import require_GET
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import RedirectView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from ctspms.models import StatusList, TagList, PriorityList, Issue, Project, Task, Comment, Attachment, Timelog, Notification
 from account.models import Department, Role
+from .forms import CommentForm
 
 
 
@@ -67,7 +70,16 @@ class ProjectListView(LoginRequiredMixin, ListView):
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
     template_name = 'tasks/board.html'
-    context_object_name = 'tasks'  # Context variable in the template
+    context_object_name = 'tasks'
+
+    def get_queryset(self):
+        self.project = get_object_or_404(Project, pk=self.kwargs['label'].upper())
+        return Task.objects.filter(project=self.project)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['project'] = self.project
+        return context
 
 # Detail View
 class ProjectDetailView(LoginRequiredMixin, DetailView):
@@ -131,8 +143,53 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class TaskDetailView(LoginRequiredMixin, DetailView):
+class TaskDetailView(DetailView):
     model = Task
-    template_name = 'tasks/task_detail.html'
     context_object_name = 'task'
+    template_name = 'tasks/task_detail.html'
+    pk_url_kwarg = 'unique_id'
+
+    def get_object(self, queryset=None):
+        label = self.kwargs.get('label')  # Extract the 'label' from the URL
+        unique_id = self.kwargs.get('unique_id')  # Extract the 'unique_id' from the URL
+        project = get_object_or_404(Project, code=label)
+        task = get_object_or_404(Task, project=project, project_task_number=unique_id.split('-')[-1])
+        return task
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        task = context['task']
+        comments = Comment.objects.filter(task=task)
+        context['comments'] = comments
+        context['project'] = task.project  # Pass the related project to the context
+        context['comment_form'] = CommentForm()  # Add the comment form to the context
+        return context
+
+    def post(self, request, *args, **kwargs):
+        task = self.get_object()  # Retrieve the task object
+
+        # Handle comment update or deletion
+        if 'comment_id' in request.POST:
+            comment_id = request.POST['comment_id']
+            comment = get_object_or_404(Comment, id=comment_id)
+
+            if 'delete_comment' in request.POST:  # Handle comment deletion
+                comment.delete()
+            elif 'edit_comment' in request.POST:  # Handle comment update
+                form = CommentForm(request.POST, request.FILES, instance=comment)
+                if form.is_valid():
+                    form.save()
+
+            return redirect('task_detail', label=task.project.code, unique_id=task.project_task_number)
+
+        # Handle new comment creation
+        form = CommentForm(request.POST, request.FILES)  # Use request.FILES for attachments
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.task = task  # Associate comment with the task
+            new_comment.user = request.user  # Associate comment with the logged-in user
+
+            new_comment.save()  # Save the comment
+
+        return redirect('task_detail', label=task.project.code, unique_id=task.project_task_number)
 

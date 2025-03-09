@@ -3,20 +3,19 @@
 
 {% block content %}
 <div class="container container-fluid">
-    <div class="">
         <div class="d-flex justify-content-sm-between">
-            <div class="d-flex align-items-center justify-content-sm-start gap-2 my-5">
-                <a href="{% url 'projects' %}" class="text-decoration-none fw-semibold">Projects</a>
-                <i class="fa-solid fa-angle-right"></i>
-                <a href="{% url 'project_detail' project.label %}" class="text-decoration-none fw-semibold"> {{ project.name }}</a>
+            <div class="d-flex align-items-center justify-content-sm-start gap-2">
+                <a href="{% url 'projects' %}" class="text-decoration-none eme01">Projects</a>
+                /
+                <a href="{% url 'project_detail' project.label %}" class="text-decoration-none eme01"> {{ project.name }}</a>
             </div>
-            <button class="btn btn-primary my-5">Create Task</button>
+            <button class="btn btn-primary eme01 p-1 my-2">Create Task</button>
         </div>
         <div class="row">
             <!-- Donut Chart -->
             <div class="col">
                 <div class="p-4 bg-white shadow-sm rounded">
-                    <h5>{{ project.name }} Task Status</h5>
+                    <p class="fw-semibold eme01">{{ project.name }} Task Status</p>
                     <canvas id="doughnutChart" class="w-100 h-100"></canvas>
                     <script>
                         var doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
@@ -46,20 +45,20 @@
             <!-- Project description -->
             <div class="col">
                 <div class="p-4 bg-white shadow-sm rounded w-100 h-100">
-                    <h4>Project Description</h4>
-                    <p>{{ project.description }}</p>
+                    <p class="fw-semibold eme01">Project Description</p>
+                    <p class="fw-medium eme01">{{ project.description }}</p>
                 </div>
             </div>
 
             <!-- Recent Comments -->
             <div class="col">
                 <div class="p-4 bg-white shadow-sm rounded w-100 h-100">
-                    <h4>Recent Comments</h4>
+                    <p class="eme01 fw-semibold">Recent Comments</p>
                     <ul class="list-group list-group-flush">
                         {% for task in project.tasks.all %}
                             {% for comment in task.comments.all %}
                                 <li class="list-group-item">
-                                <span class="fw-semibold" style="color: #3d99f5">{{ task.unique_id }}</span>: {{ comment.comment }} <span style="font-size: 13px; font-style: italic;">comment by <a href="#" class="text-primary text-decoration-none">{{ comment.user.first_name }}</a></span>
+                                    <span class="fw-semibold eme01 text-primary">{{ task.unique_id }}</span>: <span class="eme01 fw-medium"> {{ comment.comments_message }}</span> <span class="eme02">comment by <a href="#" class="text-primary text-decoration-none">{{ comment.user.first_name }}</a></span>
                                 </li>
                             {% endfor %}
                         {% endfor %}
@@ -178,5 +177,5 @@
             </div>
         </div>
     </div>
-</div>
+
 {% endblock %}

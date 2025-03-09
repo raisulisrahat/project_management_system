@@ -64,6 +64,11 @@ class Project(models.Model):
         if not self.name.replace(' ', '').isalpha():
             raise ValidationError('Name can only contain letters and spaces.')
 
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.label()[:10]
+        super(Project, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -117,12 +122,11 @@ class Attachment(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
-    comment = models.TextField(null=True, blank=True)
-    attachment = models.ForeignKey(Attachment, on_delete=models.CASCADE, null=True, blank=True)
-    note = models.TextField(null=True, blank=True)
+    comments_message = models.TextField(null=True, blank=True)
+    attachment = models.FileField(upload_to="upload/comments/data", null=True, blank=True)
 
     def __str__(self):
-        return self.note
+        return self.comments_message
 
 
 

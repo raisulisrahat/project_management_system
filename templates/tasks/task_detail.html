@@ -1,4 +1,102 @@
-<h1>Task Details</h1>
-<p>Task Name: {{ task.name }}</p>
-<p>Task Description: {{ task.description }}</p>
-<p>Task Priority: {{ task.priority }}</p>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ task.title }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb navigation -->
+<div class="eme01 mb-4">
+    <p class="mb-0">
+        <a href="{% url 'projects' %}" class="text-decoration-none">Project</a> /
+        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none">{{ task.project.name }}</a> /
+        {{ task.unique_id }}
+    </p>
+</div>
+
+<!-- Task Information Section -->
+<div class="p-5 mb-4 bg-white text-dark">
+    <h2>{{ task.summary }}</h2>
+    <p><strong>Description:</strong> {{ task.description }}</p>
+    <p><strong>Priority:</strong> {{ task.priority }}</p>
+    <p><strong>Start Date:</strong> {{ task.start_date }}</p>
+    <p><strong>End Date:</strong> {{ task.end_date }}</p>
+</div>
+
+<!-- Comment Form for Adding New Comment -->
+<div class="p-4 bg-light shadow-sm rounded w-100 h-100">
+    <h3>Add a Comment</h3>
+    <form method="post" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ comment_form.as_p }}  <!-- This will display form fields including the attachment input -->
+
+        <!-- Add a rich text editor to the comment message -->
+        <div id="editor-container" class="bg-white" style="min-height: 200px;">
+            <!-- Quill editor for rich text -->
+        </div>
+        <input type="hidden" name="comments_message" id="comments_message">
+
+        <button type="submit" class="btn btn-primary">Add Comment</button>
+    </form>
+</div>
+
+<!-- Comments Section -->
+<div class="p-4 bg-white shadow-sm rounded w-100 h-100 mb-4">
+    <p class="eme01 fw-semibold">Comments</p>
+    <ul class="list-group list-group-flush">
+        {% for comment in comments %}
+            <li class="list-group-item">
+                <a href="" class="text-primary text-decoration-none">
+                    <img src="{{ comment.user.profile.profile_image.url }}" alt="" class="rounded-circle" width="30" height="30">
+                    <span class="eme01 fw-semibold">{{ comment.user.profile.full_name }}</span>
+                </a>
+                <p class="eme01 mt-1 ms-5">{{ comment.comments_message }}</p>
+
+                <!-- Display attachment if it exists -->
+                {% if comment.attachment %}
+                    <div class="mt-2">
+                        <a href="{{ comment.attachment.url }}" class="btn btn-link" target="_blank">Download Attachment</a>
+                    </div>
+                {% endif %}
+
+                <!-- Show edit and delete options if the comment belongs to the logged-in user -->
+                {% if comment.user == request.user %}
+                    <form method="post" id="edit-delete-form" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" class="my-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="comment_id" value="{{ comment.id }}">
+
+                        <!-- Edit Comment -->
+                        <button type="submit" name="edit_comment" class="my-0 btn btn-link text-decoration-none eme01">Edit</button>
+
+                        <!-- Delete Comment -->
+                        <button type="submit" name="delete_comment" class="btn btn-link text-danger text-decoration-none eme01">Delete</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+  // Initialize Quill editor
+  var quill = new Quill('#editor-container', {
+    theme: 'snow',
+    placeholder: 'Write your comment...',
+    modules: {
+      toolbar: [
+        [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['bold', 'italic', 'underline'],
+        [{ 'align': [] }],
+        ['link']
+      ]
+    }
+  });
+
+  // When the form is submitted, set the content of the Quill editor to the hidden input
+  document.querySelector('form').onsubmit = function() {
+    var commentMessage = document.querySelector('#comments_message');
+    commentMessage.value = quill.root.innerHTML;
+  };
+</script>
+
+{% endblock %}

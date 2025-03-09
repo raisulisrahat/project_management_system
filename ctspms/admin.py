@@ -19,7 +19,7 @@ class TimelogAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('task', 'user', 'comment')
+    list_display = ('task', 'user', 'comments_message', 'attachment')
 
 admin.site.register(Attachment)
 admin.site.register(TagList)

@@ -19,15 +19,15 @@
             <tbody>
             {% for project in projects %}
                 <tr>
-                    <td class="fw-semibold">
+                    <td class="fw-medium">
                         <a href="{% url 'project_detail' project.label %}" class="text-decoration-none" style="color: #3e98ff;">
                             {{ project.name }}
                         </a>
                     </td>
-                    <td class="fw-semibold text-secondary">{{ project.label }}</td>
-                    <td class="fw-semibold text-secondary">{{ project.type }}</td>
-                    <td class="fw-semibold">
-                        <a href="#" class="text-decoration-none gap-2" style="color: #3e98ff;">
+                    <td class="fw-medium text-secondary">{{ project.label }}</td>
+                    <td class="fw-medium text-secondary">{{ project.type }}</td>
+                    <td class="fw-medium">
+                        <a href="" class="text-decoration-none gap-2" style="color: #3e98ff;">
                             <img src="{{ project.lead.user.profile.profile_image.url }}" alt="{{ project.lead }}" class="rounded-circle" width="30" height="30">  {{ project.lead }}
                         </a>
                     </td>

@@ -193,12 +193,12 @@
             {% for task in tasks %}
                 <tr>
                     <th scope="row" class="fw-medium eme01">
-                        <a href="{% url 'task_detail' task.unique_id %}" class="text-decoration-none" style="color: rgb(54, 162, 235);">
+                        <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none" style="color: rgb(54, 162, 235);">
                             {{ task.unique_id }}
                         </a>
                     </th>
                     <td class="fw-medium eme01">
-                        <a href="{% url 'task_detail' task.unique_id %}" class="text-decoration-none" style="color: rgb(92,174,255);">
+                        <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none" style="color: rgb(92,174,255);">
                             {{ task.summary }}
                         </a>
                     </td>
