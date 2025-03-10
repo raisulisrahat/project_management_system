@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'fontawesomefree',
     'bootstrap5',
+    'ckeditor',
+    'ckeditor_uploader',
     'cities_light',
 ]
 
@@ -129,3 +131,25 @@ EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+
+
+# CKEditor Settings
+CKEDITOR_UPLOAD_PATH = 'upload/data/'
+CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline'],  # Basic formatting options
+            ['NumberedList', 'BulletedList'],
+            ['Link', 'Unlink'],
+            ['File', 'Table', 'HorizontalRule'],
+            ['RemoveFormat'],  # Removing the "Source" option here
+        ],
+        'width': 'auto',
+        'height': '300px',
+        'removePlugins': 'sourcearea',  # Completely remove the Source button
+    },
+}
+

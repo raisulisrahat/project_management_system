@@ -1,5 +1,5 @@
 from django.contrib import admin
-from ctspms.models import Project, ProjectType, Task, Comment, Attachment, Timelog,  Notification, TagList, StatusList, PriorityList, Issue
+from ctspms.models import Project, ProjectType, Task, Comment, Attachment, Timelog, TagList, StatusList, PriorityList, Issue
 
 
 
@@ -16,10 +16,9 @@ class TimelogAdmin(admin.ModelAdmin):
     list_display = ('people','task', 'hours', 'log_date', )
 
 
-
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('task', 'user', 'comments_message', 'attachment')
+    list_display = ('task', 'user', 'comments_message')
 
 admin.site.register(Attachment)
 admin.site.register(TagList)

@@ -4,6 +4,7 @@ from django.db import models
 from account.models import Profile, Team
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from ckeditor_uploader.fields import RichTextUploadingField
 
 class ProjectType(models.Model):
     type_name = models.CharField(max_length=100)
@@ -44,7 +45,7 @@ class Project(models.Model):
     name = models.CharField(max_length=100, validators=[RegexValidator(regex=r'^[A-Za-z\s]+$', message='Name can only contain letters and spaces.', code='invalid_name')])
     lead_team = models.ForeignKey(Team, on_delete=models.PROTECT, null=True, blank=True)
     lead = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    description = models.TextField(null=True, blank=True)
+    description = RichTextUploadingField(null=True, blank=True)
     type = models.ForeignKey(ProjectType, on_delete=models.CASCADE)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(null=True, blank=True)
@@ -78,7 +79,7 @@ class Task(models.Model):
     id = models.AutoField(primary_key=True)  # Automatically increments for each task
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
     summary = models.CharField(max_length=100)
-    description = models.TextField(null=True, blank=True)
+    description = RichTextUploadingField(null=True, blank=True)
     reporter = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='reporter_tasks')
     assigned_to = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='assigned_tasks')
     priority = models.ForeignKey(PriorityList, on_delete=models.CASCADE)
@@ -122,13 +123,11 @@ class Attachment(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
-    comments_message = models.TextField(null=True, blank=True)
-    attachment = models.FileField(upload_to="upload/comments/data", null=True, blank=True)
+    comments_message = RichTextUploadingField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.comments_message
-
-
+        return f'Comment by {self.user} on {self.task}'
 
 class Timelog(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -142,49 +141,49 @@ class Timelog(models.Model):
     def __str__(self):
         return f'Time log by {self.people.full_name} on {self.task}'
 
-class Notification(models.Model):
-    NOTIFICATION_TYPES  = (
-        ('task_created', 'Task Created'),
-        ('task_updated', 'Task Updated'),
-        ('task_assigned', 'Task Assigned'),
-        ('task_completed', 'Task Completed'),
-        ('comment_added', 'Comment Added'),
-        ('task_due', 'Task Due Soon'),
-        ('project_updated', 'Project Updated'),
-        ('task_mentioned', 'Task Mentioned'),
-    )
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
-    people = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='notifications')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='notifications')
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='notifications')
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='notifications')
-    read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        # Return a readable description based on the type of notification
-        if self.notification_type == 'task_assigned':
-            return f'{self.people.full_name()} assigned to Task: {self.task.summary}'
-        elif self.notification_type == 'comment_added':
-            return f'New comment added on Task: {self.task.summary}'
-        elif self.notification_type == 'task_updated':
-            return f'Task {self.task.summary} updated'
-        elif self.notification_type == 'task_due':
-            return f'Task {self.task.summary} is due soon'
-        elif self.notification_type == 'project_updated':
-            return f'Project {self.project.name} updated'
-        else:
-            return f'Notification: {self.notification_type}'
-
-    def mark_as_read(self):
-        """Method to mark the notification as read"""
-        self.read = True
-        self.save()
-
-    def mark_as_unread(self):
-        """Method to mark the notification as unread"""
-        self.read = False
-        self.save()
+# class Notification(models.Model):
+#     NOTIFICATION_TYPES  = (
+#         ('task_created', 'Task Created'),
+#         ('task_updated', 'Task Updated'),
+#         ('task_assigned', 'Task Assigned'),
+#         ('task_completed', 'Task Completed'),
+#         ('comment_added', 'Comment Added'),
+#         ('task_due', 'Task Due Soon'),
+#         ('project_updated', 'Project Updated'),
+#         ('task_mentioned', 'Task Mentioned'),
+#     )
+#
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+#     people = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='notifications')
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='notifications')
+#     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='notifications')
+#     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='notifications')
+#     read = models.BooleanField(default=False)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#
+#     def __str__(self):
+#         # Return a readable description based on the type of notification
+#         if self.notification_type == 'task_assigned':
+#             return f'{self.people.full_name()} assigned to Task: {self.task.summary}'
+#         elif self.notification_type == 'comment_added':
+#             return f'New comment added on Task: {self.task.summary}'
+#         elif self.notification_type == 'task_updated':
+#             return f'Task {self.task.summary} updated'
+#         elif self.notification_type == 'task_due':
+#             return f'Task {self.task.summary} is due soon'
+#         elif self.notification_type == 'project_updated':
+#             return f'Project {self.project.name} updated'
+#         else:
+#             return f'Notification: {self.notification_type}'
+#
+#     def mark_as_read(self):
+#         """Method to mark the notification as read"""
+#         self.read = True
+#         self.save()
+#
+#     def mark_as_unread(self):
+#         """Method to mark the notification as unread"""
+#         self.read = False
+#         self.save()
 

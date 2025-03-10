@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import RedirectView, CreateView, ListView, DetailView, UpdateView, DeleteView
-from ctspms.models import StatusList, TagList, PriorityList, Issue, Project, Task, Comment, Attachment, Timelog, Notification
+from ctspms.models import StatusList, TagList, PriorityList, Issue, Project, Task, Comment, Attachment, Timelog
 from account.models import Department, Role
 from .forms import CommentForm
 
@@ -150,8 +150,8 @@ class TaskDetailView(DetailView):
     pk_url_kwarg = 'unique_id'
 
     def get_object(self, queryset=None):
-        label = self.kwargs.get('label')  # Extract the 'label' from the URL
-        unique_id = self.kwargs.get('unique_id')  # Extract the 'unique_id' from the URL
+        label = self.kwargs.get('label')  # Extract 'label' from the URL
+        unique_id = self.kwargs.get('unique_id')  # Extract 'unique_id' from the URL
         project = get_object_or_404(Project, code=label)
         task = get_object_or_404(Task, project=project, project_task_number=unique_id.split('-')[-1])
         return task
@@ -192,4 +192,3 @@ class TaskDetailView(DetailView):
             new_comment.save()  # Save the comment
 
         return redirect('task_detail', label=task.project.code, unique_id=task.project_task_number)
-
