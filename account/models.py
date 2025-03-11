@@ -53,7 +53,6 @@ class Profile(models.Model):
     profile_image = models.ImageField(upload_to='upload/images/', null=True, blank=True, default='/images/user.png')
     country = models.ForeignKey('cities_light.Country', on_delete=models.SET_NULL, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
-    role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
     teams = models.ManyToManyField(Team, blank=True)
 

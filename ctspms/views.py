@@ -163,6 +163,12 @@ class TaskDetailView(DetailView):
         context['comments'] = comments
         context['project'] = task.project  # Pass the related project to the context
         context['comment_form'] = CommentForm()  # Add the comment form to the context
+        context['edit_form'] = CommentForm()
+        # If editing a comment, add the edit form for that specific comment
+        editing_comment_id = self.request.GET.get('editing_comment_id', None)  # Get the ID of the comment to edit
+        if editing_comment_id:
+            comment_to_edit = get_object_or_404(Comment, id=editing_comment_id)
+            context['edit_form'] = CommentForm(instance=comment_to_edit)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -192,3 +198,4 @@ class TaskDetailView(DetailView):
             new_comment.save()  # Save the comment
 
         return redirect('task_detail', label=task.project.code, unique_id=task.project_task_number)
+

@@ -19,7 +19,7 @@
     <div class="col-sm-8">
         <div class="p-4 mb-4 bg-white shadow-sm">
             <p><strong>Summary:</strong> {{ task.summary }}</p>
-            <p><strong>Description:</strong> {{ task.description }}</p>
+            <p><strong>Description:</strong> {{ task.description|safe }}</p>
         </div>
 
         <!-- Comment Form for Adding New Comment -->
@@ -27,7 +27,7 @@
             <h3>Add a Comment</h3>
             <form method="post" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" enctype="multipart/form-data" class="figurex">
                 {% csrf_token %}
-                {{ comment_form.as_p }}  <!-- CKEditor input field is rendered here -->
+                {{ comment_form.as_p }}  <!-- CKEditor input field for new comment -->
                 {{ comment_form.media }}  <!-- Ensures CKEditor media is loaded -->
                 <button type="submit" class="btn btn-secondary eme01">Add Comment</button>
             </form>
@@ -38,25 +38,36 @@
             <h4>Comments</h4>
             <ul class="list-group list-group-flush">
                 {% for comment in comments %}
-                    <li class="list-group-item">
-                        <a href="#" class="text-primary text-decoration-none">
+                    <li class="list-group-item" id="comment-{{ comment.id }}">
+                        <div class="text-primary d-flex text-decoration-none gap-sm-2">
                             <img src="{{ comment.user.profile.profile_image.url }}" alt="" class="rounded-circle" width="30" height="30">
-                            <span class="eme01 fw-semibold">{{ comment.user.profile.full_name }}</span>
-                        </a>
-                        <p class="eme01 mt-2">{{ comment.comments_message|safe }}</p>
+                            <span class="eme01 mt-sm-2 fw-semibold">{{ comment.user.profile.full_name }}</span>
+                            <span class="eme01 fst-italic mt-sm-2 text-secondary">{{ comment.created_at }}</span>
+                        </div>
+
+                        <!-- Show Comment Text Initially -->
+                        <p id="comment-text-{{ comment.id }}" class="eme01 mt-2">{{ comment.comments_message|safe }}</p>
+
+                        <!-- Hidden Edit Form (Visible when Edit is clicked) -->
+                        <form method="post" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" enctype="multipart/form-data" id="edit-form-{{ comment.id }}" style="display: none;" class="figurex">
+                            {% csrf_token %}
+                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                            {{ edit_form.as_p }}  <!-- CKEditor edit field -->
+                            {{ edit_form.media }}
+                            <button type="submit" name="edit_comment" class="btn btn-secondary eme01">Save</button>
+                            <button type="button" class="btn btn-light eme01" onclick="toggleEdit({{ comment.id }})">Cancel</button>
+                        </form>
 
                         <!-- Edit and Delete Buttons for the Logged-in User -->
                         {% if comment.user == request.user %}
-                            <form method="post" id="edit-delete-form" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" class="my-0">
-                                {% csrf_token %}
-                                <input type="hidden" name="comment_id" value="{{ comment.id }}">
-
-                                <!-- Edit Comment -->
-                                <button type="submit" name="edit_comment" class="btn btn-link text-decoration-none eme01">Edit</button>
-
-                                <!-- Delete Comment -->
-                                <button type="submit" name="delete_comment" class="btn btn-link text-danger text-decoration-none eme01">Delete</button>
-                            </form>
+                            <div class="mt-2">
+                                <button type="button" class="border-0 p-0 me-3 bg-transparent eme01" onclick="toggleEdit({{ comment.id }})">Edit</button>
+                                <form method="post" id="delete-form-{{ comment.id }}" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" class="d-inline-block">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                                    <button type="submit" name="delete_comment" class="border-0 p-0 bg-transparent eme01">Delete</button>
+                                </form>
+                            </div>
                         {% endif %}
                     </li>
                 {% endfor %}
@@ -65,14 +76,36 @@
     </div>
 
     <!-- Sidebar with Task Details -->
-    <div class="col-lg-3 p-5 mb-4 bg-white text-dark">
-        <h4>Task Details</h4>
+    <div class="col-lg-3 p-5 mb-4 bg-white text-dark shadow-sm">
+        <p class="fs-5 fw-semibold">Task Details</p>
         <p><strong>Priority:</strong> <span class="p-2 btn-secondary">{{ task.priority }}</span></p>
         <p><strong>Start Date:</strong> {{ task.start_date }}</p>
         <p><strong>End Date:</strong> {{ task.end_date }}</p>
     </div>
 </div>
 
+<!-- CKEditor Initialization Script -->
+<script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+<script>
+    // Initialize CKEditor for new comment form
+    CKEDITOR.replace('{{ comment_form.comment_field.id_for_label }}');
+
+    // Toggle between comment text and edit form
+    function toggleEdit(commentId) {
+        var commentText = document.getElementById('comment-text-' + commentId);
+        var editForm = document.getElementById('edit-form-' + commentId);
+
+        if (commentText.style.display === 'none') {
+            commentText.style.display = 'block';
+            editForm.style.display = 'none';
+        } else {
+            commentText.style.display = 'none';
+            editForm.style.display = 'block';
+
+            // Initialize CKEditor for the edit form once it's shown
+            CKEDITOR.replace('id_comment_field');  // Ensure the field matches your form field name
+        }
+    }
+</script>
+
 {% endblock %}
-
-

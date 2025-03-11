@@ -2,7 +2,7 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <p class="fs-4 py-3 fw-semibold">Welcome to Dashboard, <span class="fw-medium fs-5 text-info">{{ user.first_name }}</span></p>
+    <p class="fs-4 py-3 fw-semibold">Welcome to Dashboard, <span class="fw-semibold fs-5 text-info">{{ user.first_name }}</span></p>
     <div class="d-flex justify-content-center">
         <div class="d-flex justify-content-center bg-white shadow-sm rounded gap-3 fw-semibold">
             <div class="d-flex align-items-center p-3 gap-2">
@@ -150,19 +150,19 @@
             <tbody>
             {% for project in projects %}
                 <tr>
-                    <td class="fw-medium eme01">
-                        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none" style="color: #3e98ff;">
+                    <td class="fw-semibold eme01">
+                        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark">
                             {{ project.name }}
                         </a>
                     </td>
-                    <td class="fw-medium eme01">
-                        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none">
+                    <td class="fw-semibold eme01">
+                        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark">
                             {{ project.label }}
                         </a>
                     </td>
-                    <td class="fw-medium eme01">{{ project.type }}</td>
-                    <td class="fw-medium eme01">
-                        <a href="{% url 'profile' user.profile.id %}" class="text-decoration-none" style="color: #3e98ff;">
+                    <td class="fw-semibold eme01 text-secondary">{{ project.type }}</td>
+                    <td class="fw-semibold eme01">
+                        <a href="{% url 'profile' user.profile.id %}" class="text-decoration-none text-dark">
                             {{ project.lead }}
                         </a>
                     </td>
@@ -192,20 +192,20 @@
             <tbody>
             {% for task in tasks %}
                 <tr>
-                    <th scope="row" class="fw-medium eme01">
-                        <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none" style="color: rgb(54, 162, 235);">
+                    <th scope="row" class="fw-semibold eme01">
+                        <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none text-dark">
                             {{ task.unique_id }}
                         </a>
                     </th>
-                    <td class="fw-medium eme01">
-                        <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none" style="color: rgb(92,174,255);">
+                    <td class="fw-semibold eme01">
+                        <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none text-dark">
                             {{ task.summary }}
                         </a>
                     </td>
-                    <td class="fw-medium eme01 text-secondary">{{ task.priority }}</td>
-                    <td class="fw-medium eme01 text-secondary">{{ task.status }}</td>
-                    <td class="fw-medium eme01 text-secondary">
-                        <a href="{% url 'profile' user.profile.id %}" class="text-decoration-none" style="color: #3e98ff;">
+                    <td class="fw-semibold eme01 text-secondary">{{ task.priority }}</td>
+                    <td class="fw-semibold eme01 text-secondary">{{ task.status }}</td>
+                    <td class="fw-semibold eme01 text-secondary">
+                        <a href="{% url 'profile' task.assigned_to.user.profile.id %}" class="text-decoration-none text-dark">
                             {{ task.assigned_to.full_name }}
                         </a>
                     </td>

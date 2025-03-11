@@ -4,7 +4,7 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from ctspms.models import Comment
 
 class CommentForm(forms.ModelForm):
-    comments_message = forms.CharField(widget=CKEditorUploadingWidget(attrs={'cols': 10, 'rows': 10}))
+    comments_message = forms.CharField(widget=CKEditorUploadingWidget(attrs={'cols': 80, 'rows': 10}))
 
     class Meta:
         model = Comment

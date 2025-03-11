@@ -1,22 +1,24 @@
 {% extends "base.html" %}
-{% block title %}{{ project.name }}{% endblock %}
+{% block title %}Summary - {{ project.name }}{% endblock %}
 
 {% block content %}
 <div class="container container-fluid">
         <div class="d-flex justify-content-sm-between">
             <div class="d-flex align-items-center justify-content-sm-start gap-2">
-                <a href="{% url 'projects' %}" class="text-decoration-none eme01">Projects</a>
+                <a href="{% url 'projects' %}" class="text-decoration-none text-dark eme01">Projects</a>
                 /
-                <a href="{% url 'project_detail' project.label %}" class="text-decoration-none eme01"> {{ project.name }}</a>
+                <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark eme01"> {{ project.name }}</a>
             </div>
-            <button class="btn btn-primary eme01 p-1 my-2">Create Task</button>
+            <button class="btn btn-primary eme01 p-sm-2 my-sm-3">Create Task</button>
         </div>
+        <p class="fw-semibold">Summary</p>
         <div class="row">
             <!-- Donut Chart -->
             <div class="col">
                 <div class="p-4 bg-white shadow-sm rounded">
-                    <p class="fw-semibold eme01">{{ project.name }} Task Status</p>
-                    <canvas id="doughnutChart" class="w-100 h-100"></canvas>
+                    <p class="fw-semibold eme01">Status Overview</p>
+                    <p class="eme01">Get a snapshot of the status of your tasks. <a href="" class="text-decoration-none">View all tasks</a></p>
+                    <canvas id="doughnutChart" class="w-100 h-100" style="max-height: 280px;"></canvas>
                     <script>
                         var doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
                         var doughnutChart = new Chart(doughnutCtx, {
@@ -34,7 +36,7 @@
                                         'rgba(153, 102, 255)',
                                         'rgba(201, 203, 207)'
                                     ],
-                                    hoverOffset: 4
+                                    hoverOffset: 3
                                 }]
                             }
                         });
@@ -44,21 +46,22 @@
 
             <!-- Project description -->
             <div class="col">
-                <div class="p-4 bg-white shadow-sm rounded w-100 h-100">
+                <div class="p-4 overflow-auto bg-white shadow-sm rounded w-100 h-100" style="max-height: 400px;">
                     <p class="fw-semibold eme01">Project Description</p>
-                    <p class="fw-medium eme01">{{ project.description }}</p>
+                    <p class="fw-medium eme01">{{ project.description|safe }}</p>
                 </div>
             </div>
 
             <!-- Recent Comments -->
             <div class="col">
-                <div class="p-4 bg-white shadow-sm rounded w-100 h-100">
+                <div class="p-4 overflow-auto bg-white shadow-sm rounded w-100 h-100" style="max-height: 400px;">
                     <p class="eme01 fw-semibold">Recent Comments</p>
                     <ul class="list-group list-group-flush">
                         {% for task in project.tasks.all %}
                             {% for comment in task.comments.all %}
-                                <li class="list-group-item">
-                                    <span class="fw-semibold eme01 text-primary">{{ task.unique_id }}</span>: <span class="eme01 fw-medium"> {{ comment.comments_message }}</span> <span class="eme02">comment by <a href="#" class="text-primary text-decoration-none">{{ comment.user.first_name }}</a></span>
+                                <li class="list-group-item gap-sm-1">
+                                    <p class="fw-semibold eme01 text-primary my-sm-0">{{ task.unique_id }}: </p>
+                                    <p class="eme01 fw-medium my-0">{{ comment.comments_message|safe }} <span class="eme01 fw-lighter mt-0">comment by <a href="" class="text-primary text-decoration-none mb-sm-0">{{ comment.user.first_name }}</a></span></p>
                                 </li>
                             {% endfor %}
                         {% endfor %}

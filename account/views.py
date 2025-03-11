@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
@@ -6,19 +7,105 @@ from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
+from django.utils.decorators import method_decorator
 from django.utils import timezone as tz
 from django.utils.translation import activate, get_language
 from django.conf import settings
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from account.models import Profile, Role, Department, Team, PasswordResetOTP, Invitation, OrgType, Organization
-from account.forms import InvitationForm, PasswordResetRequestForm, OTPVerificationForm, SignUpForm
+from account.forms import InvitationForm, PasswordResetRequestForm, OTPVerificationForm, SignUpForm, ProfileForm
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import RedirectView, DetailView, UpdateView, CreateView, DeleteView
 from django.db.models import Count
 from ctspms.models import Project, Task, Timelog
 
 # Create your views here.
+
+class RegisterView(View):
+    def get(self, request):
+        # Display the registration form when the user accesses the page via GET
+        user_form = SignUpForm()
+        return render(request, 'users/register.html', {'user_form': user_form})
+
+    def post(self, request):
+        # Handle form submission when the user submits the form via POST
+        user_form = SignUpForm(request.POST)
+
+        if user_form.is_valid():
+            user = user_form.save()  # Save the user
+            username = user.username  # Get the username of the newly created user
+
+            # Log the user in after successful registration
+            login(request, user)
+
+            # Redirect to the profile setup page with the username
+            return redirect(reverse('profile_setup', kwargs={'username': username}))
+
+        return render(request, 'users/register.html', {'user_form': user_form})
+@method_decorator(login_required, name='dispatch')
+class ProfileSetupView(View):
+    def get(self, request):
+        # Get the logged-in user
+        user = request.user
+
+        # Get the profile for this user, or create one if it doesn't exist
+        profile, created = Profile.objects.get_or_create(user=user)
+
+        # Create a form for the Profile model
+        profile_form = ProfileForm(instance=profile)
+        return render(request, 'users/profile_setup.html', {'profile_form': profile_form, 'user': user})
+
+    def post(self, request):
+        # Get the logged-in user
+        user = request.user
+
+        # Get the profile for this user, or create one if it doesn't exist
+        profile, created = Profile.objects.get_or_create(user=user)
+
+        # Handle the form submission
+        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
+
+        if profile_form.is_valid():
+            profile_form.save()
+            return redirect('dashboard')
+
+        return render(request, 'users/profile_setup.html', {'profile_form': profile_form, 'user': user})
+
+class CommonDashboardDataMixin:
+    def get_common_dashboard_data(self):
+        projects = Project.objects.order_by('-start_date')[:5]
+        tasks = Task.objects.order_by('-start_date')[:5]
+        peoples = Profile.objects.all()
+        teams = Team.objects.all()
+        timelog = Timelog.objects.all()
+
+        ts_no = Task.objects.count()
+        prj_no = Project.objects.count()
+        tk_status_no = Task.objects.filter(status__isnull=True).count()
+        project_labels = [project.label() for project in projects]
+        project_task_counts = [Task.objects.filter(project=project).count() for project in projects]
+
+        return {
+            'tk_status_no': tk_status_no,
+            'prj_no': prj_no,
+            'ts_no': ts_no,
+            'projects': projects,
+            'tasks': tasks,
+            'profile': peoples,
+            'timelog': timelog,
+            'team': teams,
+            'project_labels': project_labels,
+            'project_task_counts': project_task_counts,
+        }
+
+@login_required
+def dashboard_view(request):
+    mixin = CommonDashboardDataMixin()
+    context = mixin.get_common_dashboard_data()
+    return render(request, 'dashboard.html', context)
+
+
 def request_password_reset(request):
     if request.method == 'POST':
         form = PasswordResetRequestForm(request.POST)

@@ -137,19 +137,37 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 CKEDITOR_UPLOAD_PATH = 'upload/data/'
 CKEDITOR_IMAGE_BACKEND = "pillow"
 CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'
+# CKEDITOR_CONFIGS = {
+#     'default': {
+#         'toolbar': 'Custom',
+#         'toolbar_Custom': [
+#             ['Format'],
+#             ['Bold', 'Italic', 'Underline'],  # Basic formatting options
+#             ['NumberedList', 'BulletedList'],
+#             ['Link', 'Unlink'],
+#             ['Image', 'Attachment', 'Table', 'HorizontalRule']
+#         ],
+#         'width': 'auto',
+#         'height': '300px',
+#         'removePlugins': 'sourcearea',  # Completely remove the Source button
+#     },
+# }
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Custom',
         'toolbar_Custom': [
+            ['Format'],
             ['Bold', 'Italic', 'Underline'],  # Basic formatting options
             ['NumberedList', 'BulletedList'],
             ['Link', 'Unlink'],
-            ['File', 'Table', 'HorizontalRule'],
-            ['RemoveFormat'],  # Removing the "Source" option here
+            ['Image', 'Attachment', 'Table', 'HorizontalRule']
         ],
-        'width': 'auto',
+        'width': '100%',  # Set to 100% for responsive design
         'height': '300px',
         'removePlugins': 'sourcearea',  # Completely remove the Source button
+        'extraPlugins': 'uploadimage',  # Add plugin for image upload
+        'filebrowserUploadUrl': '/ckeditor/upload/',  # Specify the upload URL for images
+        'filebrowserUploadMethod': 'form',  # Upload method (form-based)
     },
 }
 

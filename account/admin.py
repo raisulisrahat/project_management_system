@@ -16,7 +16,7 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class PeoplesAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'profile_image', 'department', 'role', 'address', 'country']
+    list_display = ['full_name', 'profile_image', 'department', 'address', 'country']
 
 @admin.register(Team)
 class MembersAdmin(admin.ModelAdmin):
