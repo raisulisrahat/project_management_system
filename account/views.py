@@ -39,9 +39,11 @@ class RegisterView(View):
             # Redirect to the profile setup page with the username
             return redirect(reverse('profile_setup', kwargs={'username': username}))  # Ensure it matches the new URL pattern
 
-        return render(request, 'users/register.html', {'user_form': user_form})@method_decorator(login_required, name='dispatch')
-
-
+        return render(request, 'users/register.html', {'user_form': user_form})
+    
+    
+    
+@method_decorator(login_required, name='dispatch')
 class ProfileSetupView(View):
     def get(self, request, username):
         # Get the user by username
