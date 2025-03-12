@@ -54,7 +54,7 @@ class ProfileSetupView(View):
 
         # Create a form for the Profile model
         profile_form = ProfileForm(instance=profile)
-        return render(request, 'users/../templates/profile/profile_setup.html', {'profile_form': profile_form, 'user': user})
+        return render(request, 'profile/profile_setup.html', {'profile_form': profile_form, 'user': user})
 
     def post(self, request, username):
         # Get the user by username
