@@ -24,14 +24,11 @@ from ctspms.models import Project, Task, Timelog
 
 class RegisterView(View):
     def get(self, request):
-        # Display the registration form when the user accesses the page via GET
         user_form = SignUpForm()
         return render(request, 'users/register.html', {'user_form': user_form})
 
     def post(self, request):
-        # Handle form submission when the user submits the form via POST
         user_form = SignUpForm(request.POST)
-
         if user_form.is_valid():
             user = user_form.save()  # Save the user
             username = user.username  # Get the username of the newly created user
@@ -40,25 +37,26 @@ class RegisterView(View):
             login(request, user)
 
             # Redirect to the profile setup page with the username
-            return redirect(reverse('profile_setup', kwargs={'username': username}))
+            return redirect(reverse('profile_setup', kwargs={'username': username}))  # Ensure it matches the new URL pattern
 
-        return render(request, 'users/register.html', {'user_form': user_form})
-@method_decorator(login_required, name='dispatch')
+        return render(request, 'users/register.html', {'user_form': user_form})@method_decorator(login_required, name='dispatch')
+
+
 class ProfileSetupView(View):
-    def get(self, request):
-        # Get the logged-in user
-        user = request.user
+    def get(self, request, username):
+        # Get the user by username
+        user = User.objects.get(username=username)
 
         # Get the profile for this user, or create one if it doesn't exist
         profile, created = Profile.objects.get_or_create(user=user)
 
         # Create a form for the Profile model
         profile_form = ProfileForm(instance=profile)
-        return render(request, 'users/profile_setup.html', {'profile_form': profile_form, 'user': user})
+        return render(request, 'users/../templates/profile/profile_setup.html', {'profile_form': profile_form, 'user': user})
 
-    def post(self, request):
-        # Get the logged-in user
-        user = request.user
+    def post(self, request, username):
+        # Get the user by username
+        user = User.objects.get(username=username)
 
         # Get the profile for this user, or create one if it doesn't exist
         profile, created = Profile.objects.get_or_create(user=user)
@@ -70,7 +68,7 @@ class ProfileSetupView(View):
             profile_form.save()
             return redirect('dashboard')
 
-        return render(request, 'users/profile_setup.html', {'profile_form': profile_form, 'user': user})
+        return render(request, 'users/../templates/profile/profile_setup.html', {'profile_form': profile_form, 'user': user})
 
 class CommonDashboardDataMixin:
     def get_common_dashboard_data(self):

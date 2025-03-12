@@ -2,54 +2,55 @@
 {% load bootstrap5 %}
 {% bootstrap_css %}
 <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
- <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
-
-<body class="vh-100">
-
-    <div class="row exm78 h-100">
-        <!-- Left Section (Logo and Text) -->
-        <div class="col-md-6 d-flex flex-column d-none d-md-flex align-items-center justify-content-center bg-success">
-            <div class="text-center">
-                <!-- Replace with your logo path -->
-                <img src="{% static 'image/flowtrex-icon-lg.png' %}" alt="Flowtrex" width="120">
-                <p class="mb-1 fw-bold fs-2 text-white">Flowtrex</p>
-                <p class="fw-normal text-white">Next Gen ERP System</p>
+<link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+<title>Flowtrex - Log In</title>
+<body class="vh-100 overflow-hidden">
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <!-- Left Section (Logo and Text) -->
+            <div class="col-md-6 d-flex flex-column d-none d-md-flex align-items-center justify-content-center bg-success">
+                <div class="text-center">
+                    <!-- Replace with your logo path -->
+                    <img src="{% static 'image/flowtrex-icon-lg.png' %}" alt="Flowtrex" width="120">
+                    <p class="mb-1 fw-bold fs-2 text-white">Flowtrex</p>
+                    <p class="fw-normal text-white">Next Gen ERP System</p>
+                </div>
             </div>
-        </div>
 
-        <!-- Right Section (Login Form) -->
-        <div class="col-md-6 d-flex align-items-center justify-content-center">
-            <div class="w-100" style="max-width: 400px;">
-                {% if messages %}
-                    <ul class="messages list-unstyled">
-                        {% for message in messages %}
-                            <li class="alert {{ message.tags }}" style="color: #3d99f5">{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                
-                <form method="POST" action="{% url 'login' %}">
-                    {% csrf_token %}
+            <!-- Right Section (Login Form) -->
+            <div class="col-md-6 d-flex align-items-center justify-content-center p-4">
+                <div class="w-100" style="max-width: 400px;">
+                    {% if messages %}
+                        <ul class="messages list-unstyled">
+                            {% for message in messages %}
+                                <li class="alert {{ message.tags }}" style="color: #3d99f5">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                     
-                    <!-- Username input -->
-                    <div class="form-outline mb-4">
-
-                        <input type="text" placeholder="Your Username" id="username" name="username" class="form-control" required />
-                    </div>
-                    
-                    <!-- Password input -->
-                    <div class="form-outline rmb-4">
-
-                        <input type="password" placeholder="Your Password" id="password" name="password" class="form-control" required />
-                    </div>
-                    
-                    <!-- Sign In Button -->
-                    <div class="d-flex my-3 justify-content-between">
-                        <a href="{% url 'register' %}" class="text-secondary-emphasis text-decoration-none">Register a new user</a>
-                        <a href="{% url 'password_reset' %}" class="text-secondary-emphasis text-decoration-none">Forgot Password?</a>
-                    </div>
-                    <input type="submit" value="Log In" class="btn btn-primary btn-ghost-primary btn-block ">
-                </form>
+                    <form method="POST" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <p class="text-center fw-bold fs-3 text-dark">Sign In</p>
+                        </div>
+                        <!-- Username input -->
+                        <div class="form-outline mb-4">
+                            <input type="text" placeholder="Your Username" id="username" name="username" class="form-control" required />
+                        </div>
+                        
+                        <!-- Password input -->
+                        <div class="form-outline mb-4">
+                            <input type="password" placeholder="Your Password" id="password" name="password" class="form-control" required />
+                        </div>
+                        
+                        <!-- Sign In Button -->
+                        <div class="d-flex my-3 justify-content-between">
+                            <a href="{% url 'register' %}" class="text-secondary-emphasis text-decoration-none">Register a new user</a>
+                            <a href="{% url 'password_reset' %}" class="text-secondary-emphasis text-decoration-none">Forgot Password?</a>
+                        </div>
+                        <input type="submit" value="Log In" class="btn btn-primary btn-ghost-primary btn-block">
+                    </form>
+                </div>
             </div>
         </div>
     </div>

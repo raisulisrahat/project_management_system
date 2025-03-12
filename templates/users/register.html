@@ -1,8 +1,81 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+<link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
+<link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+<title>Flowtrex - Register an User</title>
+<body class="vh-100 overflow-hidden">
 
-<h2>Register</h2>
+    <div class="row h-100 m-0">
+        <!-- Left Section (Logo and Text) -->
+        <div class="col-md-6 d-flex flex-column d-none d-md-flex align-items-center justify-content-center bg-success">
+            <div class="text-center">
+                <!-- Replace with your logo path -->
+                <img src="{% static 'image/flowtrex-icon-lg.png' %}" alt="Flowtrex" width="120">
+                <p class="mb-1 fw-bold fs-2 text-white">Flowtrex</p>
+                <p class="fw-normal text-white">Next Gen ERP System</p>
+            </div>
+        </div>
 
-<form method="post">
-    {% csrf_token %}
-    {{ user_form.as_p }}
-    <button type="submit">Register</button>
-</form>
+        <!-- Right Section (Registration Form) -->
+        <div class="col-md-6 d-flex align-items-center justify-content-center p-4">
+
+
+            <div class="w-100" style="max-width: min(400px, 100%);">
+
+                <!-- Display error messages if the form is invalid -->
+                {% if user_form.errors %}
+                    <div class="alert alert-danger">
+                        <ul class="list-unstyled mb-0">
+                            {% for field, errors in user_form.errors.items %}
+                                <li><strong>{{ field }}:</strong> {{ errors|striptags }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Render the form with Bootstrap styling -->
+                <form method="POST" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    <div class="mb-sm-4">
+                        <p class="text-center fw-bold fs-3 text-dark">Sign Up</p>
+                    </div>
+                    <!-- Render the entire form using Bootstrap styling -->
+                    <div class="d-flex justify-content-sm-between gap-sm-2">
+                        <div class="mb-3">
+                            {{ user_form.first_name }}
+                        </div>
+                        <div class="mb-3">
+                            {{ user_form.last_name }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ user_form.username }}
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="email" name="email" class="form-control" placeholder="Email address" required>
+                    </div>
+                    <div class="mb-3">
+                        <!-- Manually render the password1 field with correct class -->
+                        <input type="password" class="form-control" placeholder="Password" name="password1" id="id_password1">
+                    </div>
+
+                    <div class="mb-3">
+                        <!-- Manually render the password2 field with correct class -->
+                        <input type="password" class="form-control" placeholder="Confirm Password" name="password2" id="id_password2">
+                    </div>
+                                    <!-- Sign In Button -->
+                    <div class="d-flex my-3 justify-content-between">
+                        <a href="{% url 'login' %}" class="text-secondary-emphasis text-decoration-none">Already have an account? Login Here</a>
+                    </div>
+
+                    <input type="submit" value="Create Account" class="btn btn-primary btn-ghost-primary btn-block">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Bootstrap JavaScript -->
+    {% bootstrap_javascript %}
+</body>

@@ -1,0 +1,73 @@
+<html>
+    <head>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+        <title> {{ user.first_name }} Profile Setup </title>
+    </head>
+
+<body class="vh-100">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid px-3">
+        <a class="navbar-brand" href="{% url 'profile_setup' user.username %}">
+            <img src="{% static 'image/flowtrex-icon.png' %}" alt="" width="30" height="24" class="d-inline-block align-text-top">
+        </a>
+    </div>
+
+</nav>
+<main class="container container-fluid p-sm-4">
+    <div class="my-sm-2">
+        <p class="fw-bold fs-4">Hi, {{ user.profile.full_name }}</p>
+    </div>
+        <div class="container px-sm-5">
+            <div class="row">
+                <div class="col">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group my-sm-3">
+                            <div class="row mb-sm-3">
+                                <div class="col-sm-2">
+                                    <label for="{{ profile_form.profile_image.id_for_label }}" class="fs-5 fw-semibold">Your Profile Images:</label>
+                                </div>
+                                <div class="col-sm-5">
+                                    {{ profile_form.profile_image }}
+                                </div>
+                            </div>
+                            <div class="row mb-sm-3">
+                                <div class="col-sm-2">
+                                    <label for="{{ profile_form.country.id_for_label }}"  class="fs-5 fw-semibold">Your Country: </label>
+                                </div>
+                                <div class="col-sm-5">
+                                    {{ profile_form.country }}
+                                </div>
+                            </div>
+                            <div class="row mb-sm-3">
+                                <div class="col-sm-2">
+                                    <label for="{{ profile_form.address.id_for_label }}" class="fs-5 fw-semibold">Your Address: </label>
+                                </div>
+                                <div class="col-sm-5">
+                                    {{ profile_form.address }}
+                                </div>
+                            </div>
+                            <div class="row mb-sm-3">
+                                <div class="col-sm-2">
+                                    <label for="{{ profile_form.department.id_for_label }}" class="fs-5 fw-semibold">Your Departments: </label>
+                                </div>
+                                <div class="col-sm-5 fw-semibold">
+                                    {{ profile_form.department }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="py-3">
+                            <button type="submit" href="{% url 'dashboard' %}" class="btn btn-secondary">Save Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

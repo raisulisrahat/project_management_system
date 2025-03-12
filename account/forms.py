@@ -7,9 +7,34 @@ from django.contrib.auth.forms import UserCreationForm
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)
+
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+        labels = {
+            'username': '',
+            'email': '',
+            'first_name': '',
+            'last_name': '',
+            'password1': '',
+            'password2': '',
+        }
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'id':'exampleInputEmail1', 'type':'email', 'placeholder': 'Email Address'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'password1': forms.TextInput(attrs={'class': 'form-control', 'id':'inputPassword3', 'type':'password', 'placeholder': 'Password'}),
+            'password2': forms.TextInput(attrs={'class': 'form-control', 'id':'inputPassword3', 'type':'password', 'placeholder': 'Confirm Password'}),
+        }
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match")
+        return password2
 
     def save(self, commit=True):
         user = super(SignUpForm, self).save(commit=False)
@@ -21,7 +46,13 @@ class SignUpForm(UserCreationForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ('profile_image', 'address', 'country', 'department')
+        widgets = {
+            'profile_image': forms.FileInput(attrs={'class': 'form-control', 'type': 'file', 'id':'formFile', 'placeholder': 'AddProfile Image'}),
+            'address': forms.Textarea(attrs={'class': "form-control", 'placeholder': 'Address', 'rows': 5}),
+            'country': forms.Select(attrs={'class': "form-control", 'placeholder': "Select Country"}),
+            'department': forms.Select(attrs={'class': "form-control", 'placeholder': "Select Department"}),
+        }
 
 
 class InvitationForm(forms.ModelForm):
