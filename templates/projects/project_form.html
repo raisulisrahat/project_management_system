@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Project{% endblock %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- Name Field -->
+    <div class="form-group">
+{#        <label for="{{ form.name.id_for_label }}">Name<span class="text-danger">*</span></label>#}
+{#        {{ form.name }}#}
+{#    </div>#}
+{##}
+{#    <!-- Type Field -->#}
+{#    <div class="form-group">#}
+{#        <label for="{{ form.type.id_for_label }}">Type<span class="text-danger">*</span></label>#}
+{#        {{ form.type }}#}
+{#    </div>#}
+{##}
+{#    <!-- Lead Field -->#}
+{#    <div class="form-group">#}
+{#        <label for="{{ form.lead.id_for_label }}">Lead<span class="text-danger">*</span></label>#}
+{#        {{ form.lead }}#}
+{#    </div>#}
+
+    <!-- Description Field (CKEditor) -->
+{#    <div class="form-group">#}
+{#        <label for="{{ form.description.id_for_label }}">Description</label>#}
+        {{ form.as_p }}
+        {{ form.media }}
+    </div>
+{##}
+{#    <!-- Code Field -->#}
+{#    <div class="form-group">#}
+{#        <label for="{{ form.code.id_for_label }}">Key<span class="text-danger">*</span></label>#}
+{#        {{ form.code }}#}
+{#    </div>#}
+
+    <!-- Submit Button -->
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

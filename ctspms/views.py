@@ -1,14 +1,14 @@
 from enum import unique
-
+from django.views import View
 from django.http import JsonResponse,Http404, HttpResponseForbidden
 from django.views.decorators.http import require_GET
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import RedirectView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from ctspms.models import StatusList, TagList, PriorityList, Issue, Project, Task, Comment, Attachment, Timelog
 from account.models import Department, Role
-from .forms import CommentForm
+from .forms import CommentForm, TaskForm, ProjectForm
 
 
 
@@ -43,21 +43,31 @@ def ajax_search(request):
     return JsonResponse({'error': 'No query provided'}, status=400)
 
 # Create Views
-class ProjectCreateView(LoginRequiredMixin, CreateView):
+class ProjectCreateView(LoginRequiredMixin, View):
     model = Project
     template_name = 'projects/project_form.html'
-    fields = ['name', 'description', 'start_date', 'type', 'lead', 'end_date']  # Include necessary fields
     success_url = reverse_lazy('project_list')  # Redirect to project list after creating
+
+    def get(self, request, *args, **kwargs):
+        project_form = ProjectForm()
+        return render(request, self.template_name, {'form': project_form})
+
+    def post(self, request, *args, **kwargs):
+        project_form = ProjectForm(request.POST)
+        if project_form.is_valid():
+            project_form.save()  # Save the project object directly
+            return redirect(self.success_url)  # Redirect to the project list after saving
+        return render(request, self.template_name, {'form': project_form})
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
     template_name = 'tasks/task_form.html'
-    fields = ['summery', 'description', 'status', 'assigned_to', 'reporter', 'due_date', 'project', 'priority', 'tag']  # Include necessary fields
+    fields = ['summery', 'description', 'status', 'assigned_to', 'reporter',   'due_date', 'project', 'priority', 'tag']  # Include necessary fields
     success_url = reverse_lazy('task_create')  # Redirect to task list after creating
 
 class StatusCreateView(LoginRequiredMixin, CreateView):
     model = StatusList
-    template_name = 'tasks/task_form.html'  # Add the correct template path
+    template_name = 'tasks/board.html'  # Add the correct template path
     fields = ['status_name']  # Include necessary fields
     success_url = reverse_lazy('task_create')  # Redirect to task list after creating
 

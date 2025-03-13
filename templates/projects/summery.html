@@ -16,7 +16,8 @@
             <!-- Donut Chart -->
             <div class="col">
                 <div class="p-4 bg-white shadow-sm rounded">
-                    <p class="fw-semibold eme01">Status Overview</p>
+                    <p class="fw-semibold fs-6">Status Overview</p>
+                    <div class="mx-3">
                     <p class="eme01">Get a snapshot of the status of your tasks. <a href="" class="text-decoration-none">View all tasks</a></p>
                     <canvas id="doughnutChart" class="w-100 h-100" style="max-height: 280px;"></canvas>
                     <script>
@@ -42,20 +43,23 @@
                         });
                     </script>
                 </div>
+                </div>
             </div>
 
             <!-- Project description -->
             <div class="col">
                 <div class="p-4 overflow-auto bg-white shadow-sm rounded w-100 h-100" style="max-height: 400px;">
-                    <p class="fw-semibold eme01">Project Description</p>
-                    <p class="fw-medium eme01">{{ project.description|safe }}</p>
+                    <p class="fw-semibold fs-6">Project Description</p>
+                    <div class="mx-3">
+                        <p class="fw-medium eme01">{{ project.description|safe }}</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Recent Comments -->
             <div class="col">
                 <div class="p-4 overflow-auto bg-white shadow-sm rounded w-100 h-100" style="max-height: 400px;">
-                    <p class="eme01 fw-semibold">Recent Comments</p>
+                    <p class="fw-semibold fs-6">Recent Comments</p>
                     <ul class="list-group list-group-flush">
                         {% for task in project.tasks.all %}
                             {% for comment in task.comments.all %}
@@ -73,7 +77,7 @@
         <div class="d-flex mt-5 gap-5">
             <div class="col">
                 <div class="p-4 bg-white shadow-sm rounded">
-                    <h4>Priority breakdown</h4>
+                    <p class="fw-semibold fs-6">Priority breakdown</p>
                     <canvas id="barChart" class="w-100 h-100"></canvas>
                     <script>
                         var ctx = document.getElementById('barChart').getContext('2d');
@@ -126,7 +130,7 @@
             <!-- Team workload -->
             <div class="col">
                 <div class="row p-4 bg-white shadow-sm rounded">
-                    <h4>Team workload</h4>
+                    <p class="fw-semibold fs-6">Team workload</p>
                     <div class="col">
                         <canvas id="barChart2" class="w-100 h-100"></canvas>
                         <script>

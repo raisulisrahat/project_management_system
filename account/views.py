@@ -77,7 +77,7 @@ class CommonDashboardDataMixin:
         projects = Project.objects.order_by('-start_date')[:5]
         tasks = Task.objects.order_by('-start_date')[:5]
         peoples = Profile.objects.all()
-        teams = Team.objects.all()
+        teamlist = Team.objects.all()
         timelog = Timelog.objects.all()
 
         ts_no = Task.objects.count()
@@ -94,7 +94,7 @@ class CommonDashboardDataMixin:
             'tasks': tasks,
             'profile': peoples,
             'timelog': timelog,
-            'team': teams,
+            'teamlist': teamlist,
             'project_labels': project_labels,
             'project_task_counts': project_task_counts,
         }
