@@ -61,9 +61,27 @@ class ProjectCreateView(LoginRequiredMixin, View):
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
+    form_class = TaskForm  # Use the custom form
     template_name = 'tasks/task_form.html'
-    fields = ['summery', 'description', 'status', 'assigned_to', 'reporter',   'due_date', 'project', 'priority', 'tag']  # Include necessary fields
-    success_url = reverse_lazy('task_create')  # Redirect to task list after creating
+
+    def get_success_url(self):
+        # Get the project label for redirecting after task creation
+        project_label = self.object.project.label()  # Make sure the 'label' method is defined in Project
+        return reverse_lazy('dashboard', kwargs={'label': project_label})
+
+    def get(self, request, *args, **kwargs):
+        task_form = TaskForm()
+        return render(request, self.template_name, {'task_form': task_form})
+
+    def post(self, request, *args, **kwargs):
+        task_form = TaskForm(request.POST, request.FILES)  # Include request.FILES for file uploads
+        if task_form.is_valid():
+            task = task_form.save(commit=False)  # Get task instance without saving yet
+            # If project is passed in URL or needs to be set in a special way, do it here:
+            # task.project = ...
+            task.save()  # Save the task instance to the database
+            return redirect(self.get_success_url())
+        return render(request, self.template_name, {'task_form': task_form})
 
 class StatusCreateView(LoginRequiredMixin, CreateView):
     model = StatusList
@@ -83,7 +101,8 @@ class TaskListView(LoginRequiredMixin, ListView):
     context_object_name = 'tasks'
 
     def get_queryset(self):
-        self.project = get_object_or_404(Project, pk=self.kwargs['label'].upper())
+        # Retrieve the project by its code (which is passed as 'label')
+        self.project = get_object_or_404(Project, code=self.kwargs['label'].upper())
         return Task.objects.filter(project=self.project)
 
     def get_context_data(self, **kwargs):
@@ -91,10 +110,11 @@ class TaskListView(LoginRequiredMixin, ListView):
         context['project'] = self.project
         return context
 
+
 # Detail View
 class ProjectDetailView(LoginRequiredMixin, DetailView):
     model = Project
-    template_name = 'projects/summery.html'
+    template_name = 'projects/summary.html'
     context_object_name = 'project'
 
     def get_object(self):
