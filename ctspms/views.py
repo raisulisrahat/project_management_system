@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import RedirectView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from ctspms.models import StatusList, TagList, PriorityList, Issue, Project, Task, Comment, Attachment, Timelog
-from account.models import Department, Role
+from account.models import Department, Role, User, Profile
 from .forms import CommentForm, TaskForm, ProjectForm
 
 
@@ -61,27 +61,61 @@ class ProjectCreateView(LoginRequiredMixin, View):
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
-    form_class = TaskForm  # Use the custom form
+    form_class = TaskForm
     template_name = 'tasks/task_form.html'
 
-    def get_success_url(self):
-        # Get the project label for redirecting after task creation
-        project_label = self.object.project.label()  # Make sure the 'label' method is defined in Project
-        return reverse_lazy('dashboard', kwargs={'label': project_label})
+    # Change how the success URL is handled
+    def get_success_url(self, project):
+        # Use the label method to get the project's label and return the correct URL
+        return reverse_lazy('dashboard', kwargs={'label': project.label()})
 
     def get(self, request, *args, **kwargs):
+        label = kwargs.get('label')  # Capture the label from the URL
+        if not label:
+            return redirect('project_list')  # Redirect if label is not found
+
+        # Retrieve the project by its 'code' (since the label method uses code or name abbreviation)
+        project = get_object_or_404(Project, code=label)
+
         task_form = TaskForm()
-        return render(request, self.template_name, {'task_form': task_form})
+        return render(request, self.template_name, {'task_form': task_form, 'project': project})
 
     def post(self, request, *args, **kwargs):
-        task_form = TaskForm(request.POST, request.FILES)  # Include request.FILES for file uploads
+        label = kwargs.get('label')  # Capture the label from the URL
+        if not label:
+            return redirect('project_list')  # Redirect if label is not found
+
+        # Retrieve the project by its 'code'
+        project = get_object_or_404(Project, code=label)
+
+        task_form = TaskForm(request.POST, request.FILES)
         if task_form.is_valid():
-            task = task_form.save(commit=False)  # Get task instance without saving yet
-            # If project is passed in URL or needs to be set in a special way, do it here:
-            # task.project = ...
-            task.save()  # Save the task instance to the database
-            return redirect(self.get_success_url())
-        return render(request, self.template_name, {'task_form': task_form})
+            task = task_form.save(commit=False)
+            task.project = project
+
+            # Ensure the current user has a profile and is authenticated
+            if request.user.is_authenticated:
+                # Assign the logged-in user's profile as the reporter
+                task.reporter = request.user.profile
+
+                # Set the assignee to the current logged-in user if 'assign_me' button was clicked
+                if 'assign_me' in request.POST:
+                    task.assigned_to = request.user.profile  # Assign to the current user's profile
+                else:
+                    # If "Assign Me" is not clicked, use the selected assignee in the form
+                    task.assigned_to = task_form.cleaned_data['assigned_to']
+
+                task.save()  # Save the task instance to the database
+
+                # Now that the task is saved, pass the project to get the success URL
+                return redirect(self.get_success_url(project))
+            else:
+                # If the user is not authenticated, redirect to login
+                return redirect('login')
+
+        return render(request, self.template_name, {'task_form': task_form, 'project': project})
+
+
 
 class StatusCreateView(LoginRequiredMixin, CreateView):
     model = StatusList

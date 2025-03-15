@@ -78,9 +78,9 @@
     <!-- Sidebar with Task Details -->
     <div class="col-lg-3 p-5 mb-4 bg-white text-dark shadow-sm">
         <p class="fs-5 fw-semibold">Task Details</p>
-        <p><strong>Priority:</strong> <span class="p-2 btn-secondary">{{ task.priority }}</span></p>
-        <p><strong>Start Date:</strong> {{ task.start_date }}</p>
-        <p><strong>End Date:</strong> {{ task.end_date }}</p>
+        <p><strong>Priority:</strong> <span class="p-2 btn-secondary">{{ task.priority.priority_name }}</span></p>
+        <p><strong>Start Date:</strong> {{ task.start_date.date }}</p>
+        <p><strong>End Date:</strong> {{ task.due_date.date }}</p>
     </div>
 </div>
 

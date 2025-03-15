@@ -36,6 +36,7 @@ class TaskForm(forms.ModelForm):
             'due_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             # Use 'type': 'date' for HTML5 datepicker
         }
+        project = forms.ModelChoiceField(queryset=Project.objects.all(), widget=forms.HiddenInput())
 
 
 class CommentForm(forms.ModelForm):
