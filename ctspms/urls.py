@@ -8,7 +8,6 @@ urlpatterns = [
     path('projects/<str:label>/summary/', ProjectDetailView.as_view(), name='project_detail'),
     path('projects/create/', ProjectCreateView.as_view(), name='project_create'),
     # path('projects/<str:label>/edit/', ProjectUpdateView.as_view(), name='project_edit'),
-    #
     # # Task URLs
     path('projects/<str:lable>/boards/', TaskListView.as_view(), name='kanban_board'),
     # Correct URL pattern

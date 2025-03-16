@@ -46,7 +46,7 @@ def ajax_search(request):
 class ProjectCreateView(LoginRequiredMixin, View):
     model = Project
     template_name = 'projects/project_form.html'
-    success_url = reverse_lazy('project_list')  # Redirect to project list after creating
+    success_url = reverse_lazy('projects')  # Redirect to project list after creating
 
     def get(self, request, *args, **kwargs):
         project_form = ProjectForm()
@@ -67,12 +67,12 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
     # Change how the success URL is handled
     def get_success_url(self, project):
         # Use the label method to get the project's label and return the correct URL
-        return reverse_lazy('dashboard', kwargs={'label': project.label()})
+        return reverse_lazy('kanban_board', kwargs={'label': project.label()})
 
     def get(self, request, *args, **kwargs):
         label = kwargs.get('label')  # Capture the label from the URL
         if not label:
-            return redirect('project_list')  # Redirect if label is not found
+            return redirect('projects')  # Redirect if label is not found
 
         # Retrieve the project by its 'code' (since the label method uses code or name abbreviation)
         project = get_object_or_404(Project, code=label)
@@ -83,7 +83,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
         label = kwargs.get('label')  # Capture the label from the URL
         if not label:
-            return redirect('project_list')  # Redirect if label is not found
+            return redirect('projects')  # Redirect if label is not found
 
         # Retrieve the project by its 'code'
         project = get_object_or_404(Project, code=label)
