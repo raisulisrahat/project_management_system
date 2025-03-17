@@ -12,6 +12,7 @@ urlpatterns = [
     # Dashboard
     path('dashboard/', dashboard_view, name='dashboard'),
     path('settings/', settings_view, name='settings'),
+
     path('invite/', invite_user, name='invite_user'),
     path('accept-users/<str:code>/', accept_invitation, name='accept_invitation'),
     path('users-success/', invitation_success, name='invitation_success'),

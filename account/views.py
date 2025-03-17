@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.utils.decorators import method_decorator
-from django.utils import timezone as tz
+import pytz
 from django.utils.translation import activate, get_language
 from django.conf import settings
 from django.urls import reverse_lazy, reverse
@@ -70,7 +71,7 @@ class ProfileSetupView(View):
             profile_form.save()
             return redirect('dashboard')
 
-        return render(request, 'users/../templates/profile/profile_setup.html', {'profile_form': profile_form, 'user': user})
+        return render(request, 'profile/profile_setup.html', {'profile_form': profile_form, 'user': user})
 
 class CommonDashboardDataMixin:
     def get_common_dashboard_data(self):
@@ -233,37 +234,43 @@ def dashboard_view(request):
 
 @login_required
 def settings_view(request):
-    organizations = OrgType.objects.all()
+    timezones = pytz.all_timezones  # List of all timezones
+    languages = settings.LANGUAGES  # List of available languages
 
-    # if request.method == 'POST':
-    #     # Get the selected timezone and language from the form
-    #     selected_timezone = request.POST.get('timezone')
-    #     selected_language = request.POST.get('language')
-    #
-    #     # Set the timezone in the user's session
-    #     request.session['django_timezone'] = selected_timezone
-    #     tz.activate(selected_timezone)  # Apply the timezone for this request
-    #
-    #     # Set the language in the user's session
-    #     request.session[settings.LANGUAGE_COOKIE_NAME] = selected_language
-    #     activate(selected_language)  # Apply the language for this request
-    #
-    #     # Redirect to the same page or any other page
-    #     return redirect('your_page')
-    #
-    # # For GET requests, display the form
-    # timezones = tz.common_timezones
-    # languages = settings.LANGUAGES
-    # current_timezone = tz.get_current_timezone_name()
-    # current_language = get_language()
+    if request.method == 'POST':
+        # Get the selected timezone and language from the form
+        selected_timezone = request.POST.get('timezone')
+        selected_language = request.POST.get('language')
 
-    return render(request, 'setting.html', {
-        'organizations': organizations,
-        # 'timezones': timezones,
-        # 'languages': languages,
-        # 'current_timezone': current_timezone,
-        # 'current_language': current_language
-    })
+        # You can store these settings in the user's session
+        request.session['django_timezone'] = selected_timezone
+        request.session['django_language'] = selected_language
+
+        # Optionally, you could also store it in the user's profile (if you have a profile model)
+        # profile = request.user.profile
+        # profile.timezone = selected_timezone
+        # profile.language = selected_language
+        # profile.save()
+
+        # Set the selected language using Django's translation system
+        from django.utils import translation
+        translation.activate(selected_language)
+
+        # Redirect to the same page to reflect changes
+        return redirect('settings')
+
+    # Add the current timezone and language to the context to pre-select them in the form
+    current_timezone = request.session.get('django_timezone', 'UTC')  # Default to UTC if not set
+    current_language = request.session.get('django_language', 'en')  # Default to English
+
+    context = {
+        'timezones': timezones,
+        'languages': languages,
+        'current_timezone': current_timezone,
+        'current_language': current_language,
+    }
+
+    return render(request, 'setting.html', context)
 
 # 6. Invite user view
 @login_required

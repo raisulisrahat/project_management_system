@@ -2,23 +2,60 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
-
-
-        <div class="p-5 bg-white">
-        <h3>General</h3>
+    <div class="p-5 bg-white">
+        <p class="fs-4 fw-semibold">General</p>
+        <form class="form-inline my-2 my-lg-0" method="POST">
+            {% csrf_token %}
+            <!-- Timezone and Language form as before -->
             <div class="col py-4">
-                <div class="d-flex">
-                    <p class="">Themes</p>
-                    <button class="btn btn-primary" id="light-theme">Light</button>
-                    <button class="btn btn-primary" id="dark-theme">Dark</button>
+                <div class="row">
+                <div class="col-sm-2">
+                    <label for="timezone" class="fw-semibold">Select Timezone:</label>
+                </div>
+                <div class="col-sm-2">
+                    <select name="timezone" class="form-control" id="timezone">
+                        {% for timezone in timezones %}
+                            <option value="{{ timezone }}" {% if timezone == current_timezone %}selected{% endif %}>
+                                {{ timezone }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="d-flex">
-
+            <div class="col py-4">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <label for="language" class="fw-semibold">Select Language: </label>
+                    </div>
+                    <div class="col-sm-1">
+                        <select name="language" id="language" class="form-control">
+                            {% for code, name in languages %}
+                                <option value="{{ code }}" {% if code == current_language %}selected{% endif %}>
+                                    {{ name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
             </div>
-
+            <div class="col py-4">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <label for="language" class="fw-semibold">Select Language: </label>
+                    </div>
+                    <div class="col-sm-1">
+                        <select name="language" id="language" class="form-control">
+                            {% for code, name in languages %}
+                                <option value="{{ code }}" {% if code == current_language %}selected{% endif %}>
+                                    {{ name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary px-sm-2 py-sm-1">Submit</button>
+        </form>
     </div>
-
 {% endblock %}

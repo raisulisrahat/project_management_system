@@ -27,3 +27,16 @@
     text-align: center;
     font-size: 0.8rem;
 }
+
+:root {
+    --bs-primary: #0d6efd;
+    --bs-bg-color: #ffffff;
+}
+
+[data-bs-theme="dark"] {
+    --bs-bg-color: #121212;
+}
+
+body {
+    background-color: var(--bs-bg-color);
+}

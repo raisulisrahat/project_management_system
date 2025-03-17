@@ -12,6 +12,15 @@ from .forms import CommentForm, TaskForm, ProjectForm
 
 
 
+class KanbanBoardView(View):
+    def get(self, request):
+        projects = Project.objects.all()
+        tasks = Task.objects.all()
+        status = StatusList.objects.all()
+        priorities = PriorityList.objects.all()
+        issues = Issue.objects.all()
+
+
 @require_GET
 def ajax_search(request):
     query = request.GET.get('q', '')  # Get the query from the GET request

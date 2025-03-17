@@ -7,8 +7,8 @@
 <!-- Breadcrumb Navigation -->
 <div class="eme01 mb-4">
     <p class="mb-0">
-        <a href="{% url 'projects' %}" class="text-decoration-none">Project</a> /
-        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none">{{ task.project.name }}</a> /
+        <a href="{% url 'projects' %}" class="text-decoration-none text-dark">Project</a> /
+        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark">{{ task.project.name }}</a> /
         {{ task.unique_id }}
     </p>
 </div>
@@ -24,7 +24,6 @@
 
         <!-- Comment Form for Adding New Comment -->
         <div class="p-4 bg-light shadow-sm rounded">
-            <h3>Add a Comment</h3>
             <form method="post" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" enctype="multipart/form-data" class="figurex">
                 {% csrf_token %}
                 {{ comment_form.as_p }}  <!-- CKEditor input field for new comment -->
@@ -37,6 +36,7 @@
         <div class="my-4 p-4 bg-white shadow-sm rounded">
             <h4>Comments</h4>
             <ul class="list-group list-group-flush">
+            <hr>
                 {% for comment in comments %}
                     <li class="list-group-item" id="comment-{{ comment.id }}">
                         <div class="text-primary d-flex text-decoration-none gap-sm-2">
@@ -52,6 +52,7 @@
                         <form method="post" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" enctype="multipart/form-data" id="edit-form-{{ comment.id }}" style="display: none;" class="figurex">
                             {% csrf_token %}
                             <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                            
                             {{ edit_form.as_p }}  <!-- CKEditor edit field -->
                             {{ edit_form.media }}
                             <button type="submit" name="edit_comment" class="btn btn-secondary eme01">Save</button>
@@ -70,6 +71,8 @@
                             </div>
                         {% endif %}
                     </li>
+                    {% empty %}
+                        <p class="eme01 mt-2">No Comments</p>
                 {% endfor %}
             </ul>
         </div>

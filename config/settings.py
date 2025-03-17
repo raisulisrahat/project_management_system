@@ -38,6 +38,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'account.middleware.TimezoneMiddleware',
 ]
 
 
@@ -86,9 +88,66 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
-
+LANGUAGES = [
+    ('af', 'Afrikaans'),
+    ('ar', 'Arabic'),
+    ('az', 'Azerbaijani'),
+    ('bg', 'Bulgarian'),
+    ('bn', 'Bengali'),
+    ('ca', 'Catalan'),
+    ('cs', 'Czech'),
+    ('da', 'Danish'),
+    ('de', 'German'),
+    ('el', 'Greek'),
+    ('en', 'English'),
+    ('es', 'Spanish'),
+    ('et', 'Estonian'),
+    ('fa', 'Persian'),
+    ('fi', 'Finnish'),
+    ('fr', 'French'),
+    ('gu', 'Gujarati'),
+    ('he', 'Hebrew'),
+    ('hi', 'Hindi'),
+    ('hr', 'Croatian'),
+    ('hu', 'Hungarian'),
+    ('id', 'Indonesian'),
+    ('it', 'Italian'),
+    ('ja', 'Japanese'),
+    ('kn', 'Kannada'),
+    ('ko', 'Korean'),
+    ('lt', 'Lithuanian'),
+    ('lv', 'Latvian'),
+    ('ml', 'Malayalam'),
+    ('mr', 'Marathi'),
+    ('my', 'Burmese'),
+    ('nb', 'Norwegian Bokmål'),
+    ('ne', 'Nepali'),
+    ('nl', 'Dutch'),
+    ('pl', 'Polish'),
+    ('pt', 'Portuguese'),
+    ('pt-br', 'Brazilian Portuguese'),
+    ('ro', 'Romanian'),
+    ('ru', 'Russian'),
+    ('sk', 'Slovak'),
+    ('sl', 'Slovenian'),
+    ('sq', 'Albanian'),
+    ('sr', 'Serbian'),
+    ('sv', 'Swedish'),
+    ('ta', 'Tamil'),
+    ('te', 'Telugu'),
+    ('th', 'Thai'),
+    ('tr', 'Turkish'),
+    ('uk', 'Ukrainian'),
+    ('ur', 'Urdu'),
+    ('vi', 'Vietnamese'),
+    ('zh-hans', 'Simplified Chinese'),
+    ('zh-hant', 'Traditional Chinese'),
+]
 TIME_ZONE = 'UTC'
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
 
 USE_I18N = True
 
@@ -137,21 +196,6 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 CKEDITOR_UPLOAD_PATH = 'upload/data/'
 CKEDITOR_IMAGE_BACKEND = "pillow"
 CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'
-# CKEDITOR_CONFIGS = {
-#     'default': {
-#         'toolbar': 'Custom',
-#         'toolbar_Custom': [
-#             ['Format'],
-#             ['Bold', 'Italic', 'Underline'],  # Basic formatting options
-#             ['NumberedList', 'BulletedList'],
-#             ['Link', 'Unlink'],
-#             ['Image', 'Attachment', 'Table', 'HorizontalRule']
-#         ],
-#         'width': 'auto',
-#         'height': '300px',
-#         'removePlugins': 'sourcearea',  # Completely remove the Source button
-#     },
-# }
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Custom',

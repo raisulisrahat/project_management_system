@@ -19,7 +19,6 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
 </head>
 <body class="emx3">
-
     <nav class="bg-white navbar navbar-expand-lg px-1 fixed-top navbg border-bottom">
         {% include "navbar.html" %}
     </nav>
@@ -27,15 +26,12 @@
         <div class="row h-100">
             <div class="col-2">
                 {% include "sidebar.html" %}
-
+            </div>
+            <main class="col overflow-auto h-100 py-5 ps-2 pe-5 my-5">
+                {% block content %}
+                {% endblock %}
+            </main>
         </div>
-
-
-        <main class="col overflow-auto h-100 py-5 ps-2 pe-5 my-5">
-            {% block content %}
-            {% endblock %}
-        </main>
-    </div>
     </div>
 </body>
 </html>
