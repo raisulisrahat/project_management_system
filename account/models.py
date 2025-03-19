@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.crypto import get_random_string
 from django.utils import timezone
-import uuid
+import uuid, pyotp
 from django.contrib.auth.models import User, Group
 import datetime
 from django.utils.text import slugify
@@ -55,6 +55,14 @@ class Profile(models.Model):
     address = models.TextField(null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
     teams = models.ManyToManyField(Team, blank=True)
+    two_factor_enabled = models.BooleanField(default=False)
+    totp_secret = models.CharField(max_length=32, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        # Generate a new TOTP secret if enabling 2FA and no secret exists
+        if self.two_factor_enabled and not self.totp_secret:
+            self.totp_secret = pyotp.random_base32()
+        super().save(*args, **kwargs)
 
     def validate_image(self):
         if not self.profile_image.name.endswith(('.png', '.jpg', '.jpeg')):

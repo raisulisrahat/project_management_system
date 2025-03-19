@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.utils.decorators import method_decorator
-import pytz
+import pytz, pyotp, io, qrcode, base64
 from django.utils.translation import activate, get_language
 from django.conf import settings
 from django.urls import reverse_lazy, reverse
@@ -176,16 +176,53 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True
     success_url = reverse_lazy('dashboard')
 
-    def get_success_url(self):
-        # Clear old messages (if any) before setting the new one
-        return self.success_url
+    def form_valid(self, form):
+        """Override this method to handle 2FA after valid credentials are entered."""
+        user = form.get_user()
+
+        # Check if the user has 2FA enabled
+        if user.profile.two_factor_enabled:
+            # Store the user's ID in session and redirect them to the 2FA verification page
+            self.request.session['2fa_user_id'] = user.id
+            return redirect('two_factor_auth')  # Create this view for 2FA code entry
+        else:
+            # If 2FA is not enabled, log the user in as usual
+            login(self.request, user)
+            return redirect(self.get_success_url())
 
     def form_invalid(self, form):
         """Handles invalid login attempts (e.g., wrong credentials)."""
         messages.error(self.request, "Invalid username or password. Please try again.")
         return super().form_invalid(form)
 
+    def get_success_url(self):
+        """Redirect to the dashboard on successful login."""
+        return self.success_url
 
+@login_required
+def two_factor_auth_view(request):
+    """View to handle 2FA code input and validation."""
+    if request.method == 'POST':
+        token = request.POST.get('token')
+        user_id = request.session.get('2fa_user_id')
+
+        if user_id:
+            user = User.objects.get(id=user_id)
+            totp = pyotp.TOTP(user.profile.totp_secret)
+
+            # Verify the 2FA token
+            if totp.verify(token):
+                # Token is valid, log the user in and clear session data
+                login(request, user)
+                del request.session['2fa_user_id']  # Clear session data after successful login
+                messages.success(request, f"Welcome back, {user.username}!")
+                return redirect('dashboard')
+            else:
+                messages.error(request, "Invalid 2FA code. Please try again.")
+        else:
+            messages.error(request, "An error occurred. Please try again.")
+
+    return render(request, 'users/2fa.html')
 # 4. Logout view
 class CustomLogoutView(LogoutView):
     next_page = reverse_lazy('login')  # Redirect to login page after logout
@@ -237,41 +274,74 @@ def settings_view(request):
     timezones = pytz.all_timezones  # List of all timezones
     languages = settings.LANGUAGES  # List of available languages
 
+    # Generate or retrieve TOTP secret (session-based storage for now, but can be user model-based)
+    if not request.session.get('totp_secret'):
+        totp_secret = pyotp.random_base32()  # Generate a random secret for TOTP
+        request.session['totp_secret'] = totp_secret
+    else:
+        totp_secret = request.session['totp_secret']
+
+    # Generate the TOTP object and provisioning URL
+    totp = pyotp.TOTP(totp_secret)
+    totp_url = totp.provisioning_uri(name=request.user.email, issuer_name="YourAppName")
+
+    # Generate a QR code for the TOTP URL
+    qr_img = qrcode.make(totp_url)
+    buf = io.BytesIO()
+    qr_img.save(buf, format='PNG')
+    qr_code_data = base64.b64encode(buf.getvalue()).decode()  # Encode as base64 for rendering
+
+    # Track whether 2FA is enabled or disabled
+    two_factor_state = request.session.get('2fa_enabled', False)
+    show_modal = False  # Track if modal should be shown
+
     if request.method == 'POST':
-        # Get the selected timezone and language from the form
+        # Get the submitted form values (timezone, language, 2FA state, and 2FA token)
         selected_timezone = request.POST.get('timezone')
         selected_language = request.POST.get('language')
+        selected_2fa_state = request.POST.get('2fa_state')
+        submitted_token = request.POST.get('token')
 
-        # You can store these settings in the user's session
+        # Update timezone and language in session
         request.session['django_timezone'] = selected_timezone
         request.session['django_language'] = selected_language
 
-        # Optionally, you could also store it in the user's profile (if you have a profile model)
-        # profile = request.user.profile
-        # profile.timezone = selected_timezone
-        # profile.language = selected_language
-        # profile.save()
+        # Enable or disable 2FA based on selection
+        if selected_2fa_state == 'enable':
+            # Show modal to allow user to enter the 2FA token
+            show_modal = True
+            if submitted_token:
+                # Verify the TOTP token
+                if totp.verify(submitted_token):
+                    request.session['2fa_enabled'] = True  # Mark 2FA as enabled
+                    two_factor_state = True
+                    request.session.pop('2fa_error', None)  # Remove previous errors if successful
+                    show_modal = False  # Close modal after successful token submission
+                else:
+                    request.session['2fa_error'] = "Invalid token"  # Token is invalid
+                    show_modal = True  # Keep modal open if token is invalid
+        elif selected_2fa_state == 'disable':
+            request.session['2fa_enabled'] = False  # Disable 2FA
+            two_factor_state = False
 
-        # Set the selected language using Django's translation system
-        from django.utils import translation
-        translation.activate(selected_language)
-
-        # Redirect to the same page to reflect changes
+        # Redirect to the settings page to refresh changes
         return redirect('settings')
 
-    # Add the current timezone and language to the context to pre-select them in the form
-    current_timezone = request.session.get('django_timezone', 'UTC')  # Default to UTC if not set
-    current_language = request.session.get('django_language', 'en')  # Default to English
-
+    # Add current settings to context
+    current_timezone = request.session.get('django_timezone', 'UTC')
+    current_language = request.session.get('django_language', 'en')
     context = {
         'timezones': timezones,
         'languages': languages,
         'current_timezone': current_timezone,
         'current_language': current_language,
+        'qr_code_data': qr_code_data,  # QR code data as base64 for 2FA
+        '2fa_enabled': two_factor_state,
+        '2fa_error': request.session.get('2fa_error', ''),
+        'show_modal': show_modal,  # Pass modal visibility status
     }
 
     return render(request, 'setting.html', context)
-
 # 6. Invite user view
 @login_required
 def invite_user(request):

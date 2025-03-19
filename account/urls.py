@@ -1,11 +1,12 @@
 from django.urls import path
-from account.views import RegisterView, ProfileSetupView, CustomLoginView, CustomLogoutView, ProfileDetailView, PeopleModify, dashboard_view, settings_view, invite_user, accept_invitation, invitation_success, request_password_reset, verify_otp, password_reset_success
+from account.views import RegisterView, ProfileSetupView, CustomLoginView, two_factor_auth_view, CustomLogoutView, ProfileDetailView, PeopleModify, dashboard_view, settings_view, invite_user, accept_invitation, invitation_success, request_password_reset, verify_otp, password_reset_success
 
 # Create your tests here.
 
 urlpatterns = [
     # Authentication
     path('', CustomLoginView.as_view(), name='login'),
+    path('verify/2fa/', two_factor_auth_view, name='two_factor_auth'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
     path('register/', RegisterView.as_view(), name='register'),
     path('profile/setup/<str:username>', ProfileSetupView.as_view(), name='profile_setup'),

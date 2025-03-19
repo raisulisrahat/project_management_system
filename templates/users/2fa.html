@@ -1,0 +1,31 @@
+<html lang="en">
+    <head>
+        {% load static %}
+        {% load bootstrap5 %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+        <title>Two-Factor Authentication</title>
+    </head>
+<body>
+    <div class="p-5 bg-white">
+        <h3>Two-Factor Authentication</h3>
+        <p>Please enter the code from your authenticator app.</p>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="token">2FA Code</label>
+                <input type="text" class="form-control" id="token" name="token" placeholder="Enter 2FA code" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li style="color: red;">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>

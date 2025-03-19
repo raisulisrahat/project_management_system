@@ -28,15 +28,26 @@
     font-size: 0.8rem;
 }
 
-:root {
-    --bs-primary: #0d6efd;
-    --bs-bg-color: #ffffff;
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background-color: white;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
 }
-
-[data-bs-theme="dark"] {
-    --bs-bg-color: #121212;
+.modal-content {
+    padding: 20px;
+    text-align: center;
 }
-
-body {
-    background-color: var(--bs-bg-color);
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 24px;
 }
