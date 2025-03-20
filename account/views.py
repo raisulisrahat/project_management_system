@@ -1,5 +1,5 @@
 from datetime import timezone
-from django.shortcuts import render, redirect
+from django.dispatch import receiver
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -9,8 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.utils.decorators import method_decorator
-import pytz, pyotp, io, qrcode, base64
-from django.utils.translation import activate, get_language
+import pytz, pyotp, io, qrcode, base64, logging
 from django.conf import settings
 from django.urls import reverse_lazy, reverse
 from django.contrib import messages
@@ -22,7 +21,8 @@ from django.db.models import Count
 from ctspms.models import Project, Task, Timelog
 
 # Create your views here.
-
+# logs
+logger = logging.getLogger(__name__)
 class RegisterView(View):
     def get(self, request):
         user_form = SignUpForm()
@@ -180,13 +180,15 @@ class CustomLoginView(LoginView):
         """Override this method to handle 2FA after valid credentials are entered."""
         user = form.get_user()
 
+        # Apply timezone and language settings from the user's profile
+        self.request.session['django_timezone'] = user.profile.timezone
+        self.request.session['django_language'] = user.profile.language
+
         # Check if the user has 2FA enabled
         if user.profile.two_factor_enabled:
-            # Store the user's ID in session and redirect them to the 2FA verification page
             self.request.session['2fa_user_id'] = user.id
-            return redirect('two_factor_auth')  # Create this view for 2FA code entry
+            return redirect('two_factor_auth')
         else:
-            # If 2FA is not enabled, log the user in as usual
             login(self.request, user)
             return redirect(self.get_success_url())
 
@@ -198,6 +200,7 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         """Redirect to the dashboard on successful login."""
         return self.success_url
+
 
 @login_required
 def two_factor_auth_view(request):
@@ -232,71 +235,74 @@ class CustomLogoutView(LogoutView):
         messages.success(request, "You have successfully logged out.")
         return super().dispatch(request, *args, **kwargs)
 
+
 @login_required
 def settings_view(request):
-    user = request.user
-    profile = user.profile  # Assuming each user has a related profile object
+    timezones = pytz.all_timezones  # List of all timezones
+    languages = settings.LANGUAGES  # List of available languages
+    profile = request.user.profile  # Get the user's profile
+
+    # Generate or retrieve TOTP secret from the user's profile (instead of session)
+    if not profile.totp_secret:
+        profile.totp_secret = pyotp.random_base32()  # Generate a random secret for TOTP
+
+    # Generate the TOTP object and provisioning URL
+    totp = pyotp.TOTP(profile.totp_secret)
+    totp_url = totp.provisioning_uri(name=request.user.email, issuer_name="Flowtrex")
+
+    # Generate a QR code for the TOTP URL
+    qr_img = qrcode.make(totp_url)
+    buf = io.BytesIO()
+    qr_img.save(buf, format='PNG')
+    qr_code_data = base64.b64encode(buf.getvalue()).decode()  # Encode as base64 for rendering
+
+    # Track whether 2FA is enabled or disabled
+    two_factor_state = profile.two_factor_enabled
+    show_modal = False  # Track if modal should be shown
 
     if request.method == 'POST':
-        # Get the posted values
+        # Get the submitted form values (timezone, language, 2FA state, and 2FA token)
         selected_timezone = request.POST.get('timezone')
         selected_language = request.POST.get('language')
-        two_factor_state = request.POST.get('2fa_state')
-        token = request.POST.get('token')
+        selected_2fa_state = request.POST.get('2fa_state')
+        submitted_token = request.POST.get('token')
 
-        # Update timezone and language preferences
-        if selected_timezone:
-            profile.timezone = selected_timezone  # Assuming you have a 'timezone' field in the profile
-        if selected_language:
-            profile.language = selected_language  # Assuming you have a 'language' field in the profile
+        # Update profile timezone and language
+        profile.timezone = selected_timezone
+        profile.language = selected_language
 
-        # Handle 2FA settings
-        if two_factor_state == 'enable':
-            # Enable 2FA
-            if not profile.two_factor_enabled:
-                profile.two_factor_enabled = True
-                profile.totp_secret = pyotp.random_base32()  # Generate new TOTP secret if enabling 2FA
-        elif two_factor_state == 'disable':
-            # Disable 2FA
-            profile.two_factor_enabled = False
+        # Enable or disable 2FA based on selection
+        if selected_2fa_state == 'enable':
+            show_modal = True
+            if submitted_token:
+                # Verify the TOTP token
+                if totp.verify(submitted_token):
+                    profile.two_factor_enabled = True  # Mark 2FA as enabled
+                    profile.save()  # Save changes to profile
+                    show_modal = False  # Close modal after successful token submission
+                else:
+                    request.session['2fa_error'] = "Invalid token"  # Token is invalid
+                    show_modal = True  # Keep modal open if token is invalid
+        elif selected_2fa_state == 'disable':
+            profile.two_factor_enabled = False  # Disable 2FA
+            profile.save()
 
-        # If 2FA is enabled, verify the token
-        if profile.two_factor_enabled and token:
-            totp = pyotp.TOTP(profile.totp_secret)
-            if totp.verify(token):
-                messages.success(request, "Two-factor authentication enabled successfully.")
-            else:
-                messages.error(request, "Invalid 2FA token. Please try again.")
-                # Show modal again if 2FA setup failed
+        return redirect('settings')
 
-                return render(request, 'setting.html', {
-                    'languages': lang,  # Your function for getting language choices
-                    'timezones': pytz.all_timezones,
-                    'current_timezone': profile.timezone,
-                    'current_language': profile.language,
-                    '2fa_enabled': profile.two_factor_enabled,
-                    'show_modal': True,  # Show the modal again if token is invalid
-                    'qr_code_data': generate_qr_code(profile.totp_secret),  # Generate the QR code again
-                    '2fa_error': "Invalid 2FA token."
-                })
-
-        # Save the updated profile settings
-        profile.save()
-
-        messages.success(request, "Settings updated successfully.")
-        return redirect('settings')  # Redirect to the settings page after saving
-
-    # GET request (show the settings page)
+    # Add current settings to context
     context = {
-        'languages': get_languages(),  # Your function for getting language choices
-        'timezones': pytz.all_timezones,
-        'current_timezone': profile.timezone,  # Pre-select user's current timezone
-        'current_language': profile.language,  # Pre-select user's current language
-        '2fa_enabled': profile.two_factor_enabled,  # Show if 2FA is enabled
-        'qr_code_data': generate_qr_code(profile.totp_secret) if profile.two_factor_enabled else None
+        'timezones': timezones,
+        'languages': languages,
+        'current_timezone': profile.timezone,
+        'current_language': profile.language,
+        'qr_code_data': qr_code_data,  # QR code data as base64 for 2FA
+        '2fa_enabled': profile.two_factor_enabled,
+        '2fa_error': request.session.get('2fa_error', ''),
+        'show_modal': show_modal,  # Pass modal visibility status
     }
 
     return render(request, 'setting.html', context)
+
 
 # 6. Invite user view
 @login_required
