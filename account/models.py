@@ -55,6 +55,8 @@ class Profile(models.Model):
     address = models.TextField(null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
     teams = models.ManyToManyField(Team, blank=True)
+    timezone = models.CharField(max_length=100, default='UTC')  # Add timezone field
+    language = models.CharField(max_length=10, default='en')    # Add language field
     two_factor_enabled = models.BooleanField(default=False)
     totp_secret = models.CharField(max_length=32, blank=True, null=True)
 

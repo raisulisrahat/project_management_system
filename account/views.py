@@ -78,7 +78,7 @@ class CommonDashboardDataMixin:
         projects = Project.objects.order_by('-start_date')[:5]
         tasks = Task.objects.order_by('-start_date')[:5]
         peoples = Profile.objects.all()
-        teamlist = Team.objects.all()
+        team = Team.objects.all()
         timelog = Timelog.objects.all()
 
         ts_no = Task.objects.count()
@@ -95,7 +95,7 @@ class CommonDashboardDataMixin:
             'tasks': tasks,
             'profile': peoples,
             'timelog': timelog,
-            'teamlist': teamlist,
+            'team': team,
             'project_labels': project_labels,
             'project_task_counts': project_task_counts,
         }
@@ -232,116 +232,72 @@ class CustomLogoutView(LogoutView):
         messages.success(request, "You have successfully logged out.")
         return super().dispatch(request, *args, **kwargs)
 
-
-# 5. Dashboard view
-@login_required  # Ensure that only logged-in users can access the dashboard
-def dashboard_view(request):
-    # Fetching data for the dashboard
-    projects = Project.objects.order_by('-start_date')[:5]  # Limiting to 4 recent projects
-    tasks = Task.objects.order_by('-start_date')[:5]
-    peoples = Profile.objects.all()
-    teams = Team.objects.all()
-    timelog = Timelog.objects.all()
-
-    # Get counts for projects and tasks
-    ts_no = Task.objects.count()
-    prj_no = Project.objects.count()
-
-    # Status counts (example: count tasks with no status)
-    tk_status_no = Task.objects.filter(status__isnull=True).count()
-
-    # Get project labels and task counts for each project
-    project_labels = [project.label() for project in projects]  # Project labels (e.g., 'HMS', 'PMS')
-
-    # Aggregating task counts per project
-    project_task_counts = [Task.objects.filter(project=project).count() for project in projects]
-
-    return render(request, 'dashboard.html', {
-        'tk_status_no': tk_status_no,
-        'prj_no': prj_no,
-        'ts_no': ts_no,
-        'projects': projects,
-        'tasks': tasks,
-        'profile': peoples,
-        'timelog': timelog,
-        'team': teams,
-        'project_labels': project_labels,  # Pass project labels
-        'project_task_counts': project_task_counts,  # Pass project task counts
-    })
-
 @login_required
 def settings_view(request):
-    timezones = pytz.all_timezones  # List of all timezones
-    languages = settings.LANGUAGES  # List of available languages
-
-    # Generate or retrieve TOTP secret (session-based storage for now, but can be user model-based)
-    if not request.session.get('totp_secret'):
-        totp_secret = pyotp.random_base32()  # Generate a random secret for TOTP
-        request.session['totp_secret'] = totp_secret
-    else:
-        totp_secret = request.session['totp_secret']
-
-    # Generate the TOTP object and provisioning URL
-    totp = pyotp.TOTP(totp_secret)
-    totp_url = totp.provisioning_uri(name=request.user.email, issuer_name="YourAppName")
-
-    # Generate a QR code for the TOTP URL
-    qr_img = qrcode.make(totp_url)
-    buf = io.BytesIO()
-    qr_img.save(buf, format='PNG')
-    qr_code_data = base64.b64encode(buf.getvalue()).decode()  # Encode as base64 for rendering
-
-    # Track whether 2FA is enabled or disabled
-    two_factor_state = request.session.get('2fa_enabled', False)
-    show_modal = False  # Track if modal should be shown
+    user = request.user
+    profile = user.profile  # Assuming each user has a related profile object
 
     if request.method == 'POST':
-        # Get the submitted form values (timezone, language, 2FA state, and 2FA token)
+        # Get the posted values
         selected_timezone = request.POST.get('timezone')
         selected_language = request.POST.get('language')
-        selected_2fa_state = request.POST.get('2fa_state')
-        submitted_token = request.POST.get('token')
+        two_factor_state = request.POST.get('2fa_state')
+        token = request.POST.get('token')
 
-        # Update timezone and language in session
-        request.session['django_timezone'] = selected_timezone
-        request.session['django_language'] = selected_language
+        # Update timezone and language preferences
+        if selected_timezone:
+            profile.timezone = selected_timezone  # Assuming you have a 'timezone' field in the profile
+        if selected_language:
+            profile.language = selected_language  # Assuming you have a 'language' field in the profile
 
-        # Enable or disable 2FA based on selection
-        if selected_2fa_state == 'enable':
-            # Show modal to allow user to enter the 2FA token
-            show_modal = True
-            if submitted_token:
-                # Verify the TOTP token
-                if totp.verify(submitted_token):
-                    request.session['2fa_enabled'] = True  # Mark 2FA as enabled
-                    two_factor_state = True
-                    request.session.pop('2fa_error', None)  # Remove previous errors if successful
-                    show_modal = False  # Close modal after successful token submission
-                else:
-                    request.session['2fa_error'] = "Invalid token"  # Token is invalid
-                    show_modal = True  # Keep modal open if token is invalid
-        elif selected_2fa_state == 'disable':
-            request.session['2fa_enabled'] = False  # Disable 2FA
-            two_factor_state = False
+        # Handle 2FA settings
+        if two_factor_state == 'enable':
+            # Enable 2FA
+            if not profile.two_factor_enabled:
+                profile.two_factor_enabled = True
+                profile.totp_secret = pyotp.random_base32()  # Generate new TOTP secret if enabling 2FA
+        elif two_factor_state == 'disable':
+            # Disable 2FA
+            profile.two_factor_enabled = False
 
-        # Redirect to the settings page to refresh changes
-        return redirect('settings')
+        # If 2FA is enabled, verify the token
+        if profile.two_factor_enabled and token:
+            totp = pyotp.TOTP(profile.totp_secret)
+            if totp.verify(token):
+                messages.success(request, "Two-factor authentication enabled successfully.")
+            else:
+                messages.error(request, "Invalid 2FA token. Please try again.")
+                # Show modal again if 2FA setup failed
 
-    # Add current settings to context
-    current_timezone = request.session.get('django_timezone', 'UTC')
-    current_language = request.session.get('django_language', 'en')
+                return render(request, 'setting.html', {
+                    'languages': lang,  # Your function for getting language choices
+                    'timezones': pytz.all_timezones,
+                    'current_timezone': profile.timezone,
+                    'current_language': profile.language,
+                    '2fa_enabled': profile.two_factor_enabled,
+                    'show_modal': True,  # Show the modal again if token is invalid
+                    'qr_code_data': generate_qr_code(profile.totp_secret),  # Generate the QR code again
+                    '2fa_error': "Invalid 2FA token."
+                })
+
+        # Save the updated profile settings
+        profile.save()
+
+        messages.success(request, "Settings updated successfully.")
+        return redirect('settings')  # Redirect to the settings page after saving
+
+    # GET request (show the settings page)
     context = {
-        'timezones': timezones,
-        'languages': languages,
-        'current_timezone': current_timezone,
-        'current_language': current_language,
-        'qr_code_data': qr_code_data,  # QR code data as base64 for 2FA
-        '2fa_enabled': two_factor_state,
-        '2fa_error': request.session.get('2fa_error', ''),
-        'show_modal': show_modal,  # Pass modal visibility status
+        'languages': get_languages(),  # Your function for getting language choices
+        'timezones': pytz.all_timezones,
+        'current_timezone': profile.timezone,  # Pre-select user's current timezone
+        'current_language': profile.language,  # Pre-select user's current language
+        '2fa_enabled': profile.two_factor_enabled,  # Show if 2FA is enabled
+        'qr_code_data': generate_qr_code(profile.totp_secret) if profile.two_factor_enabled else None
     }
 
     return render(request, 'setting.html', context)
+
 # 6. Invite user view
 @login_required
 def invite_user(request):
