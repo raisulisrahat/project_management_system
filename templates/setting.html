@@ -2,48 +2,48 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
-    <div class="p-5 bg-white shadow-sm">
-        <h3>General</h3>
+<div class="p-5 bg-white shadow-sm">
+    <h3>General</h3>
     <hr>
-        <form class="form-inline p-3 my-2 my-lg-0" method="POST">
-            {% csrf_token %}
-                <div class="col py-2">
-                    <div class="row align-items-center">
-                    <div class="col-sm-3">
-                        <label for="timezone" class="fw-semibold">Timezone:</label>
-                    </div>
-                    <div class="col-sm-1">
-                        <select name="timezone" id="timezone" class="eme01 form-control">
-                            {% for timezone in timezones %}
-                                <option value="{{ timezone }}" class="form-select" {% if timezone == current_timezone %}selected{% endif %}>
-                                    {{ timezone }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    </div>
+    <form class="form-inline p-3 my-2 my-lg-0" method="POST">
+        {% csrf_token %}
+        <div class="col py-2">
+            <div class="row align-items-center">
+                <div class="col-sm-3">
+                    <label for="timezone" class="fw-semibold">Timezone:</label>
                 </div>
-
-                <div class="col py-2">
-                    <div class="row align-items-center">
-                    <div class="col-sm-3">
-                        <label for="language" class="fw-semibold">Language:</label>
-                    </div>
-                    <div class="col-sm-1">
-                        <select name="language" class="eme01 form-control" id="language">
-                            {% for code, name in languages %}
-                                <option value="{{ code }}" class="form-select" {% if code == current_language %}selected{% endif %}>
-                                    {{ name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    </div>
+                <div class="col-sm-1">
+                    <select name="timezone" id="timezone" class="eme01 form-control">
+                        {% for timezone in timezones %}
+                            <option value="{{ timezone }}" class="form-select" {% if timezone == current_timezone %}selected{% endif %}>
+                                {{ timezone }}
+                            </option>
+                        {% endfor %}
+                    </select>
                 </div>
+            </div>
+        </div>
 
-                <!-- 2FA Enable/Disable Dropdown -->
-                <div class="col py-2">
-                    <div class="row align-items-center">
+        <div class="col py-2">
+            <div class="row align-items-center">
+                <div class="col-sm-3">
+                    <label for="language" class="fw-semibold">Language:</label>
+                </div>
+                <div class="col-sm-1">
+                    <select name="language" class="eme01 form-control" id="language">
+                        {% for code, name in languages %}
+                            <option value="{{ code }}" class="form-select" {% if code == current_language %}selected{% endif %}>
+                                {{ name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2FA Enable/Disable Dropdown -->
+            <div class="col py-2">
+                <div class="row align-items-center">
                     <div class="col-sm-3">
                         <label for="2fa_state" class="fw-semibold">Two-Factor Authentication (2FA):</label>
                     </div>
@@ -54,8 +54,9 @@
                             <option value="enable" class="form-select" {% if 2fa_enabled %}selected{% endif %}>Enable</option>
                         </select>
                     </div>
-                    </div>
                 </div>
+            </div>
+
             <div class="py-4">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
@@ -63,76 +64,58 @@
     </div>
 
     <!-- 2FA Modal for QR Code and Token -->
-    <div id="2fa-modal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close" onclick="close2FAModal()">&times;</span>
-            <h3>Enable Two-Factor Authentication</h3>
-            <p>Scan the QR code with your authenticator app:</p>
-            <img src="data:image/png;base64,{{ qr_code_data }}" alt="QR Code" class="w-25 h-25 mx-auto"/>
-
+    <div id="2fa-modal" class="justify-content-center" title="Enable Two-Factor Authentication">
+        <p>Scan the QR code with your authenticator app:</p>
+            <div class="text-center">
+                <img src="data:image/png;base64,{{ qr_code_data }}" alt="QR Code" class="w-25 h-25 mx-auto"/>
+                <p class="eme01">{{ user.profile.totp_secret }}</p>
+            </div>
             <form method="POST" enctype="multipart/form-data" class="m-3">
                 {% csrf_token %}
                 <input type="hidden" name="2fa_state" value="enable" class="form-control">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <input type="text" name="token" placeholder="Enter 2FA Code" class="form-control" required />
+                <div class="d-flex justify-content-center gap-3">
+                    <div class="col-sm-4 eme01">
+                        <input type="text" name="token" placeholder="Enter 2FA Code" class="form-control eme01" required />
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </div>
                 {% if 2fa_error %}
-                    <p class="text-danger">{{ 2fa_error }}</p>
+                    <p class="my-2 text-center text-danger">{{ 2fa_error }}</p>
                 {% endif %}
+
             </form>
-        </div>
     </div>
 
-    <!-- Modal CSS -->
-    <style>
-        .modal {
-            display: none;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1030;
-            background-color: white;
-            padding: 20px;
-            border: 2px solid #ccc;
-
-        }
-        .modal-content {
-            padding: 20px;
-            text-align: center;
-            align-items: center;
-
-        }
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            cursor: pointer;
-            font-size: 24px;
-        }
-    </style>
-
-    <!-- JavaScript to Show/Hide Modal -->
     <script>
-        function toggle2FA(value) {
-            if (value === 'enable') {
-                document.getElementById('2fa-modal').style.display = 'block';
-            } else {
-                close2FAModal();
-            }
-        }
+        $(function() {
+            // Initialize the 2FA modal as a jQuery UI dialog
+            $("#2fa-modal").dialog({
+                autoOpen: false,
+                modal: true,
+                width: 500,
+                buttons: {
+                    "Close": function() {
+                        $(this).dialog("close");
+                    }
+                }
+            });
 
-        function close2FAModal() {
-            document.getElementById('2fa-modal').style.display = 'none';
-        }
+            // Toggle 2FA modal based on dropdown value
+            window.toggle2FA = function(value) {
+                if (value === 'enable') {
+                    $("#2fa-modal").dialog("open");
+                } else {
+                    $("#2fa-modal").dialog("close");
+                }
+            };
 
-        // Automatically show the modal if it's enabled (for page reload after submission)
-        {% if show_modal %}
-            document.getElementById('2fa-modal').style.display = 'block';
-        {% endif %}
+            // Automatically show the modal if it's enabled (for page reload after submission)
+            {% if show_modal %}
+                $("#2fa-modal").dialog("open");
+            {% endif %}
+        });
     </script>
+
 {% endblock %}

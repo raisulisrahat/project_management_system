@@ -59,14 +59,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-function toggle2FA(value) {
-    if (value === 'enable') {
-        document.getElementById('2fa-modal').style.display = 'block';
-    } else {
-        close2FAModal();
-    }
-}
-
-function close2FAModal() {
-    document.getElementById('2fa-modal').style.display = 'none';
-}
