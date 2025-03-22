@@ -9,35 +9,36 @@
 
         <!-- My tasks link -->
         <li class="py-2">
-            <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseTask" role="button" aria-expanded="false" aria-controls="collapseTask">
+            <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis"  href="{% url 'projects' %}">
+{#                data-bs-toggle="collapse" href="#collapseTask" role="button" aria-expanded="false" aria-controls="collapseTask">#}
                 <i class="fa-solid fa-list-check me-2"></i> My Tasks
             </a>
-            <ul class="collapse list-group list-group-flush" id="collapseTask">
-                <li class="list-group-item">
-                    <a href="" class="dropdown-item text-secondary-emphasis">
-                        <i class="fa fa-list-alt" aria-hidden="true"></i>
-                        <span class="eme01">Summary</span>
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="" class="dropdown-item text-secondary-emphasis">
-                        <i class="fa-solid fa-columns me-2"></i>
-                        <span class="eme01">Boards</span>
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="" class="dropdown-item text-secondary-emphasis">
-                        <i class="fa-solid fa-bug me-2"></i>
-                        <span class="eme01">Issues</span>
-                    </a>
-                </li>
-                <li class="list-group-item">
-                    <a href="" class="dropdown-item text-secondary-emphasis">
-                        <i class="fa-solid fa-calendar-days me-2"></i>
-                        <span class="eme01">Calendar</span>
-                    </a>
-                </li>
-            </ul>
+{#            <ul class="collapse list-group list-group-flush" id="collapseTask">#}
+{#                <li class="list-group-item">#}
+{#                    <a href="" class="dropdown-item text-secondary-emphasis">#}
+{#                        <i class="fa fa-list-alt" aria-hidden="true"></i>#}
+{#                        <span class="eme01">Summary</span>#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="list-group-item">#}
+{#                    <a href="" class="dropdown-item text-secondary-emphasis">#}
+{#                        <i class="fa-solid fa-columns me-2"></i>#}
+{#                        <span class="eme01">Boards</span>#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="list-group-item">#}
+{#                    <a href="" class="dropdown-item text-secondary-emphasis">#}
+{#                        <i class="fa-solid fa-bug me-2"></i>#}
+{#                        <span class="eme01">Issues</span>#}
+{#                    </a>#}
+{#                </li>#}
+{#                <li class="list-group-item">#}
+{#                    <a href="{% url 'task_lists' %}" class="dropdown-item text-secondary-emphasis">#}
+{#                        <i class="fa-solid fa-calendar-days me-2"></i>#}
+{#                        <span class="eme01">View Tasks</span>#}
+{#                    </a>#}
+{#                </li>#}
+{#            </ul>#}
         </li>
 
         <!-- Messages link -->

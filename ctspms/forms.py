@@ -45,3 +45,7 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['comments_message']
+
+
+class ProjectSelectForm(forms.Form):
+    project = forms.ModelChoiceField(queryset=Project.objects.all(), label="Select Project", widget=forms.Select(attrs={'class': 'form-control'}))

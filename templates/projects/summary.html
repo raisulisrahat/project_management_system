@@ -19,7 +19,7 @@
                 <div class="p-4 bg-white shadow-sm rounded">
                     <p class="fw-semibold fs-6">Status Overview</p>
                     <div class="mx-3">
-                    <p class="eme01">Get a snapshot of the status of your tasks. <a href="" class="text-decoration-none">View all tasks</a></p>
+                    <p class="eme01">Get a snapshot of the status of your tasks. <a href="{% url 'task_lists' project.label %}" class="text-decoration-none">View all tasks</a></p>
                     <canvas id="doughnutChart" class="w-100 h-100" style="max-height: 280px;"></canvas>
                     <script>
                         var doughnutCtx = document.getElementById('doughnutChart').getContext('2d');

@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import RedirectView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from ctspms.models import StatusList, TagList, PriorityList, Issue, Project, Task, Comment, Attachment, Timelog
 from account.models import Department, Role, User, Profile
-from .forms import CommentForm, TaskForm, ProjectForm
+from .forms import CommentForm, TaskForm, ProjectForm, ProjectSelectForm
 
 
 
@@ -140,12 +140,25 @@ class ProjectListView(LoginRequiredMixin, ListView):
 
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
-    template_name = 'tasks/board.html'
+    template_name = 'tasks/tasks.html'
     context_object_name = 'tasks'
 
+    def get(self, request, *args, **kwargs):
+        if 'label' in self.kwargs:
+            self.project = get_object_or_404(Project, code=self.kwargs['label'].upper())
+            return super().get(request, *args, **kwargs)
+        else:
+            form = ProjectSelectForm()
+            return render(request, 'tasks/project_select.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = ProjectSelectForm(request.POST)
+        if form.is_valid():
+            project = form.cleaned_data['project']
+            return redirect('task_lists', label=project.code)
+        return render(request, 'tasks/project_select.html', {'form': form})
+
     def get_queryset(self):
-        # Retrieve the project by its code (which is passed as 'label')
-        self.project = get_object_or_404(Project, code=self.kwargs['label'].upper())
         return Task.objects.filter(project=self.project)
 
     def get_context_data(self, **kwargs):
