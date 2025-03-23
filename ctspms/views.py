@@ -75,8 +75,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
     # Change how the success URL is handled
     def get_success_url(self, project):
-        # Use the label method to get the project's label and return the correct URL
-        return reverse_lazy('kanban_board', kwargs={'label': project.label()})
+        return reverse_lazy('task_lists', kwargs={'label': project.label()})
 
     def get(self, request, *args, **kwargs):
         label = kwargs.get('label')  # Capture the label from the URL
@@ -93,35 +92,22 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
         label = kwargs.get('label')  # Capture the label from the URL
         if not label:
             return redirect('projects')  # Redirect if label is not found
-
-        # Retrieve the project by its 'code'
         project = get_object_or_404(Project, code=label)
 
         task_form = TaskForm(request.POST, request.FILES)
         if task_form.is_valid():
             task = task_form.save(commit=False)
             task.project = project
-
-            # Ensure the current user has a profile and is authenticated
             if request.user.is_authenticated:
-                # Assign the logged-in user's profile as the reporter
-                task.reporter = request.user.profile
-
-                # Set the assignee to the current logged-in user if 'assign_me' button was clicked
+                task.reporter = request.user.profile.full_name()
                 if 'assign_me' in request.POST:
-                    task.assigned_to = request.user.profile  # Assign to the current user's profile
+                    task.assigned_to = request.user.profile.full_name()
                 else:
-                    # If "Assign Me" is not clicked, use the selected assignee in the form
                     task.assigned_to = task_form.cleaned_data['assigned_to']
-
-                task.save()  # Save the task instance to the database
-
-                # Now that the task is saved, pass the project to get the success URL
+                task.save()
                 return redirect(self.get_success_url(project))
             else:
-                # If the user is not authenticated, redirect to login
                 return redirect('login')
-
         return render(request, self.template_name, {'task_form': task_form, 'project': project})
 
 

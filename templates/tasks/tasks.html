@@ -21,19 +21,55 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Task</th>
+                <th>Key</th>
+                <th>Summary</th>
                 <th>Assigned To</th>
+                <th>Start Date</th>
                 <th>Due Date</th>
+                <th>Priorities</th>
                 <th>Status</th>
+                <th>Reporter</th>
             </tr>
         </thead>
         <tbody>
             {% for task in tasks %}
             <tr>
-                <td>{{ task.summary }}</td>
-                <td>{{ task.assigned_to }}</td>
-                <td>{{ task.due_date }}</td>
-                <td>{{ task.status }}</td>
+                <td>
+                    {{ task.unique_id }}
+                </td>
+                <td>
+                    {{ task.summary }}
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-sm p-0 m-0">
+                        {{ task.assigned_to }}
+                    </button>
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-sm p-0 m-0">
+                        {{ task.start_date.date }}
+                    </button>
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-sm p-0 m-0">
+                        {{ task.due_date.date }}
+                    </button>
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-sm p-0 m-0">
+                        {{ task.priority }}
+                    </button>
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-sm p-0 m-0">
+                        {{ task.status }}
+                    </button>
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-sm p-0 m-0">
+                        {{ task.reporter }}
+                    </button>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
