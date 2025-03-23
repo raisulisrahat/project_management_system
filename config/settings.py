@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'fontawesomefree',
     'bootstrap5',
+    'django_bootstrap_icons',
     'ckeditor',
     'ckeditor_uploader',
     'cities_light',

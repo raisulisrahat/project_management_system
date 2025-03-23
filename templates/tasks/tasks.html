@@ -4,9 +4,20 @@
 {% block title %}Task List{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Tasks for Project: {{ project.name }}</h2>
+<div class="container container-fluid">
+    <div class="d-flex justify-content-sm-between">
+        <div class="d-flex align-items-center justify-content-sm-start gap-2">
+            <a href="{% url 'projects' %}" class="text-decoration-none text-dark eme01">Projects</a> /
+            <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark eme01"> {{ project.name }}</a> /
+            <a href="{% url 'task_lists' project.label %}" class="text-decoration-none text-dark eme01"> Lists</a>
+        </div>
 
+        <!-- Use <a> tag to properly link to the task creation page for the project -->
+        <a href="{% url 'task_create' project.label %}" class="btn btn-primary eme01 p-sm-2 my-sm-3">Create Task</a>
+    </div>
+    <div class="my-sm-2">
+        {% include "tabs.html" %}
+    </div>
     <table class="table">
         <thead>
             <tr>
