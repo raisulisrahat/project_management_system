@@ -41,8 +41,14 @@ class PriorityList(models.Model):
         return self.priority_name
 
 class Project(models.Model):
+    ACCESS_TYPES = (
+        ('Open', 'Open'),
+        ('Private', 'Private'), # only team can see the project
+    )
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, validators=[RegexValidator(regex=r'^[A-Za-z\s]+$', message='Name can only contain letters and spaces.', code='invalid_name')])
+    access = models.CharField(max_length=20, choices=ACCESS_TYPES, default='Open')
     lead_team = models.ForeignKey(Team, on_delete=models.PROTECT, null=True, blank=True)
     lead = models.ForeignKey(Profile, on_delete=models.CASCADE)
     description = RichTextUploadingField(null=True, blank=True)

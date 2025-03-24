@@ -15,7 +15,7 @@ class ProjectForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Project Name'}),
             'type': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Project Type'}),
             'lead': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Project Level'}),
-            'code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Project Code'}),
+            'code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Key'}),
         }
 
 
