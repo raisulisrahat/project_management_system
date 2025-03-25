@@ -10,12 +10,13 @@ class ProjectForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        fields = ('name', 'lead', 'description', 'code', 'type')
+        fields = ('name', 'description', 'code', 'type', 'access', 'lead_team')
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Project Name'}),
-            'type': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Project Type'}),
-            'lead': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Project Level'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}),
+            'type': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Type'}),
             'code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Key'}),
+            'access': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Access'}),
+            'lead_team': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Team Member'}),
         }
 
 

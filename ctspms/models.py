@@ -43,13 +43,13 @@ class PriorityList(models.Model):
 class Project(models.Model):
     ACCESS_TYPES = (
         ('Open', 'Open'),
-        ('Private', 'Private'), # only team can see the project
+        ('Private', 'Private'), # only team can see private project
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, validators=[RegexValidator(regex=r'^[A-Za-z\s]+$', message='Name can only contain letters and spaces.', code='invalid_name')])
     access = models.CharField(max_length=20, choices=ACCESS_TYPES, default='Open')
-    lead_team = models.ForeignKey(Team, on_delete=models.PROTECT, null=True, blank=True)
+    lead_team = models.ForeignKey(Team, on_delete=models.PROTECT, null=True, blank=True) # If access = Private this project will be private for selected teams
     lead = models.ForeignKey(Profile, on_delete=models.CASCADE)
     description = RichTextUploadingField(null=True, blank=True)
     type = models.ForeignKey(ProjectType, on_delete=models.CASCADE)
@@ -83,7 +83,7 @@ class Project(models.Model):
 
 class Task(models.Model):
     id = models.AutoField(primary_key=True)  # Automatically increments for each task
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks') # if project is open this project task shows all user or private project tasks show only selected team
     summary = models.CharField(max_length=100)
     description = RichTextUploadingField(null=True, blank=True)
     reporter = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='reporter_tasks')

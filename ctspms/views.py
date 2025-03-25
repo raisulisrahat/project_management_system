@@ -64,7 +64,10 @@ class ProjectCreateView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         project_form = ProjectForm(request.POST)
         if project_form.is_valid():
-            project_form.save()  # Save the project object directly
+            # Don't save the form yet; we need to add the lead field
+            project = project_form.save(commit=False)
+            project.lead = request.user.profile  # Assuming the `Profile` model is linked to the user via a `OneToOneField`
+            project.save()  # Now save the project with the user as the lead
             return redirect(self.success_url)  # Redirect to the project list after saving
         return render(request, self.template_name, {'form': project_form})
 

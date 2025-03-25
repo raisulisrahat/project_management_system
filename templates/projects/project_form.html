@@ -7,37 +7,56 @@
     <div class="container">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-group p-sm-4 bg-white">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <label for="name" class="font-weight-bold">Name<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter Project Name" required>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group p-sm-4  bg-white">
+                        <div class="row mb-2">
+                            <div class="col-sm-7">
+                                <label for="name" class="fw-semibold">Name<span class="text-danger">*</span></label>
+                                {{ form.name }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-12 expt01">
+                                <label for="description" class="fw-semibold">Description</label>
+                                <div>
+                                    {{ form.description }}
+                                </div>
+                                {{ form.media }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-3">
+                                <label for="code" class="fw-semibold">Key</label>
+                                {{ form.code }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-7">
+                                <label for="type" class="fw-semibold">Type<span class="text-danger">*</span></label>
+                                {{  form.type }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-7">
+                                <label for="access" class="fw-semibold">Access</label>
+                                {{  form.access }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-7">
+                                <label for="lead_team" class="fw-semibold">Teams</label>
+                                {{  form.lead_team }}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">Create</button>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-1">
-                        <label for="code" class="fw-semibold">Key</label>
-                        <input type="text" class="form-control" id="code" name="code" placeholder="Key" required>
+                <div class="col-md-7">
+                    <div class="form-group p-sm-4 bg-white">
+
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <label for="type" class="fw-semibold">Type</label>
-                        <select class="form-control" id="type" name="type">
-                            <option value="1" class="form-select placeholder">Select project type</option>
-                            {% for type in types %}
-                            <option value="{{ type }}" class="form-select" {% if type == 1 %}selected {% endif %}>{{ type }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                {{ form.as_p }}
-                {{ form.media }}
-
-
-
-            <!-- Submit Button -->
-                <button type="submit" class="btn btn-sm btn-primary" href="{% url 'projects' %}">Create</button>
             </div>
         </form>
     </div>

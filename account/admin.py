@@ -20,8 +20,8 @@ class PeoplesAdmin(admin.ModelAdmin):
 
 @admin.register(Team)
 class MembersAdmin(admin.ModelAdmin):
-    fields = ('user_id', 'name', 'role_id')
-    list_display = ('name', 'role_id', 'get_user_id')
+    fields = ('user_id', 'name',)
+    list_display = ('name', 'get_user_id')
 
     def get_user_id(self, obj):
         return ", ".join([d.username for d in obj.user_id.all()])

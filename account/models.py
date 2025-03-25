@@ -40,7 +40,6 @@ class Department(models.Model):
 class Team(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    role_id = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='teams')
     user_id = models.ManyToManyField(User, related_name='teams')
 
     def __str__(self):
