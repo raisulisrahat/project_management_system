@@ -10,22 +10,50 @@
     <!-- Task Form -->
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-
-        <div class="form-group mb-4">
-            {{ task_form.as_p }}  <!-- Render form fields -->
-            {{ task_form.media }}
+        <div class="col-sm-4 form-group mb-4">
+            <label for="summary" class="form-label fw-semibold">Summary<span class="text-danger">*</span></label>
+            {{ task_form.summary }}
         </div>
+        <div class="col-sm-4 form-group mb-4">
+            <label for="description" class="form-label">Description</label>
+            {{ task_form.description }}
+        </div>
+        <div class="col-sm-4 form-group mb-4">
+            <label for="status" class="form-label">Status<span class="text-danger">*</span></label>
+            {{ task_form.status }}
+        </div>
+        <div class="col-sm-4 form-group mb-4">
+            <label for="priority" class="form-label">Priority<span class="text-danger">*</span></label>
+            {{ task_form.priority }}
+        </div>
+        <div class="col-sm-4 form-group mb-4">
+            <label for="dependencies" class="form-label">Issue</label>
+            {{ task_form.dependencies }}
+        </div>
+        <div class="col-sm-4 form-group mb-4">
+                <div class="mb-sm-2">
+                    <label for="assigned_to" class="form-label">Assignee</label>
+                        {{ task_form.assigned_to }}
+                </div>
+                <button value="assign_me" class="btn p-sm-0 btn-sm text-primary">Assignee me</button>
 
+        </div>
+        <div class="col-sm-4 form-group mb-4">
+            <label for="reporter" class="form-label">Reporter</label>
+            {{ task_form.reporter }}
+        </div>
+        <div class="col-sm-4 form-group mb-4">
+            <label for="attachments" class="form-label">Attachment</label>
+            {{ task_form.attachments }}
+        </div>
         <!-- Assign Me Button -->
-        <div class="form-group">
-            <button type="submit" name="assign_me" class="btn btn-secondary">Assign to Me</button>
-        </div>
-
+        {{ task_form.media }}
         <!-- Submit Button -->
         <div class="form-group">
             <input type="submit" value="Submit" class="btn btn-primary">
         </div>
     </form>
+
 </div>
 {% endblock %}
 

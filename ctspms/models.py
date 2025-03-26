@@ -6,6 +6,11 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from ckeditor_uploader.fields import RichTextUploadingField
 
+class Attachment(models.Model):
+    file_path = models.FileField(upload_to="upload/data", null=True, blank=True)  # Use FileField for uploaded files
+    def __str__(self):
+        return self.file_path.name
+
 class ProjectType(models.Model):
     type_name = models.CharField(max_length=100)
     def __str__(self):
@@ -86,6 +91,7 @@ class Task(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks') # if project is open this project task shows all user or private project tasks show only selected team
     summary = models.CharField(max_length=100)
     description = RichTextUploadingField(null=True, blank=True)
+    attachments = models.ManyToManyField(Attachment, blank=True)
     reporter = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='reporter_tasks')
     assigned_to = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='assigned_tasks')
     priority = models.ForeignKey(PriorityList, on_delete=models.CASCADE)
@@ -118,13 +124,7 @@ class Task(models.Model):
         # Use the project's label (HMS, PMS, etc.) and the project_task_number
         return f'{self.project.label()}-{self.project_task_number}'
 
-class Attachment(models.Model):
-    file_path = models.FileField(upload_to="upload/data", null=True, blank=True)  # Use FileField for uploaded files
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True, related_name='attachments')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True, related_name='documents')
 
-    def __str__(self):
-        return self.file_path.name
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')

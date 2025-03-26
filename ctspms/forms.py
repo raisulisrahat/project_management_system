@@ -3,10 +3,11 @@ from django import forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.contrib.admin.widgets import AdminDateWidget
 
-from ctspms.models import Comment, Project, Task
+from ctspms.models import Comment, Project, Task, StatusList
+
 
 class ProjectForm(forms.ModelForm):
-    description = forms.CharField(widget=CKEditorUploadingWidget(attrs={'cols': 80, 'rows': 10}))
+    description = forms.CharField(widget=CKEditorUploadingWidget(attrs={'cols': 80, 'rows': 10}), required=False)
 
     class Meta:
         model = Project
@@ -23,11 +24,12 @@ class ProjectForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ('summary', 'description', 'reporter', 'assigned_to', 'status', 'dependencies', 'priority', 'due_date')
+        fields = ('summary', 'description', 'reporter','attachments', 'assigned_to', 'status', 'dependencies', 'priority', 'due_date')
+        description = forms.CharField(widget=CKEditorUploadingWidget(attrs={'cols': 80, 'rows': 10}), required=False)
+        attachments = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
 
         widgets = {
             'summary': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Task Summary'}),
-            'description': CKEditorUploadingWidget(attrs={'cols': 80, 'rows': 10}),
             'status': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Task Status'}),
             'assigned_to': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Assignee'}),
             # Correct field name

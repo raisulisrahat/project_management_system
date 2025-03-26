@@ -9,8 +9,8 @@ from django.views.generic import RedirectView, CreateView, ListView, DetailView,
 from ctspms.models import StatusList, TagList, PriorityList, Issue, Project, Task, Comment, Attachment, Timelog
 from account.models import Department, Role, User, Profile
 from .forms import CommentForm, TaskForm, ProjectForm, ProjectSelectForm
-
-
+from django.db import IntegrityError
+from django.contrib import messages
 
 class KanbanBoardView(View):
     def get(self, request):
@@ -64,11 +64,24 @@ class ProjectCreateView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         project_form = ProjectForm(request.POST)
         if project_form.is_valid():
-            # Don't save the form yet; we need to add the lead field
             project = project_form.save(commit=False)
-            project.lead = request.user.profile  # Assuming the `Profile` model is linked to the user via a `OneToOneField`
-            project.save()  # Now save the project with the user as the lead
-            return redirect(self.success_url)  # Redirect to the project list after saving
+            try:
+                project.lead = request.user.profile  # Set the logged-in user as the project lead
+                project.save()
+            except Profile.DoesNotExist:
+                messages.error(request, 'Your profile is missing. Please contact the administrator.')
+                return redirect('profile')
+            except IntegrityError as e:
+                # Catch any integrity errors related to database constraints
+                print(f"Database Error: {e}")
+                messages.error(request, 'There was an issue saving the project. Please try again.')
+                return redirect('project_create')  # Or handle the error appropriately
+
+            return redirect(self.success_url)
+
+        else:
+            print(project_form.errors)  # Print form errors in the console for debugging
+
         return render(request, self.template_name, {'form': project_form})
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
