@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Create Task{% endblock %}
 
 {% block content %}
@@ -15,45 +14,172 @@
             {{ task_form.summary }}
         </div>
         <div class="col-sm-4 form-group mb-4">
-            <label for="description" class="form-label">Description</label>
+            <label for="description" class="form-label fw-semibold">Description</label>
             {{ task_form.description }}
         </div>
         <div class="col-sm-4 form-group mb-4">
-            <label for="status" class="form-label">Status<span class="text-danger">*</span></label>
+            <label for="status" class="form-label fw-semibold">Status<span class="text-danger">*</span></label>
             {{ task_form.status }}
         </div>
         <div class="col-sm-4 form-group mb-4">
-            <label for="priority" class="form-label">Priority<span class="text-danger">*</span></label>
+            <label for="priority" class="form-label fw-semibold">Priority<span class="text-danger">*</span></label>
             {{ task_form.priority }}
         </div>
         <div class="col-sm-4 form-group mb-4">
-            <label for="dependencies" class="form-label">Issue</label>
+            <label for="dependencies" class="form-label fw-semibold">Dependencies</label>
             {{ task_form.dependencies }}
         </div>
         <div class="col-sm-4 form-group mb-4">
-                <div class="mb-sm-2">
-                    <label for="assigned_to" class="form-label">Assignee</label>
-                        {{ task_form.assigned_to }}
-                </div>
-                <button value="assign_me" class="btn p-sm-0 btn-sm text-primary">Assignee me</button>
-
+            <label for="assigned_to" class="form-label fw-semibold">Assigned To</label>
+            {{ task_form.assigned_to }}
         </div>
         <div class="col-sm-4 form-group mb-4">
-            <label for="reporter" class="form-label">Reporter</label>
+            <label for="reporter" class="form-label fw-semibold">Reporter</label>
             {{ task_form.reporter }}
         </div>
+
+        <!-- File upload with custom Browse button and preview -->
         <div class="col-sm-4 form-group mb-4">
-            <label for="attachments" class="form-label">Attachment</label>
-            {{ task_form.attachments }}
+            <label for="attachments" class="form-label fw-semibold">Attachments</label>
+            <div id="dragDropArea" class="drag-drop-area">
+                <span class="fw-semibold">Drag and drop your files here or
+                    <!-- Custom Browse button -->
+                    <button type="button" id="browseButton" class="btn bg-primary-subtle shadow-sm ms-2">Browse</button>
+                    <!-- Hidden file input element -->
+                    <input type="file" id="fileInput" name="attachments" class="d-none" multiple>
+                </span>
+            </div>
+            <div id="filePreview" class="file-preview"></div>
         </div>
-        <!-- Assign Me Button -->
         {{ task_form.media }}
-        <!-- Submit Button -->
+        <!-- Submit button -->
         <div class="form-group">
             <input type="submit" value="Submit" class="btn btn-primary">
         </div>
     </form>
-
 </div>
-{% endblock %}
 
+<!-- JavaScript for file handling and preview -->
+<script>
+    const dragDropArea = document.getElementById('dragDropArea');
+    const browseButton = document.getElementById('browseButton');
+    const fileInput = document.getElementById('fileInput');  // Hidden file input
+    const filePreview = document.getElementById('filePreview');
+
+    // Browse button triggers file input click
+    browseButton.addEventListener('click', function () {
+        fileInput.click();
+    });
+
+    // Handle file input change event
+    fileInput.addEventListener('change', function () {
+        handleFiles(fileInput.files);
+    });
+
+    // Drag over event
+    dragDropArea.addEventListener('dragover', function (event) {
+        event.preventDefault();
+        dragDropArea.classList.add('drag-over');
+    });
+
+    // Drag leave event
+    dragDropArea.addEventListener('dragleave', function () {
+        dragDropArea.classList.remove('drag-over');
+    });
+
+    // Drop event
+    dragDropArea.addEventListener('drop', function (event) {
+        event.preventDefault();
+        dragDropArea.classList.remove('drag-over');
+        handleFiles(event.dataTransfer.files);
+    });
+
+    // Function to handle files and generate previews
+// Function to handle file previews
+function handleFiles(files) {
+    filePreview.innerHTML = '';  // Clear previous previews
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileName = file.name;
+        const fileExtension = fileName.split('.').pop().toLowerCase();
+
+        const previewItem = document.createElement('div');
+        previewItem.classList.add('file-preview-item');
+
+        // Show image preview for image files (jpg, jpeg, png, gif, bmp)
+        if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExtension)) {
+            const image = document.createElement('img');
+            image.src = URL.createObjectURL(file);
+            image.style.width = '100px';  // Set thumbnail size for images
+            image.style.height = 'auto';  // Maintain aspect ratio
+            previewItem.appendChild(image);
+        }
+        // Show PDF thumbnail
+        else if (fileExtension === 'pdf') {
+            const reader = new FileReader();
+            reader.onload = function () {
+                const pdfData = new Uint8Array(reader.result);
+
+                // Use PDF.js to render the first page as a thumbnail
+                pdfjsLib.getDocument(pdfData).promise.then(function (pdf) {
+                    pdf.getPage(1).then(function (page) {
+                        const scale = 0.2;  // Adjust scale for the thumbnail size
+                        const viewport = page.getViewport({ scale: scale });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        page.render({ canvasContext: context, viewport: viewport }).promise.then(function () {
+                            previewItem.appendChild(canvas);
+                        });
+                    });
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        // Show plain text preview for txt files
+        else if (fileExtension === 'txt') {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const textPreview = document.createElement('pre');
+                const previewText = e.target.result.split('\n').slice(0, 5).join('\n');  // Show only first 5 lines
+                textPreview.textContent = previewText;
+                textPreview.style.maxHeight = '50px';
+                textPreview.style.overflowY = 'auto';
+                previewItem.appendChild(textPreview);
+            };
+            reader.readAsText(file);
+        }
+        // Show Bootstrap icons for code and other unsupported files
+        else {
+            const iconContainer = document.createElement('div');
+            const fileNameSpan = document.createElement('span');
+            fileNameSpan.textContent = ``;
+
+            // Use different Bootstrap icons based on file type
+            if (['js', 'html', 'css', 'py', 'java', 'cpp', 'php'].includes(fileExtension)) {
+                iconContainer.innerHTML = `<i class="bi bi-file-earmark-code-fill" style="font-size: 2rem;"></i>`;
+            } else if (['zip', 'rar', '7z'].includes(fileExtension)) {
+                iconContainer.innerHTML = `<i class="bi bi-file-earmark-zip-fill" style="font-size: 2rem;"></i>`;
+            } else {
+                iconContainer.innerHTML = `<i class="bi bi-file-earmark-fill" style="font-size: 2rem;"></i>`;
+            }
+
+            previewItem.appendChild(iconContainer);
+            previewItem.appendChild(fileNameSpan);
+        }
+
+        // Display the file name
+        const fileNameText = document.createElement('div');
+        fileNameText.textContent = fileName;
+        fileNameText.style.fontSize = '12px';
+        previewItem.appendChild(fileNameText);
+
+        filePreview.appendChild(previewItem);
+    }
+}
+
+</script>
+{% endblock %}

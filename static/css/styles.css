@@ -54,3 +54,58 @@
   transform: scaleX(1);
   transform-origin: bottom left;
 }
+/* Custom Browse button */
+/* Custom Browse button */
+#browseButton {
+    cursor: pointer;
+}
+
+/* Drag-and-drop area styling */
+.drag-drop-area {
+    border: 2px dashed #007bff;
+    padding: 30px;
+    text-align: center;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.drag-drop-area.drag-over {
+    background-color: #e9ecef;
+    border-color: #0056b3;
+}
+
+/* File preview container */
+.file-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Adjust the style of the file preview container */
+.file-preview-item {
+    display: inline-block;
+    width: 120px;
+    text-align: center;
+    position: relative;
+    margin: 5px;
+}
+
+.file-preview-item img, .file-preview-item canvas {
+    max-width: 100px;  /* Set the maximum width for thumbnails */
+    height: auto;      /* Maintain aspect ratio */
+    border-radius: 5px;
+}
+
+.file-preview-item pre {
+    font-size: 12px;
+    max-height: 50px;
+    overflow-y: auto;
+}
+
+.file-preview-item span {
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}

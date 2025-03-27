@@ -84,48 +84,55 @@ class ProjectCreateView(LoginRequiredMixin, View):
 
         return render(request, self.template_name, {'form': project_form})
 
+
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
     form_class = TaskForm
     template_name = 'tasks/task_form.html'
 
-    # Change how the success URL is handled
     def get_success_url(self, project):
         return reverse_lazy('task_lists', kwargs={'label': project.label()})
 
     def get(self, request, *args, **kwargs):
-        label = kwargs.get('label')  # Capture the label from the URL
+        label = kwargs.get('label')
         if not label:
-            return redirect('projects')  # Redirect if label is not found
+            return redirect('projects')
 
-        # Retrieve the project by its 'code' (since the label method uses code or name abbreviation)
         project = get_object_or_404(Project, code=label)
-
         task_form = TaskForm()
         return render(request, self.template_name, {'task_form': task_form, 'project': project})
 
     def post(self, request, *args, **kwargs):
-        label = kwargs.get('label')  # Capture the label from the URL
+        label = kwargs.get('label')
         if not label:
-            return redirect('projects')  # Redirect if label is not found
-        project = get_object_or_404(Project, code=label)
+            return redirect('projects')
 
+        project = get_object_or_404(Project, code=label)
         task_form = TaskForm(request.POST, request.FILES)
+
         if task_form.is_valid():
             task = task_form.save(commit=False)
             task.project = project
+
             if request.user.is_authenticated:
-                task.reporter = request.user.profile.full_name()
+                task.reporter = request.user.profile
                 if 'assign_me' in request.POST:
-                    task.assigned_to = request.user.profile.full_name()
+                    task.assigned_to = request.user.profile
                 else:
                     task.assigned_to = task_form.cleaned_data['assigned_to']
-                task.save()
-                return redirect(self.get_success_url(project))
-            else:
-                return redirect('login')
-        return render(request, self.template_name, {'task_form': task_form, 'project': project})
 
+            task.save()  # Save the task to assign it an ID
+
+            # Process and save multiple attachments
+            files = request.FILES.getlist('attachments')
+            for file in files:
+                attachment = Attachment(attachment=file)
+                attachment.save()
+                task.attachments.add(attachment)  # Add the attachment to the task
+
+            return redirect(self.get_success_url(project))
+
+        return render(request, self.template_name, {'task_form': task_form, 'project': project})
 
 
 class StatusCreateView(LoginRequiredMixin, CreateView):

@@ -7,9 +7,10 @@ from django.core.validators import RegexValidator
 from ckeditor_uploader.fields import RichTextUploadingField
 
 class Attachment(models.Model):
-    file_path = models.FileField(upload_to="upload/data", null=True, blank=True)  # Use FileField for uploaded files
+    attachment = models.FileField(upload_to="upload/data", null=True, blank=True)  # Use FileField for uploaded files
+    uploaded_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return self.file_path.name
+        return self.attachment.name
 
 class ProjectType(models.Model):
     type_name = models.CharField(max_length=100)

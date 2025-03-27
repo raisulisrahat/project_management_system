@@ -19,8 +19,25 @@
     <div class="col-sm-8">
         <div class="p-4 mb-4 bg-white shadow-sm">
             <p><strong>Summary:</strong> {{ task.summary }}</p>
-            <p><strong>Description:</strong> {{ task.description|safe }}</p>
+            <div class="h-50 mb-3">
+                <p class="fw-semibold">Description:</p>
+                {% if task.description %}
+                    <p class="">{{ task.description|safe }}</p>
+                {% else %}
+                    <button class="btn btn-sm eme01">Add a description...</button>
+                {% endif %}
+            </div>
+            {{ task.media }}
+            <div class="">
+                <p><strong>Attachments:</strong></p>
+                <div class="">
+                    {% for attachment in task.attachments.all %}
+                    <a href="{{ attachment.file.url }}" class="text-decoration-none text-dark">{{ attachment.file.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
+
 
         <!-- Comment Form for Adding New Comment -->
         <div class="p-4 bg-light shadow-sm rounded">
@@ -88,7 +105,7 @@
 </div>
 
 <!-- CKEditor Initialization Script -->
-<script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+
 <script>
     // Initialize CKEditor for new comment form
     CKEDITOR.replace('{{ comment_form.comment_field.id_for_label }}');
