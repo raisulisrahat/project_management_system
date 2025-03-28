@@ -1,4 +1,8 @@
-
+.emx4{
+    border-color: rebeccapurple;
+    border-right: 3px;
+    border-style: solid;
+}
 
 .emx3{
     font-family: sans-serif;
@@ -109,3 +113,4 @@
     margin-top: 5px;
     display: block;
 }
+ex

@@ -1,24 +1,39 @@
 <div class="sidebar border-end shadow-sm">
     <ul class="list-unstyled p-3">
         <!-- Home link -->
-        <li class="py-2">
-            <a href="{% url 'dashboard' %}" class="d-flex align-items-center text-decoration-none text-secondary-emphasis">
-                <i class="fa-solid fa-house me-2"></i> Home
+        <li class="p-sm-1 my-sm-2 emx4">
+            <a href="{% url 'dashboard' %}" class="row text-decoration-none text-secondary-emphasis">
+                <div class="col-sm-1 me-1">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <div class="col-sm-8">
+                 <span class="">Home</span>
+                </div>
             </a>
         </li>
 
         <!-- My tasks link -->
-        <li class="py-2">
-            <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis"  href="{% url 'projects' %}">
+        <li class="p-sm-1 my-sm-2 emx4">
+            <a class="row text-decoration-none text-secondary-emphasis"  href="{% url 'projects' %}">
 {#                data-bs-toggle="collapse" href="#collapseTask" role="button" aria-expanded="false" aria-controls="collapseTask">#}
-                <i class="fa-solid fa-list-check me-2"></i> My Tasks
+                <div class="col-sm-1 me-1">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <div class="col-sm-8">
+                    <span class="">My Tasks</span>
+                </div>
             </a>
         </li>
 
         <!-- Messages link -->
-        <li class="py-2">
-            <a href="#" class="d-flex align-items-center text-decoration-none text-secondary-emphasis">
-                <i class="fa-solid fa-message me-2"></i> Messages
+        <li class="p-sm-1 my-sm-2 emx4">
+            <a href="#" class="row text-decoration-none text-secondary-emphasis">
+                <div class="col-sm-1 me-1">
+                <i class="fa-solid fa-message me-2"></i>
+                </div>
+                <div class="col-sm-8">
+                    <span class="">Messages</span>
+                </div>
             </a>
         </li>
 
@@ -26,23 +41,37 @@
         <hr>
 
         <!-- Projects link (Dropdown) -->
-        <li class="py-2">
+        <li class="p-sm-1 my-sm-2 emx4">
             <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseProject" role="button" aria-expanded="false" aria-controls="collapseProject">
                 <i class="fas fa-project-diagram me-2"></i> Projects
             </a>
             <ul class="collapse list-group list-group-flush" id="collapseProject">
-                {% for project in projects %}
-                <li class="list-group-item">
-                    <a href="{% url 'project_detail' project.label %}" class="dropdown-item text-secondary-emphasis">
-                        <i class="fa-solid fa-square-caret-right me-2"></i>
-                        <span class="eme01">{{ project.label }}</span>
+{#                {% for project in projects %}#}
+{#                <li class="list-group-item">#}
+{#                    <a href="{% url 'project_detail' project.label %}" class="dropdown-item text-secondary-emphasis">#}
+{#                        <i class="fa-solid fa-square-caret-right me-2"></i>#}
+{#                        <span class="eme01">{{ project.label }}</span>#}
+{#                    </a>#}
+{#                </li>#}
+{#                {% endfor %}#}
+                <li class="list-group-item emx4">
+                    <a href="{% url 'project_create' %}" class="row text-decoration-none text-secondary-emphasis">
+                        <div class="col-sm-1 me-1">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <div class="col-sm-8">
+                            <span class="eme01">Create Projects</span>
+                        </div>
                     </a>
                 </li>
-                {% endfor %}
-                <li class="list-group-item">
-                    <a href="{% url 'projects' %}" class="text-decoration-none text-secondary-emphasis">
-                        <i class="fa-solid fa-folder-open me-2"></i>
-                        <span class="eme01">View Projects</span>
+                <li class="list-group-item emx4">
+                    <a href="{% url 'projects' %}" class="row text-decoration-none text-secondary-emphasis">
+                        <div class="col-sm-1 me-1">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <div class="col-sm-8">
+                            <span class="eme01">View Projects</span>
+                        </div>
                     </a>
                 </li>
             </ul>
@@ -54,4 +83,21 @@
         <p class="ms-3 mb-0 fw-semibold">Version 1.0.2</p>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded',
+    function () {
+        const navItems = document
+            .querySelectorAll('.emx4');
+
+        navItems.forEach(item => {
+            item.addEventListener('click',
+                function () {
+                    navItems.forEach(navItem => navItem
+                        .classList.remove('active'));
+                    this.classList.add('active');
+                });
+        });
+    });
+</script>
 

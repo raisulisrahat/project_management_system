@@ -22,22 +22,47 @@
             <div class="h-50 mb-3">
                 <p class="fw-semibold">Description:</p>
                 {% if task.description %}
-                    <p class="">{{ task.description|safe }}</p>
+                    <p>{{ task.description|safe }}</p>
                 {% else %}
-                    <button class="btn btn-sm eme01">Add a description...</button>
+                    <form method="post" action="{% url 'add_description' task.id %}">
+                        {% csrf_token %}
+                        <textarea name="description" rows="3" class="form-control" placeholder="Add a description..."></textarea>
+                        <button type="submit" class="btn btn-sm btn-primary mt-2">Save</button>
+                    </form>
                 {% endif %}
             </div>
-            {{ task.media }}
-            <div class="">
-                <p><strong>Attachments:</strong></p>
-                <div class="">
-                    {% for attachment in task.attachments.all %}
-                    <a href="{{ attachment.file.url }}" class="text-decoration-none text-dark">{{ attachment.file.name }}</a>
-                    {% endfor %}
-                </div>
+
+            <!-- Task Attachments Section -->
+            <div class="my-sm-2">
+                {% if task.attachments.count > 0 %}
+                    <p><strong>Attachments: {{ task.attachments.count }}</strong></p>
+                    <div class="p-4 mb-4 d-flex" id="filePreview">
+                        {% for attachment in task.attachments.all %}
+                        <div class="file-preview-item m-2 d-flex align-items-center card">
+                            {% if attachment.file.name|lower|slice:"-4:" == ".jpg" or attachment.file.name|lower|slice:"-4:" == ".png" %}
+                                <!-- Image File Thumbnail -->
+                                <img src="{{ attachment.file.url }}" alt="{{ attachment.file.name }}" class="img-thumbnail" width="50" height="50">
+                                <p class="eme01">{{ attachment.file.name }}</p>
+                            {% elif attachment.file.name|lower|slice:"-4:" == ".pdf" %}
+                                <!-- PDF File Preview -->
+                                <iframe src="{{ attachment.file.url }}" width="50" height="50"></iframe>
+                                <p class="eme01">{{ attachment.file.name }}</p>
+                            {% elif attachment.file.name|lower|slice:"-4:" == ".txt" %}
+                                <!-- Text File Preview (first few lines) -->
+                                <pre class="small">{{ attachment.file.open.read|slice:":100" }}...</pre>
+                                <p class="eme01">{{ attachment.file.name }}</p>
+                            {% else %}
+                                <!-- Default Icon for other files -->
+                                <i class="bi bi-file-earmark-fill" style="font-size: 2rem;"></i>
+                                <p class="eme01">{{ attachment.file.name }}</p>
+                            {% endif %}
+                            <a href="{{ attachment.file.url }}" class="text-decoration-none text-dark ms-2">{{ attachment.file.name }}</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
         </div>
-
 
         <!-- Comment Form for Adding New Comment -->
         <div class="p-4 bg-light shadow-sm rounded">
@@ -53,7 +78,7 @@
         <div class="my-4 p-4 bg-white shadow-sm rounded">
             <h4>Comments</h4>
             <ul class="list-group list-group-flush">
-            <hr>
+                <hr>
                 {% for comment in comments %}
                     <li class="list-group-item" id="comment-{{ comment.id }}">
                         <div class="text-primary d-flex text-decoration-none gap-sm-2">
@@ -69,11 +94,9 @@
                         <form method="post" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" enctype="multipart/form-data" id="edit-form-{{ comment.id }}" style="display: none;" class="figurex">
                             {% csrf_token %}
                             <input type="hidden" name="comment_id" value="{{ comment.id }}">
-                            
-                            {{ edit_form.as_p }}  <!-- CKEditor edit field -->
-                            {{ edit_form.media }}
-                            <button type="submit" name="edit_comment" class="btn btn-secondary eme01">Save</button>
-                            <button type="button" class="btn btn-light eme01" onclick="toggleEdit({{ comment.id }})">Cancel</button>
+                            <textarea name="edit_comment_field_{{ comment.id }}" id="edit_comment_field_{{ comment.id }}" rows="3" class="form-control">{{ comment.comments_message }}</textarea>
+                            <button type="submit" name="edit_comment" class="btn btn-secondary eme01 mt-2">Save</button>
+                            <button type="button" class="btn btn-light eme01 mt-2" onclick="toggleEdit({{ comment.id }})">Cancel</button>
                         </form>
 
                         <!-- Edit and Delete Buttons for the Logged-in User -->
@@ -88,8 +111,8 @@
                             </div>
                         {% endif %}
                     </li>
-                    {% empty %}
-                        <p class="eme01 mt-2">No Comments</p>
+                {% empty %}
+                    <p class="eme01 mt-2">No Comments</p>
                 {% endfor %}
             </ul>
         </div>
@@ -105,7 +128,6 @@
 </div>
 
 <!-- CKEditor Initialization Script -->
-
 <script>
     // Initialize CKEditor for new comment form
     CKEDITOR.replace('{{ comment_form.comment_field.id_for_label }}');
@@ -122,10 +144,12 @@
             commentText.style.display = 'none';
             editForm.style.display = 'block';
 
-            // Initialize CKEditor for the edit form once it's shown
-            CKEDITOR.replace('id_comment_field');  // Ensure the field matches your form field name
+            // Initialize CKEditor for the edit form dynamically
+            var editorFieldId = 'edit_comment_field_' + commentId;
+            CKEDITOR.replace(editorFieldId);  // Initialize CKEditor for the edit field
         }
     }
 </script>
 
 {% endblock %}
+

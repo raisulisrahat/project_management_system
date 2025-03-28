@@ -81,6 +81,7 @@ class CommonDashboardDataMixin:
         team = Team.objects.all()
         timelog = Timelog.objects.all()
 
+
         ts_no = Task.objects.count()
         prj_no = Project.objects.count()
         tk_status_no = Task.objects.filter(status__isnull=True).count()
