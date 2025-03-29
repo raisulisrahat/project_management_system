@@ -1,7 +1,7 @@
 <div class="sidebar border-end shadow-sm">
     <ul class="list-unstyled p-3">
         <!-- Home link -->
-        <li class="p-sm-1 my-sm-2 emx4">
+        <li class="p-sm-1 my-sm-2">
             <a href="{% url 'dashboard' %}" class="row text-decoration-none text-secondary-emphasis">
                 <div class="col-sm-1 me-1">
                     <i class="fa-solid fa-house"></i>
@@ -13,7 +13,7 @@
         </li>
 
         <!-- My tasks link -->
-        <li class="p-sm-1 my-sm-2 emx4">
+        <li class="p-sm-1 my-sm-2">
             <a class="row text-decoration-none text-secondary-emphasis"  href="{% url 'projects' %}">
 {#                data-bs-toggle="collapse" href="#collapseTask" role="button" aria-expanded="false" aria-controls="collapseTask">#}
                 <div class="col-sm-1 me-1">
@@ -26,10 +26,10 @@
         </li>
 
         <!-- Messages link -->
-        <li class="p-sm-1 my-sm-2 emx4">
+        <li class="p-sm-1 my-sm-2">
             <a href="#" class="row text-decoration-none text-secondary-emphasis">
                 <div class="col-sm-1 me-1">
-                <i class="fa-solid fa-message me-2"></i>
+                <i class="fa-solid fa-message"></i>
                 </div>
                 <div class="col-sm-8">
                     <span class="">Messages</span>
@@ -41,7 +41,7 @@
         <hr>
 
         <!-- Projects link (Dropdown) -->
-        <li class="p-sm-1 my-sm-2 emx4">
+        <li class="p-sm-1 my-sm-2">
             <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseProject" role="button" aria-expanded="false" aria-controls="collapseProject">
                 <i class="fas fa-project-diagram me-2"></i> Projects
             </a>
@@ -54,7 +54,7 @@
 {#                    </a>#}
 {#                </li>#}
 {#                {% endfor %}#}
-                <li class="list-group-item emx4">
+                <li class="list-group-item">
                     <a href="{% url 'project_create' %}" class="row text-decoration-none text-secondary-emphasis">
                         <div class="col-sm-1 me-1">
                             <i class="fa-solid fa-plus"></i>
@@ -76,6 +76,17 @@
                 </li>
             </ul>
         </li>
+        <hr>
+        <li class="p-sm-1 my-sm-2">
+            <a href="{% url 'teams' %}" class="row text-decoration-none text-secondary-emphasis">
+                <div class="col-sm-1 me-1">
+                    <i class="fa-solid fa-file-code"></i>
+                </div>
+                <div class="col-sm-8">
+                    <span class="">Teams</span>
+                </div>
+            </a>
+        </li>
     </ul>
 
     <!-- Footer -->
@@ -83,21 +94,3 @@
         <p class="ms-3 mb-0 fw-semibold">Version 1.0.2</p>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded',
-    function () {
-        const navItems = document
-            .querySelectorAll('.emx4');
-
-        navItems.forEach(item => {
-            item.addEventListener('click',
-                function () {
-                    navItems.forEach(navItem => navItem
-                        .classList.remove('active'));
-                    this.classList.add('active');
-                });
-        });
-    });
-</script>
-

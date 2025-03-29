@@ -16,7 +16,7 @@ from django.contrib import messages
 from account.models import Profile, Role, Department, Team, PasswordResetOTP, Invitation, OrgType, Organization
 from account.forms import InvitationForm, PasswordResetRequestForm, OTPVerificationForm, SignUpForm, ProfileForm
 from django.contrib.auth.forms import UserCreationForm
-from django.views.generic import RedirectView, DetailView, UpdateView, CreateView, DeleteView
+from django.views.generic import RedirectView, DetailView, UpdateView, CreateView, DeleteView, ListView
 from django.db.models import Count
 from ctspms.models import Project, Task, Timelog
 
@@ -371,5 +371,14 @@ class ProfileDetailView(DetailView):
         team = Team.objects.all()
         return {'profile': profile, 'team': team}
 
-class PeopleModify(UpdateView):
-    model = Profile
+class TeamView(ListView):
+    model = Team
+    context_object_name = 'team'
+    template_name = "teams/teams.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_list'] = User.objects.filter(profile__isnull=False)  # Users with profiles
+        context['team_list'] = Team.objects.all()  # All teams
+        return context
+

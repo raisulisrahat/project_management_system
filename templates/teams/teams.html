@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Team and User List{% endblock %}
+
+{% block content %}
+<div class="container">
+
+            <!-- List of Users -->
+            <h3>Users</h3>
+            <ul class="d-flex gap-3">
+                {% for user in user_list %}
+
+                    <a href="{% url 'profile' user.profile.id %}" class="p-sm-3 card shadow-sm text-decoration-none">
+                        <div class="col text-center">
+                            <img src="{{ user.profile.profile_image.url }}" class="rounded-circle" alt="{{ user.username }}" width="50" height="50">
+                             <p class="ms-2 eme01">{{ user.profile.full_name }}</p>
+                        </div>
+                    </a>
+
+                {% endfor %}
+            </ul>
+
+
+<div class="d-flex flex-column">
+    <!-- List of Teams -->
+    <h3>Teams</h3>
+    <div class="d-flex flex-wrap gap-4">
+        {% for team in team_list %}
+            <div class="card shadow-sm p-4 text-center">
+                <!-- Team name link -->
+                <a href="" class="text-decoration-none fw-bold mb-3">{{ team.name }}</a>
+
+                <!-- User Avatars with Z-Index Stacking -->
+                <div class="d-flex justify-content-center position-relative">
+                    {% for user in team.user_id.all %}
+                        <div class="avatar-stack" style="z-index: {{ forloop.counter0 }};">
+                            <img src="{{ user.profile.profile_image.url }}" class="rounded-circle" alt="{{ user.username }}" width="40" height="40" style="border: 2px solid white;">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Optional Custom Styles -->
+<style>
+    .avatar-stack {
+        position: relative;
+        margin-left: -15px; /* Controls overlap (adjust as needed) */
+    }
+
+    .avatar-stack:first-child {
+        margin-left: 0; /* No margin for the first avatar */
+    }
+</style>
+
+
+    </div>
+{% endblock %}
+
