@@ -366,10 +366,17 @@ class ProfileDetailView(DetailView):
     template_name = 'profile/profile.html'
 
     def get_object(self):
-        # Fetch profile by user UUID (assuming you're passing user_id in the URL)
-        profile = Profile.objects.get(pk=self.kwargs['id'])
-        team = Team.objects.all()
-        return {'profile': profile, 'team': team}
+        # Fetch profile by user UUID
+        return Profile.objects.get(pk=self.kwargs['id'])
+
+class UserProfileDetailView(DetailView):
+    model = User
+    context_object_name = 'user'
+    template_name = "profile/profile.html"
+
+    def get_object(self):
+        user = get_object_or_404(User, pk=self.kwargs['user_id'])
+        return user
 
 class TeamView(ListView):
     model = Team
@@ -381,4 +388,3 @@ class TeamView(ListView):
         context['user_list'] = User.objects.filter(profile__isnull=False)  # Users with profiles
         context['team_list'] = Team.objects.all()  # All teams
         return context
-
