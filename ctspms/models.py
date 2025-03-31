@@ -74,6 +74,11 @@ class Project(models.Model):
                 return ''.join([word[0].upper() for word in words])
 
     def clean(self):
+        if self.access == 'Private' and not self.lead_team:
+            raise ValidationError({
+                'lead_team': 'Lead team is required for private projects.'
+            })
+
         if not self.name.replace(' ', '').isalpha():
             raise ValidationError('Name can only contain letters and spaces.')
 

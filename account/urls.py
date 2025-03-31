@@ -1,5 +1,5 @@
 from django.urls import path
-from account.views import RegisterView, ProfileSetupView, CustomLoginView, two_factor_auth_view, CustomLogoutView, ProfileDetailView, UserProfileDetailView, TeamView, dashboard_view, settings_view, invite_user, accept_invitation, invitation_success, request_password_reset, verify_otp, password_reset_success
+from account.views import RegisterView, ProfileSetupView, CustomLoginView, two_factor_auth_view, CustomLogoutView, ProfileDetailView, UserProfileDetailView, TeamView, TeamDetailView, dashboard_view, settings_view, invite_user, accept_invitation, invitation_success, request_password_reset, verify_otp, password_reset_success, user_search
 
 # Create your tests here.
 
@@ -23,6 +23,8 @@ urlpatterns = [
     path('password-reset-success/', password_reset_success, name='password_reset_success'),
     path('profile/<str:id>', ProfileDetailView.as_view(), name='profile'),
     path('user/<str:user_id>/', UserProfileDetailView.as_view(), name='user_profile'),
+    path('team/<str:id>/', TeamDetailView.as_view(), name='team_detail'),
+    path('user-search/', user_search, name='user_search'),
     # path('profile/edit/', PeopleModify.as_view(), name='profile-edit')
     path('team/', TeamView.as_view(), name='teams'),
 ]

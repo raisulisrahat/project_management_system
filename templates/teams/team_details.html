@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ team.name }} - Team | Flowtrex{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row gap-sm-3">
+            <div class="col-sm-3 card p-sm-4">
+                <p class="fw-semibold fs-5">{{ team.name }}</p>
+                <p class="fw-semibold fs-6">About:</p>
+                <p class="eme01">{{ team.about_info }}</p>
+
+                <div class="d-flex justify-content-between my-sm-2">
+                    <p>
+                        <span class="fw-semibold">Members:</span>
+                        <span class="rounded-circle eme01 fw-semibold px-sm-2 py-sm-1 bg-light">{{ team.user_id.count }}</span>
+                    </p>
+                    <div id="user_search">
+                        <button type="button" class="bi bi-person-plus-fill rounded border-0"></button>
+                    </div>
+                </div>
+                <div class="card card-body">
+                    {% for member in team.user_id.all %}
+                        <a href="{% url 'user_profile' member.id %}" class="text-decoration-none">
+                            <div class="row my-2">
+                                <div class="col-sm-2">
+                                    <img src="{{ member.profile.profile_image.url }}" alt="" class="rounded-circle" width="40" height="40">
+                                </div>
+                                <div class="col-sm-10">
+                                    <p class="fw-semibold m-0">{{ member.profile.full_name }}</p>
+                                    <span class="eme01 mt-0 text-secondary">{{ member.profile.department }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-sm-7 card p-sm-4">
+                <p class="fw-semibold fs-5">Active Projects:</p>
+
+                {% for project in projects %}
+                    <div class="mb-4">
+                        <p class="fw-semibold mt-0 text-secondary">{{ project.name }}</p>
+                        <ul class="list-group list-group-flush">
+                            {% for task in project.tasks.all %}
+                                <li class="list-group-item">
+                                    <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none">
+                                        <span class="">{{ task.unique_id }}</span>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

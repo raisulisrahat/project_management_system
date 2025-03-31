@@ -7,8 +7,9 @@
 <div class="container">
 
     <!-- List of Users -->
-    <div class="d-flex flex-column my-sm-2">
-        <p class="fw-semibold fs-5">Peoples</p>
+<p class="fw-semibold fs-5">Peoples</p>
+    <div class="d-flex justify-content-sm-between my-sm-2">
+
         <div class="d-flex flex-wrap gap-3 mb-sm-3">
             {% for user in user_list|slice:":5" %}
                 <a href="{% url 'user_profile' user.id %}" class="text-decoration-none">
@@ -20,18 +21,20 @@
                     </div>
                 </a>
             {% endfor %}
-            <a href="" class="ms-sm-5 text-decoration-none">View more <i class="bi btn bg-primary-subtle eme01 py-0 px-1 bi-arrow-right"></i></a>
+
         </div>
+        <a href="" class="text-decoration-none"><span class="">View more</span> <i class="bi btn bg-primary-subtle eme01 py-0 px-1 bi-arrow-right"></i></a>
     </div>
 
     <!-- List of Teams -->
-    <div class="d-flex flex-column my-sm-2">
-        <p class="fs-5 fw-semibold">Teams</p>
-        <div class="d-flex flex-wrap gap-3">
+<p class="fs-5 fw-semibold">Teams</p>
+    <div class="d-flex justify-content-sm-between my-sm-2">
+
+        <div class="d-flex  flex-wrap gap-3">
             {% for team in team_list %}
                 <div class="card shadow-sm p-4 text-center">
                     <!-- Team name link -->
-                    <a href="" class="text-decoration-none fw-bold mb-3">{{ team.name }}</a>
+                    <a href="{% url 'team_detail' team.id %}" class="text-decoration-none fw-bold mb-3">{{ team.name }}</a>
 
                     <!-- User Avatars with Z-Index Stacking -->
                     <div class="d-flex justify-content-center position-relative">
@@ -43,7 +46,9 @@
                     </div>
                 </div>
             {% endfor %}
+
         </div>
+    <a href="" class="text-decoration-none">View more <i class="bi btn bg-primary-subtle eme01 py-0 px-1 bi-arrow-right"></i></a>
     </div>
 </div>
 

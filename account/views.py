@@ -1,5 +1,6 @@
 from datetime import timezone
 from django.dispatch import receiver
+from django.http.response import JsonResponse
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -388,3 +389,59 @@ class TeamView(ListView):
         context['user_list'] = User.objects.filter(profile__isnull=False)  # Users with profiles
         context['team_list'] = Team.objects.all()  # All teams
         return context
+
+class TeamDetailView(DetailView):
+    model = Team
+    context_object_name = 'team'
+    template_name = "teams/team_details.html"
+    def get_object(self):
+        team = get_object_or_404(Team, pk=self.kwargs['id'])
+        return team
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation to get default context
+        context = super().get_context_data(**kwargs)
+
+        # Get the team object
+        team = self.get_object()
+
+        # Fetch all projects led by this team
+        projects = Project.objects.filter(lead_team=team)
+
+        # Filter tasks based on the project's access level:
+        # - For "Private" projects, only show tasks if the team is the lead team.
+        # - For "Open" projects, show tasks to all users.
+        tasks = Task.objects.filter(
+            project__in=projects,
+            project__access='Open'  # Show tasks from open projects to everyone
+        )
+
+        # If the team is accessing its own private project, include private tasks as well
+        private_tasks = Task.objects.filter(
+            project__in=projects,
+            project__access='Private',
+            project__lead_team=team  # Only show tasks for private projects where the team is lead
+        )
+
+        # Combine open and private tasks
+        tasks = tasks | private_tasks
+
+        context['projects'] = projects
+        context['tasks'] = tasks
+
+        return context
+
+
+
+# Move the user search view out of the class
+def user_search(request):
+    search_term = request.GET.get('q', '')
+    if search_term:
+        users = User.objects.filter(username__icontains=search_term)
+    else:
+        users = User.objects.none()  # Return no users if search term is empty
+
+    # Prepare the response data
+    user_data = [{'id': user.id, 'full_name': f'{user.first_name} {user.last_name}'} for user in users]
+
+    return JsonResponse({'users': user_data})
