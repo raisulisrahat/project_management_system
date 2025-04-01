@@ -1,4 +1,6 @@
 # forms.py
+from urllib import request
+
 from django import forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.contrib.admin.widgets import AdminDateWidget
@@ -43,20 +45,31 @@ class TaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
-        fields = (
-        'summary', 'description', 'reporter', 'attachments', 'assigned_to', 'status', 'dependencies', 'priority',
-        'due_date')
+        fields = ('summary', 'description', 'reporter', 'attachments', 'assigned_to', 'status', 'dependencies', 'priority', 'due_date')
 
         widgets = {
             'summary': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Task Summary'}),
             'description': CKEditorUploadingWidget(attrs={'cols': 80, 'rows': 10}),
-            'status': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Task Status'}),
-            'assigned_to': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Assignee'}),
-            'reporter': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Reporter'}),
-            'dependencies': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Dependencies'}),
-            'priority': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Priority'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'assigned_to': forms.Select(attrs={'class': 'form-control'}),
+            'reporter': forms.Select(attrs={'class': 'form-control'}),
+            'dependencies': forms.Select(attrs={'class': 'form-control'}),
+            'priority': forms.Select(attrs={'class': 'form-control'}),
             'due_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)  # Capture request
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        task = super().save(commit=False)
+        if not task.created_by and self.request:
+            task.created_by = self.request.user
+        if commit:
+            task.save()
+        return task
+
 
 
 class CommentForm(forms.ModelForm):

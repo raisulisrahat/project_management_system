@@ -90,8 +90,12 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
     form_class = TaskForm
     template_name = 'tasks/task_form.html'
 
-    def get_success_url(self, project):
-        return reverse_lazy('task_lists', kwargs={'label': project.label()})
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('task_lists', kwargs={'label': self.object.project.label()})
 
     def get(self, request, *args, **kwargs):
         label = kwargs.get('label')
@@ -130,7 +134,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
                 attachment.save()
                 task.attachments.add(attachment)  # Add the attachment to the task
 
-            return redirect(self.get_success_url(project))
+            return redirect(self.get_success_url('project'))
 
         return render(request, self.template_name, {'task_form': task_form, 'project': project})
 
@@ -269,6 +273,12 @@ class TaskDetailView(DetailView):
     def post(self, request, *args, **kwargs):
         task = self.get_object()  # Retrieve the task object
 
+        # Handle task description update
+        if 'description' in request.POST:
+            task.description = request.POST['description']
+            task.save()
+            return redirect('task_detail', label=task.project.code, unique_id=task.unique_id())
+
         # Handle comment update or deletion
         if 'comment_id' in request.POST:
             comment_id = request.POST['comment_id']
@@ -281,7 +291,7 @@ class TaskDetailView(DetailView):
                 if form.is_valid():
                     form.save()
 
-            return redirect('task_detail', label=task.project.code, unique_id=task.project_task_number)
+            return redirect('task_detail', label=task.project.code, unique_id=task.unique_id())
 
         # Handle new comment creation
         form = CommentForm(request.POST, request.FILES)  # Use request.FILES for attachments
@@ -289,8 +299,7 @@ class TaskDetailView(DetailView):
             new_comment = form.save(commit=False)
             new_comment.task = task  # Associate comment with the task
             new_comment.user = request.user  # Associate comment with the logged-in user
-
             new_comment.save()  # Save the comment
 
-        return redirect('task_detail', label=task.project.code, unique_id=task.project_task_number)
+        return redirect('task_detail', label=task.project.code, unique_id=task.unique_id())
 

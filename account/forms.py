@@ -1,8 +1,9 @@
 from django import forms
 from account.models import Invitation
 from django.contrib.auth.models import User
-from account.models import Profile
+from account.models import Profile, Team
 from django.contrib.auth.forms import UserCreationForm
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 
 class SignUpForm(UserCreationForm):
@@ -77,3 +78,14 @@ class OTPVerificationForm(forms.Form):
         if new_password and confirm_password and new_password != confirm_password:
             raise forms.ValidationError("Passwords do not match.")
         return cleaned_data
+
+class TeamForm(forms.ModelForm):
+    class Meta:
+        model = Team
+
+        fields = ('name', 'user_id', 'about_info')
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}),
+            'user_id': forms.CheckboxSelectMultiple(attrs={'class': 'form-control', 'id':'checkboxSelectMultiple'}),
+            'about_info':  CKEditorUploadingWidget(attrs={'cols': 80, 'rows': 10}),
+        }

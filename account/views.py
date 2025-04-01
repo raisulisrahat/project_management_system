@@ -15,7 +15,7 @@ from django.conf import settings
 from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from account.models import Profile, Role, Department, Team, PasswordResetOTP, Invitation, OrgType, Organization
-from account.forms import InvitationForm, PasswordResetRequestForm, OTPVerificationForm, SignUpForm, ProfileForm
+from account.forms import TeamForm, InvitationForm, PasswordResetRequestForm, OTPVerificationForm, SignUpForm, ProfileForm
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import RedirectView, DetailView, UpdateView, CreateView, DeleteView, ListView
 from django.db.models import Count
@@ -378,6 +378,29 @@ class UserProfileDetailView(DetailView):
     def get_object(self):
         user = get_object_or_404(User, pk=self.kwargs['user_id'])
         return user
+
+class TeamCreateView(CreateView):
+    model = Team
+    template_name = 'teams/team_form.html'
+
+    def get_success_url(self):
+        return reverse_lazy('teams')
+
+    def get(self, request, *args, **kwargs):
+        team_form = TeamForm()
+        return render(request,  self.template_name, {'form': team_form})
+
+    def post(self, request, *args, **kwargs):
+        team_form = TeamForm(request.POST)
+        if team_form.is_valid():
+            team = team_form.save(commit=False)
+            team.created_by = request.user  # Set created_by to the logged-in user
+            team.save()
+            team_form.save_m2m()  # Save many-to-many relationships
+            return redirect(self.get_success_url())
+
+        return render(request, self.template_name, {'form': team_form})
+
 
 class TeamView(ListView):
     model = Team

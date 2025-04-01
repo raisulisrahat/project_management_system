@@ -106,8 +106,8 @@ class Task(models.Model):
     dependencies = models.ManyToManyField(Issue, blank=True)
     start_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField(null=True, blank=True)
-
     project_task_number = models.PositiveIntegerField(null=True, blank=True)  # Task number within project
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.summary

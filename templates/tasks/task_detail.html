@@ -18,23 +18,30 @@
     <!-- Task Information Section -->
     <div class="col-sm-8">
         <div class="p-4 mb-4 bg-white shadow-sm">
+        <div class="d-flex justify-content-between">
             <p><strong>Summary:</strong> {{ task.summary }}</p>
+            <button type="button" class="btn btn-sm"></button>
+        </div>
             <div class="h-50 mb-3">
                 <p class="fw-semibold">Description:</p>
-                {% if task.description %}
-                    <p>{{ task.description|safe }}</p>
-                {% else %}
-                    <button type="button" class="btn" id="add_description">Add a description...</button>
-                {% endif %}
 
-                <form method="post" id="add_description" action="{% url 'task_detail' task.project.label task.unique_id %}">
+                <div id="description-view" onclick="showEditForm()" style="cursor: pointer;">
+                    {% if task.description %}
+                        <p id="description-text">{{ task.description|safe }}</p>
+                    {% else %}
+                        <p class="text-muted">Add a description...</p>
+                    {% endif %}
+                </div>
+
+                <!-- Hidden Edit Form -->
+                <form id="description-form" method="post" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" style="display: none;">
                     {% csrf_token %}
-                    <textarea name="description" rows="3" class="form-control" placeholder="Add a description..."></textarea>
+                    <textarea name="description" id="description-input" rows="3" class="form-control">{{ task.description }}</textarea>
                     <button type="submit" class="btn btn-sm btn-primary mt-2">Save</button>
+                    <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="hideEditForm()">Cancel</button>
                 </form>
-
             </div>
-
+            {{ task.description.media }}
             <!-- Task Attachments Section -->
             <div class="my-sm-2">
                 {% if task.attachments.count > 0 %}
@@ -79,7 +86,7 @@
 
         <!-- Comments Section -->
         <div class="my-4 p-4 bg-white shadow-sm rounded">
-            <h4>Comments</h4>
+            <p class="fw-semibold mb-0">Comments</p>
             <ul class="list-group list-group-flush">
                 <hr>
                 {% for comment in comments %}
@@ -123,10 +130,32 @@
 
     <!-- Sidebar with Task Details -->
     <div class="col-lg-3 p-5 mb-4 bg-white text-dark shadow-sm">
-        <p class="fs-5 fw-semibold">Task Details</p>
-        <p><strong>Priority:</strong> <span class="p-2 btn-secondary">{{ task.priority.priority_name }}</span></p>
-        <p><strong>Start Date:</strong> {{ task.start_date.date }}</p>
-        <p><strong>End Date:</strong> {{ task.due_date.date }}</p>
+        <p class="fw-semibold">Task Details</p>
+
+        <div class="row gap-sm-2 align-items-center">
+            <div class="col-sm-5">
+                <p class="fw-semibold">Priority:</p>
+            </div>
+            <div class="col-sm-6">
+                <p class="btn btn-secondary text-center px-sm-2 py-sm-1">{{ task.priority.priority_name }}</p>
+            </div>
+        </div>
+        <div class="row gap-sm-2 align-items-center">
+            <div class="col-sm-5">
+                <p class="fw-semibold">Start Date:</p>
+            </div>
+            <div class="col-sm-6">
+                <p class="">{{ task.start_date.date }}</p>
+            </div>
+        </div>
+        <div class="row gap-sm-2 align-items-center">
+            <div class="col-sm-5">
+                <p class="fw-semibold">End Date:</p>
+            </div>
+            <div class="col-sm-6">
+                <p class="">{{ task.due_date.date }}</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -152,6 +181,16 @@
             CKEDITOR.replace(editorFieldId);  // Initialize CKEditor for the edit field
         }
     }
+    function showEditForm() {
+        document.getElementById("description-view").style.display = "none";
+        document.getElementById("description-form").style.display = "block";
+    }
+
+    function hideEditForm() {
+        document.getElementById("description-view").style.display = "block";
+        document.getElementById("description-form").style.display = "none";
+    }
+    CKEDITOR.replace('description-input');
 </script>
 
 {% endblock %}

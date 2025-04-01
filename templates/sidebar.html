@@ -29,7 +29,7 @@
         <li class="p-sm-1 my-sm-2">
             <a href="#" class="row text-decoration-none text-secondary-emphasis">
                 <div class="col-sm-1 me-1">
-                <i class="fa-solid fa-message"></i>
+                    <i class="fa-solid fa-message"></i>
                 </div>
                 <div class="col-sm-8">
                     <span class="">Messages</span>
@@ -43,7 +43,12 @@
         <!-- Projects link (Dropdown) -->
         <li class="p-sm-1 my-sm-2">
             <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseProject" role="button" aria-expanded="false" aria-controls="collapseProject">
-                <i class="fas fa-project-diagram me-2"></i> Projects
+                <div class="col-sm-1 me-2">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="col-sm-8">
+                    <span class="">Projects</span>
+                </div>
             </a>
             <ul class="collapse list-group list-group-flush" id="collapseProject">
 {#                {% for project in projects %}#}
@@ -56,11 +61,11 @@
 {#                {% endfor %}#}
                 <li class="list-group-item">
                     <a href="{% url 'project_create' %}" class="row text-decoration-none text-secondary-emphasis">
-                        <div class="col-sm-1 me-1">
+                        <div class="col-sm-1">
                             <i class="fa-solid fa-plus"></i>
                         </div>
                         <div class="col-sm-8">
-                            <span class="eme01">Create Projects</span>
+                            <p class="eme01">Create Projects</p>
                         </div>
                     </a>
                 </li>
@@ -78,15 +83,37 @@
         </li>
         <hr>
         <li class="p-sm-1 my-sm-2">
-            <a href="{% url 'teams' %}" class="row text-decoration-none text-secondary-emphasis">
-                <div class="col-sm-1 me-1">
-                    <i class="fa-solid fa-file-code"></i>
+            <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseTeams" role="button" aria-expanded="false" aria-controls="collapseTeams">
+                <div class="col-sm-1 me-2">
+                    <i class="fa-solid fa-user-group"></i>
                 </div>
                 <div class="col-sm-8">
                     <span class="">Teams</span>
                 </div>
             </a>
         </li>
+        <ul class="collapse list-group list-group-flush" id="collapseTeams">
+            <li class="list-group-item">
+                    <a href="{% url 'team_create' %}" class="row text-decoration-none text-secondary-emphasis">
+                        <div class="col-sm-1">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <div class="col-sm-8">
+                            <p class="eme01">Create Teams</p>
+                        </div>
+                    </a>
+                </li>
+                <li class="list-group-item emx4">
+                    <a href="{% url 'teams' %}" class="row text-decoration-none text-secondary-emphasis">
+                        <div class="col-sm-1 me-1">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <div class="col-sm-8">
+                            <span class="eme01">View Teams</span>
+                        </div>
+                    </a>
+                </li>
+        </ul>
     </ul>
 
     <!-- Footer -->

@@ -40,12 +40,17 @@
 
                 {% for project in projects %}
                     <div class="mb-4">
-                        <p class="fw-semibold mt-0 text-secondary">{{ project.name }}</p>
                         <ul class="list-group list-group-flush">
                             {% for task in project.tasks.all %}
                                 <li class="list-group-item">
                                     <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none">
-                                        <span class="">{{ task.unique_id }}</span>
+                                        <div class="d-flex px-sm-1 py-sm-1 align-items-center shadow-sm">
+                                            <span class="ps-sm-2">{{ task.unique_id }}</span>
+                                            <div class="row m-auto text-secondary">
+                                                <p class="mb-0">{{ project.name }}</p>
+                                                <span class="eme01 mt-0">created by {{ task.created_by.profile.full_name }} {{ task.start_date.time }}</span>
+                                            </div>
+                                        </div>
                                     </a>
                                 </li>
                             {% endfor %}
