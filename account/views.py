@@ -179,9 +179,7 @@ class CustomLoginView(LoginView):
     success_url = reverse_lazy('dashboard')
 
     def form_valid(self, form):
-        """Override this method to handle 2FA after valid credentials are entered."""
         user = form.get_user()
-
         # Apply timezone and language settings from the user's profile
         self.request.session['django_timezone'] = user.profile.timezone
         self.request.session['django_language'] = user.profile.language

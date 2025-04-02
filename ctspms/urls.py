@@ -1,5 +1,5 @@
 from django.urls import path
-from ctspms.views import ProjectCreateView, TaskCreateView, ProjectListView, TaskListView, KanbanBoardView, ProjectDetailView, TaskDetailView, ajax_search
+from ctspms.views import ProjectCreateView, TaskCreateView, ProjectListView, TaskListView, KanbanBoardView, ProjectDetailView, TaskDetailView, upload_temp_file, ajax_search
 
 urlpatterns = [
     # Project URLs
@@ -11,6 +11,8 @@ urlpatterns = [
     path('projects/<str:label>/lists/', TaskListView.as_view(), name='task_lists'),
     path('projects/<str:label>/boards/<str:unique_id>/', TaskDetailView.as_view(), name='task_detail'),
     path('projects/<str:label>/tasks/create/', TaskCreateView.as_view(), name='task_create'),
+
+    path('upload-temp-file/', upload_temp_file, name='upload_temp_file'),
     # path('tasks/<str:uniqe_id>/edit/', TaskUpdateView.as_view(), name='task_edit'),
 
 ]

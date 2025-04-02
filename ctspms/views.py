@@ -1,7 +1,11 @@
-from enum import unique
+import os, uuid
 from django.views import View
 from django.http import JsonResponse,Http404, HttpResponseForbidden
 from django.views.decorators.http import require_GET
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,6 +15,7 @@ from account.models import Department, Role, User, Profile
 from .forms import CommentForm, TaskForm, ProjectForm, ProjectSelectForm
 from django.db import IntegrityError
 from django.contrib import messages
+from shutil import move
 
 class KanbanBoardView(View):
     def get(self, request):
@@ -21,6 +26,22 @@ class KanbanBoardView(View):
         issues = Issue.objects.all()
 
 
+@csrf_exempt
+def upload_temp_file(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        uploaded_file = request.FILES['file']
+
+        temp_dir = os.path.join(settings.MEDIA_ROOT, 'temp')
+        os.makedirs(temp_dir, exist_ok=True)
+
+        file_name = f"{uuid.uuid4()}_{uploaded_file.name}"
+        file_path = os.path.join(temp_dir, file_name)
+
+        default_storage.save(file_path, ContentFile(uploaded_file.read()))
+
+        return JsonResponse({'success': True, 'file_path': file_path})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
 @require_GET
 def ajax_search(request):
     query = request.GET.get('q', '')  # Get the query from the GET request
@@ -92,10 +113,23 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
-        return super().form_valid(form)
+        self.object = form.save()
 
-    def get_success_url(self):
-        return reverse_lazy('task_lists', kwargs={'label': self.object.project.label()})
+        # Move temp files to the final attachment directory
+        temp_files = self.request.POST.getlist('temp_files', [])
+        for temp_file_path in temp_files:
+            file_name = os.path.basename(temp_file_path)
+            final_path = os.path.join(settings.MEDIA_ROOT, 'tasks', file_name)
+
+            move(temp_file_path, final_path)  # Move file
+
+            attachment = Attachment(attachment=final_path)
+            attachment.save()
+            self.object.attachments.add(attachment)
+
+        return super().form_valid(form)
+    def get_success_url(self, project):
+        return reverse_lazy('task_lists', kwargs={'label': project.label()})
 
     def get(self, request, *args, **kwargs):
         label = kwargs.get('label')
@@ -134,7 +168,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
                 attachment.save()
                 task.attachments.add(attachment)  # Add the attachment to the task
 
-            return redirect(self.get_success_url('project'))
+            return redirect(self.get_success_url(project))
 
         return render(request, self.template_name, {'task_form': task_form, 'project': project})
 

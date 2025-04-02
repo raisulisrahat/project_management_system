@@ -63,39 +63,65 @@
 <script>
     const dragDropArea = document.getElementById('dragDropArea');
     const browseButton = document.getElementById('browseButton');
-    const fileInput = document.getElementById('fileInput');  // Hidden file input
+    const fileInput = document.getElementById('fileInput');
     const filePreview = document.getElementById('filePreview');
 
-    // Browse button triggers file input click
     browseButton.addEventListener('click', function () {
         fileInput.click();
     });
 
-    // Handle file input change event
     fileInput.addEventListener('change', function () {
         handleFiles(fileInput.files);
     });
 
-    // Drag over event
     dragDropArea.addEventListener('dragover', function (event) {
         event.preventDefault();
         dragDropArea.classList.add('drag-over');
     });
 
-    // Drag leave event
     dragDropArea.addEventListener('dragleave', function () {
         dragDropArea.classList.remove('drag-over');
     });
 
-    // Drop event
     dragDropArea.addEventListener('drop', function (event) {
         event.preventDefault();
         dragDropArea.classList.remove('drag-over');
         handleFiles(event.dataTransfer.files);
     });
 
+    function handleFiles(files) {
+        for (let file of files) {
+            uploadFile(file);
+        }
+    }
+
+    function uploadFile(file) {
+        let formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/upload-temp-file/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCSRFToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let preview = document.createElement('div');
+                preview.textContent = file.name;
+                filePreview.appendChild(preview);
+            }
+        })
+        .catch(error => console.error('Error uploading file:', error));
+    }
+
+    function getCSRFToken() {
+        return document.cookie.split('; ').find(row => row.startsWith('csrftoken')).split('=')[1];
+    }
     // Function to handle files and generate previews
-// Function to handle file previews
+    // Function to handle file previews
 function handleFiles(files) {
     filePreview.innerHTML = '';  // Clear previous previews
 
@@ -138,19 +164,6 @@ function handleFiles(files) {
                 });
             };
             reader.readAsArrayBuffer(file);
-        }
-        // Show plain text preview for txt files
-        else if (fileExtension === 'txt') {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const textPreview = document.createElement('pre');
-                const previewText = e.target.result.split('\n').slice(0, 5).join('\n');  // Show only first 5 lines
-                textPreview.textContent = previewText;
-                textPreview.style.maxHeight = '50px';
-                textPreview.style.overflowY = 'auto';
-                previewItem.appendChild(textPreview);
-            };
-            reader.readAsText(file);
         }
         // Show Bootstrap icons for code and other unsupported files
         else {
