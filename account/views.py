@@ -383,14 +383,26 @@ class TeamCreateView(LoginRequiredMixin, CreateView):
     template_name = 'teams/team_form.html'
     success_url = reverse_lazy('teams')
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        response = super().form_valid(form)
-        form.save_m2m()  # Save many-to-many relationships
-        return response
+    def post(self, request, *args, **kwargs):
+        team_form = TeamForm(request.POST)
 
-    def form_invalid(self, form):
-        return render(self.request, self.template_name, {'form': form})  # Show errors
+        if team_form.is_valid():
+            self.object = team_form.save(commit=False)  # Assign self.object
+            self.object.created_by = request.user  # Assign the logged-in user
+            self.object.save()  # Save the main team instance before handling M2M
+
+            # Now handle the ManyToMany relationship
+            team_form.instance = self.object  # Assign the saved team instance to the form
+            team_form.save_m2m()  # Save ManyToMany relationships
+
+            return redirect(self.get_success_url())  # self.object now exists
+
+        return render(request, self.template_name, {'form': team_form})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = User.objects.all()  # Pass all users to the template for selection
+        return context
 
 class TeamView(ListView):
     model = Team
