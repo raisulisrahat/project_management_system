@@ -47,35 +47,41 @@
                     <i class="fas fa-project-diagram"></i>
                 </div>
                 <div class="col-sm-8">
-                    <span class="">Projects</span>
+                    <span class="mb-0">Projects</span>
                 </div>
             </a>
             <ul class="collapse list-group list-group-flush" id="collapseProject">
-{#                {% for project in projects %}#}
-{#                <li class="list-group-item">#}
-{#                    <a href="{% url 'project_detail' project.label %}" class="dropdown-item text-secondary-emphasis">#}
-{#                        <i class="fa-solid fa-square-caret-right me-2"></i>#}
-{#                        <span class="eme01">{{ project.label }}</span>#}
-{#                    </a>#}
-{#                </li>#}
-{#                {% endfor %}#}
+                {% for project in projects|slice:":2" %}
+                <li class="list-group-item">
+                    <a href="{% url 'project_detail' project.label %}" class="dropdown-item text-secondary-emphasis">
+                        <div class="row align-items-center">
+                            <div class="col-sm-1">
+                                <i class="fa-solid fa-square-caret-right"></i>
+                            </div>
+                            <div class="col-sm-8">
+                                <p class="eme01 mb-0">{{ project.label }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
                 <li class="list-group-item">
                     <a href="{% url 'project_create' %}" class="row text-decoration-none text-secondary-emphasis">
                         <div class="col-sm-1">
                             <i class="fa-solid fa-plus"></i>
                         </div>
                         <div class="col-sm-8">
-                            <p class="eme01">Create Projects</p>
+                            <p class="eme01 mb-0">Create Projects</p>
                         </div>
                     </a>
                 </li>
                 <li class="list-group-item emx4">
                     <a href="{% url 'projects' %}" class="row text-decoration-none text-secondary-emphasis">
-                        <div class="col-sm-1 me-1">
+                        <div class="col-sm-1">
                             <i class="fa-solid fa-folder-open"></i>
                         </div>
                         <div class="col-sm-8">
-                            <span class="eme01">View Projects</span>
+                            <span class="eme01 mb-0">View Projects</span>
                         </div>
                     </a>
                 </li>
@@ -99,17 +105,17 @@
                             <i class="fa-solid fa-plus"></i>
                         </div>
                         <div class="col-sm-8">
-                            <p class="eme01">Create Teams</p>
+                            <p class="eme01 mb-0">Create Teams</p>
                         </div>
                     </a>
                 </li>
                 <li class="list-group-item emx4">
                     <a href="{% url 'teams' %}" class="row text-decoration-none text-secondary-emphasis">
-                        <div class="col-sm-1 me-1">
+                        <div class="col-sm-1">
                             <i class="fa-solid fa-folder-open"></i>
                         </div>
                         <div class="col-sm-8">
-                            <span class="eme01">View Teams</span>
+                            <span class="eme01 mb-0">View Teams</span>
                         </div>
                     </a>
                 </li>

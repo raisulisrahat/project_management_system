@@ -377,28 +377,20 @@ class UserProfileDetailView(DetailView):
         user = get_object_or_404(User, pk=self.kwargs['user_id'])
         return user
 
-class TeamCreateView(CreateView):
+class TeamCreateView(LoginRequiredMixin, CreateView):
     model = Team
+    form_class = TeamForm
     template_name = 'teams/team_form.html'
+    success_url = reverse_lazy('teams')
 
-    def get_success_url(self):
-        return reverse_lazy('teams')
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        response = super().form_valid(form)
+        form.save_m2m()  # Save many-to-many relationships
+        return response
 
-    def get(self, request, *args, **kwargs):
-        team_form = TeamForm()
-        return render(request,  self.template_name, {'form': team_form})
-
-    def post(self, request, *args, **kwargs):
-        team_form = TeamForm(request.POST)
-        if team_form.is_valid():
-            team = team_form.save(commit=False)
-            team.created_by = request.user  # Set created_by to the logged-in user
-            team.save()
-            team_form.save_m2m()  # Save many-to-many relationships
-            return redirect(self.get_success_url())
-
-        return render(request, self.template_name, {'form': team_form})
-
+    def form_invalid(self, form):
+        return render(self.request, self.template_name, {'form': form})  # Show errors
 
 class TeamView(ListView):
     model = Team
@@ -420,31 +412,20 @@ class TeamDetailView(DetailView):
         return team
 
     def get_context_data(self, **kwargs):
-        # Call the base implementation to get default context
         context = super().get_context_data(**kwargs)
-
-        # Get the team object
         team = self.get_object()
-
-        # Fetch all projects led by this team
         projects = Project.objects.filter(lead_team=team)
-
-        # Filter tasks based on the project's access level:
-        # - For "Private" projects, only show tasks if the team is the lead team.
-        # - For "Open" projects, show tasks to all users.
         tasks = Task.objects.filter(
             project__in=projects,
             project__access='Open'  # Show tasks from open projects to everyone
         )
 
-        # If the team is accessing its own private project, include private tasks as well
         private_tasks = Task.objects.filter(
             project__in=projects,
             project__access='Private',
             project__lead_team=team  # Only show tasks for private projects where the team is lead
         )
 
-        # Combine open and private tasks
         tasks = tasks | private_tasks
 
         context['projects'] = projects
