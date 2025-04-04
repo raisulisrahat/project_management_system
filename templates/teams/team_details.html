@@ -1,29 +1,52 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}{{ team.name }} - Team | Flowtrex{% endblock %}
+
 {% block content %}
     <div class="container">
         <div class="row gap-sm-3">
             <div class="col-sm-3 card p-sm-4">
                 <p class="fw-semibold fs-5">{{ team.name }}</p>
-                <p class="fw-semibold fs-6">About:</p>
-                <p class="eme01">{{ team.about_info }}</p>
+
+                <div>
+                    <p class="fw-semibold fs-6">About:</p>
+                    <div id="about-view" onclick="showEditForm()" style="cursor:pointer;">
+                        {% if team.about_info %}
+                            <p id="about-text">{{ team.about_info|safe }}</p>
+                        {% else %}
+                            <p class="text-muted">Add a team about...</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Editable About Info Form -->
+                    <form id="about-form" method="post" action="{% url 'team_detail' team.id %}" style="display: none;">
+                        {% csrf_token %}
+                        <textarea name="description" id="about-input" rows="3" class="form-control">{{ team.about_info }}</textarea>
+                        <button type="submit" class="btn btn-sm btn-primary mt-2">Save</button>
+                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="hideEditForm()">Cancel</button>
+                    </form>
+                </div>
 
                 <div class="d-flex justify-content-between my-sm-2">
                     <p>
                         <span class="fw-semibold">Members:</span>
-                        <span class="rounded-circle eme01 fw-semibold px-sm-2 py-sm-1 bg-light">{{ team.user_id.count }}</span>
+                        <span class="rounded-circle fw-semibold px-sm-2 py-sm-1 bg-light">{{ team.user_id.count }}</span>
                     </p>
                     <div id="user_search">
                         <button type="button" class="bi bi-person-plus-fill rounded border-0"></button>
                     </div>
                 </div>
+
+                <!-- Member List -->
                 <div class="card card-body">
                     {% for member in team.user_id.all %}
                         <a href="{% url 'user_profile' member.id %}" class="text-decoration-none">
                             <div class="row my-2">
                                 <div class="col-sm-2">
-                                    <img src="{{ member.profile.profile_image.url }}" alt="" class="rounded-circle" width="40" height="40">
+                                    <img src="{{ member.profile.profile_image.url }}"
+                                         alt="{{ member.profile.full_name }}"
+                                         class="rounded-circle" width="40" height="40"
+                                         onerror="this.onerror=null;this.src='{% static 'images/default-profile.png' %}';">
                                 </div>
                                 <div class="col-sm-10">
                                     <p class="fw-semibold m-0">{{ member.profile.full_name }}</p>
@@ -31,10 +54,13 @@
                                 </div>
                             </div>
                         </a>
+                    {% empty %}
+                        <p class="text-muted">No members yet.</p>
                     {% endfor %}
                 </div>
             </div>
 
+            <!-- Active Projects Section -->
             <div class="col-sm-7 card p-sm-4">
                 <p class="fw-semibold fs-5">Active Projects:</p>
 
@@ -48,7 +74,8 @@
                                             <span class="ps-sm-2">{{ task.unique_id }}</span>
                                             <div class="row m-auto text-secondary">
                                                 <p class="mb-0">{{ project.name }}</p>
-                                                <span class="eme01 mt-0">created by {{ task.created_by.profile.full_name }} {{ task.start_date.time }}</span>
+                                                <span class="eme01 mt-0">created by {{ task.created_by.profile.full_name }}
+                                                    {{ task.start_date }}</span>
                                             </div>
                                         </div>
                                     </a>
@@ -56,8 +83,23 @@
                             {% endfor %}
                         </ul>
                     </div>
+                {% empty %}
+                    <p class="text-muted">No active projects.</p>
                 {% endfor %}
             </div>
         </div>
     </div>
+
+    <script>
+        function showEditForm() {
+            document.getElementById("about-view").style.display = "none";
+            document.getElementById("about-form").style.display = "block";
+        }
+
+        function hideEditForm() {
+            document.getElementById("about-view").style.display = "block";
+            document.getElementById("about-form").style.display = "none";
+        }
+        CKEDITOR.replace('about-input');
+    </script>
 {% endblock %}

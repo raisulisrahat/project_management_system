@@ -50,43 +50,43 @@
                     <span class="mb-0">Projects</span>
                 </div>
             </a>
-            <ul class="collapse list-group list-group-flush" id="collapseProject">
-                {% for project in projects|slice:":2" %}
-                <li class="list-group-item">
-                    <a href="{% url 'project_detail' project.label %}" class="dropdown-item text-secondary-emphasis">
-                        <div class="row align-items-center">
+                <ul class="collapse list-group list-group-flush" id="collapseProject">
+                    {% for project in projects|slice:":2" %}
+                    <li class="list-group-item">
+                        <a href="{% url 'project_detail' project.label %}" class="dropdown-item text-secondary-emphasis">
+                            <div class="row align-items-center">
+                                <div class="col-sm-1">
+                                    <i class="fa-solid fa-square-caret-right"></i>
+                                </div>
+                                <div class="col-sm-8">
+                                    <p class="eme01 mb-0">{{ project.label }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                    <li class="list-group-item">
+                        <a href="{% url 'project_create' %}" class="row text-decoration-none text-secondary-emphasis">
                             <div class="col-sm-1">
-                                <i class="fa-solid fa-square-caret-right"></i>
+                                <i class="fa-solid fa-plus"></i>
                             </div>
                             <div class="col-sm-8">
-                                <p class="eme01 mb-0">{{ project.label }}</p>
+                                <p class="eme01 mb-0">Create Projects</p>
                             </div>
-                        </div>
-                    </a>
-                </li>
-                {% endfor %}
-                <li class="list-group-item">
-                    <a href="{% url 'project_create' %}" class="row text-decoration-none text-secondary-emphasis">
-                        <div class="col-sm-1">
-                            <i class="fa-solid fa-plus"></i>
-                        </div>
-                        <div class="col-sm-8">
-                            <p class="eme01 mb-0">Create Projects</p>
-                        </div>
-                    </a>
-                </li>
-                <li class="list-group-item emx4">
-                    <a href="{% url 'projects' %}" class="row text-decoration-none text-secondary-emphasis">
-                        <div class="col-sm-1">
-                            <i class="fa-solid fa-folder-open"></i>
-                        </div>
-                        <div class="col-sm-8">
-                            <span class="eme01 mb-0">View Projects</span>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </li>
+                        </a>
+                    </li>
+                    <li class="list-group-item emx4">
+                        <a href="{% url 'projects' %}" class="row text-decoration-none text-secondary-emphasis">
+                            <div class="col-sm-1">
+                                <i class="fa-solid fa-folder-open"></i>
+                            </div>
+                            <div class="col-sm-8">
+                                <span class="eme01 mb-0">View Projects</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
         <hr>
         <li class="p-sm-1 my-sm-2">
             <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseTeams" role="button" aria-expanded="false" aria-controls="collapseTeams">
