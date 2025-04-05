@@ -19,9 +19,9 @@
                     </div>
 
                     <!-- Editable About Info Form -->
-                    <form id="about-form" method="post" action="{% url 'team_detail' team.id %}" style="display: none;">
+                    <form id="about-form" method="post" style="display: none;">
                         {% csrf_token %}
-                        <textarea name="description" id="about-input" rows="3" class="form-control">{{ team.about_info }}</textarea>
+                        <textarea name="about_info" id="about-input" rows="3" class="form-control">{{ team.about_info }}</textarea>
                         <button type="submit" class="btn btn-sm btn-primary mt-2">Save</button>
                         <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="hideEditForm()">Cancel</button>
                     </form>

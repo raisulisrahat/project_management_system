@@ -423,6 +423,17 @@ class TeamDetailView(DetailView):
         team = get_object_or_404(Team, pk=self.kwargs['id'])
         return team
 
+    def post(self, request, *args, **kwargs):
+
+        team = self.get_object()
+        if 'about_info' in request.POST:
+            team.about_info = request.POST['about_info']
+            team.save()
+
+            return redirect('team_detail', id=team.id)
+
+        return self.get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         team = self.get_object()
@@ -444,7 +455,6 @@ class TeamDetailView(DetailView):
         context['tasks'] = tasks
 
         return context
-
 
 
 # Move the user search view out of the class
