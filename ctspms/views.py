@@ -18,11 +18,10 @@ from django.contrib import messages
 from shutil import move
 
 class KanbanBoardView(View):
+
     def get(self, request):
-        projects = Project.objects.all()
         tasks = Task.objects.all()
         status = StatusList.objects.all()
-        priorities = PriorityList.objects.all()
         issues = Issue.objects.all()
 
 

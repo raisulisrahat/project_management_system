@@ -86,6 +86,6 @@ class TeamForm(forms.ModelForm):
         fields = ('name', 'user_id', 'about_info')
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}),
-            'user_id': forms.CheckboxSelectMultiple(attrs={'class': 'form-control', 'id':'checkboxSelectMultiple'}),
+            'user_id': forms.SelectMultiple(attrs={'class': 'form-control', 'id':'checkboxSelectMultiple'}),
             'about_info':  CKEditorUploadingWidget(attrs={'cols': 80, 'rows': 10}),
         }
