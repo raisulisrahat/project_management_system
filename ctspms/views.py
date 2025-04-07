@@ -18,6 +18,9 @@ from django.contrib import messages
 from shutil import move
 
 class KanbanBoardView(View):
+    model = Task
+    template_name = 'tasks/board.html'
+    success_url = reverse_lazy('kanban_board')
 
     def get(self, request):
         tasks = Task.objects.all()

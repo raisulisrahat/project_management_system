@@ -29,21 +29,21 @@
             </div>
                 <span class="vr vr-blurry"></span>
             <div class="col-sm-1 text-center">
-                <a href="" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
+                <a href="{% url 'kanban_board' project.label %}" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
                     <i class="me-1" aria-hidden="true">{% bs_icon 'kanban' %}</i>
                     <span class="eme01">Board</span>
                 </a>
             </div>
                 <span class="vr vr-blurry"></span>
             <div class="col-sm-1 text-center">
-                <a href="" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
+                <a href="{% url 'kanban_board' project.label %}" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
                     <i class="me-1" aria-hidden="true">{% bs_icon 'calendar' extra_classes='fw-semibold' %}</i>
                     <span class="eme01">Calendar</span>
                 </a>
             </div>
             <span class="vr vr-blurry"></span>
             <div class="col-sm-1  text-center">
-                <a href="" class="link-offset-3 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
+                <a href="{% url 'kanban_board' project.label %}" class="link-offset-3 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
                     <i class="me-1" aria-hidden="true">{% bs_icon 'list-nested' extra_classes='fw-semibold' %}</i>
                     <span class="eme01">Backlog</span>
                 </a>
