@@ -1,9 +1,31 @@
 {% extends "base.html" %}
-{% block title %} {{ project.label }} Board {% endblock %}
-<body>
-<div class="d-flex">
-    <a herf="">Projects</a>/<a href="">{{ project.label }}</a>
-</div>
+{% load static %}
 
-<p class="">{{ project.label }} board</p>
-</body>
+{% block content %}
+<div class="container">
+    <p class="mb-4 eme01">{{ project.name }} / Kanban Board</p>
+    <div class="my-sm-2">
+        {% include "tabs.html" %}
+    </div>
+    <div class="row flex-nowrap overflow-auto" style="gap: 1rem;">
+    {% for status in statuses %}
+        <div class="col bg-light p-3 shadow-sm" style="min-width: 250px;">
+            <h5 class="text-center">{{ status.status_name }}</h5>
+            <div class="task-list">
+                {% for task in status.tasks %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <strong>{{ task.unique_id }}</strong><br>
+                        <span>{{ task.summary }}</span><br>
+                        <small>Assigned to: {{ task.assigned_to.user.profile.full_name }}</small>
+                    </div>
+                </div>
+                {% empty %}
+                    <p class="text-muted">No tasks</p>
+                {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

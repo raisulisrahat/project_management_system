@@ -17,15 +17,33 @@ from django.db import IntegrityError
 from django.contrib import messages
 from shutil import move
 
-class KanbanBoardView(View):
-    model = Task
+class KanbanBoardView(LoginRequiredMixin, View):
     template_name = 'tasks/board.html'
-    success_url = reverse_lazy('kanban_board')
 
-    def get(self, request):
-        tasks = Task.objects.all()
-        status = StatusList.objects.all()
-        issues = Issue.objects.all()
+    def get(self, request, *args, **kwargs):
+        label = self.kwargs.get('label')
+        if label:
+            project = get_object_or_404(Project, code=label.upper())
+            statuses = StatusList.objects.all()
+
+            for status in statuses:
+                status.tasks = project.tasks.filter(status=status)
+
+            context = {
+                'project': project,
+                'statuses': statuses,
+            }
+            return render(request, self.template_name, context)
+
+        form = ProjectSelectForm()
+        return render(request, 'projects/project_list.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = ProjectSelectForm(request.POST)
+        if form.is_valid():
+            project = form.cleaned_data['project']
+            return redirect('kanban_board', label=project.code.lower())
+        return render(request, 'projects/project_list.html', {'form': form})
 
 
 @csrf_exempt
