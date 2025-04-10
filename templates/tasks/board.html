@@ -15,9 +15,15 @@
                 {% for task in status.tasks %}
                 <div class="card mb-3">
                     <div class="card-body">
-                        <strong>{{ task.unique_id }}</strong><br>
-                        <span>{{ task.summary }}</span><br>
-                        <small>Assigned to: {{ task.assigned_to.user.profile.full_name }}</small>
+                        <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-muted text-decoration-none">
+                            <p class="fw-medium">{{ task.summary }}</p>
+                        </a>
+                        <div class="d-flex justify-content-between align-content-center">
+                            <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-muted text-decoration-none">
+                                <p class="fw-semibold eme01 mt-sm-1">{{ task.unique_id }}</p>
+                            </a>
+                            <img src="{{ task.assigned_to.user.profile.profile_image.url }}" class="rounded-circle" width="30" height="30" alt="{{ task.assigned_to.user.profile.full_name }}">
+                        </div>
                     </div>
                 </div>
                 {% empty %}

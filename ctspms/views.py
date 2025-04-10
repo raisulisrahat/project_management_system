@@ -174,7 +174,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
             if request.user.is_authenticated:
                 task.reporter = request.user.profile
-                if 'assign_me' in request.POST:
+                if request.POST.get('assign_me') == 'true':
                     task.assigned_to = request.user.profile
                 else:
                     task.assigned_to = task_form.cleaned_data['assigned_to']

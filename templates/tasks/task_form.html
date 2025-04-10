@@ -32,6 +32,8 @@
         <div class="col-sm-4 form-group mb-4">
             <label for="assigned_to" class="form-label fw-semibold">Assigned To</label>
             {{ task_form.assigned_to }}
+            <input type="hidden" name="assign_me" id="assignMeInput" value="false">
+            <button type="button" class="btn btn-sm" id="assign_me">Assign me</button>
         </div>
         <div class="col-sm-4 form-group mb-4">
             <label for="reporter" class="form-label fw-semibold">Reporter</label>
@@ -61,65 +63,70 @@
 
 <!-- JavaScript for file handling and preview -->
 <script>
-    const dragDropArea = document.getElementById('dragDropArea');
-    const browseButton = document.getElementById('browseButton');
-    const fileInput = document.getElementById('fileInput');
-    const filePreview = document.getElementById('filePreview');
+document.getElementById('assign_me').addEventListener('click', function() {
+    document.getElementById('assignMeInput').value = 'true';
+    alert("You have Assign this task")
+});
 
-    browseButton.addEventListener('click', function () {
-        fileInput.click();
-    });
+const dragDropArea = document.getElementById('dragDropArea');
+const browseButton = document.getElementById('browseButton');
+const fileInput = document.getElementById('fileInput');
+const filePreview = document.getElementById('filePreview');
 
-    fileInput.addEventListener('change', function () {
-        handleFiles(fileInput.files);
-    });
+browseButton.addEventListener('click', function () {
+    fileInput.click();
+});
 
-    dragDropArea.addEventListener('dragover', function (event) {
-        event.preventDefault();
-        dragDropArea.classList.add('drag-over');
-    });
+fileInput.addEventListener('change', function () {
+    handleFiles(fileInput.files);
+});
 
-    dragDropArea.addEventListener('dragleave', function () {
-        dragDropArea.classList.remove('drag-over');
-    });
+dragDropArea.addEventListener('dragover', function (event) {
+    event.preventDefault();
+    dragDropArea.classList.add('drag-over');
+});
 
-    dragDropArea.addEventListener('drop', function (event) {
-        event.preventDefault();
-        dragDropArea.classList.remove('drag-over');
-        handleFiles(event.dataTransfer.files);
-    });
+dragDropArea.addEventListener('dragleave', function () {
+    dragDropArea.classList.remove('drag-over');
+});
 
-    function handleFiles(files) {
-        for (let file of files) {
-            uploadFile(file);
+dragDropArea.addEventListener('drop', function (event) {
+    event.preventDefault();
+    dragDropArea.classList.remove('drag-over');
+    handleFiles(event.dataTransfer.files);
+});
+
+function handleFiles(files) {
+    for (let file of files) {
+        uploadFile(file);
+    }
+}
+
+function uploadFile(file) {
+    let formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/upload-temp-file/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCSRFToken()
         }
-    }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let preview = document.createElement('div');
+            preview.textContent = file.name;
+            filePreview.appendChild(preview);
+        }
+    })
+    .catch(error => console.error('Error uploading file:', error));
+}
 
-    function uploadFile(file) {
-        let formData = new FormData();
-        formData.append('file', file);
-
-        fetch('/upload-temp-file/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': getCSRFToken()
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                let preview = document.createElement('div');
-                preview.textContent = file.name;
-                filePreview.appendChild(preview);
-            }
-        })
-        .catch(error => console.error('Error uploading file:', error));
-    }
-
-    function getCSRFToken() {
-        return document.cookie.split('; ').find(row => row.startsWith('csrftoken')).split('=')[1];
-    }
+function getCSRFToken() {
+    return document.cookie.split('; ').find(row => row.startsWith('csrftoken')).split('=')[1];
+}
     // Function to handle files and generate previews
     // Function to handle file previews
 function handleFiles(files) {

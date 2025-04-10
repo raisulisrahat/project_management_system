@@ -98,7 +98,7 @@ class Task(models.Model):
     summary = models.CharField(max_length=100)
     description = RichTextUploadingField(null=True, blank=True)
     attachments = models.ManyToManyField(Attachment, blank=True)
-    reporter = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='reporter_tasks')
+    reporter = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name='reporter_tasks')
     assigned_to = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, related_name='assigned_tasks', default='Unassigned')
     priority = models.ForeignKey(PriorityList, on_delete=models.CASCADE, null=True, blank=True)
     status = models.ForeignKey(StatusList, on_delete=models.SET_NULL, null=True, blank=True, default='Medium')
