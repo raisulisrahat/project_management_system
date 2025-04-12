@@ -4,7 +4,7 @@
 {% block title %}Create Project{% endblock %}
 
 {% block content %}
-<div class="container">
+
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row">
@@ -29,7 +29,7 @@
             </div>
         </div>
     </form>
-</div>
+
 
 {{ form.media }}
 <script>

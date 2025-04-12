@@ -2,7 +2,7 @@
 {% block title %}List Projects{% endblock %}
 
 {% block content %}
-<div class="container">
+
 <div class="d-flex justify-content-sm-between my-3">
     <p class="fs-5 fw-bold">Projects</p>
     <a class="btn btn-primary eme01 p-sm-1 p-md-2 m-2" href="{% url 'project_create' %}" data-toggle="modal" data-target="#exampleModalCenter">Create Project</a>
@@ -39,5 +39,5 @@
             {% endfor %}
             </tbody>
         </table>
-</div>
+
 {% endblock %}

@@ -3,7 +3,7 @@
 {% block title %}Create Task{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="mt-5">
     <p class="fs-6 fw-semibold">Create a New Task for {{ project.name }}</p>
 
     <!-- Task Form -->
@@ -15,15 +15,23 @@
         </div>
         <div class="col-sm-4 form-group mb-4">
             <label for="description" class="form-label fw-semibold">Description</label>
-            {{ task_form.description }}
+            <div class="">{{ task_form.description }}</div>
         </div>
         <div class="col-sm-4 form-group mb-4">
             <label for="status" class="form-label fw-semibold">Status<span class="text-danger">*</span></label>
-            {{ task_form.status }}
+            <select class="form-select" id="status" name="status">
+                {% for status in statuses %}
+                    <option value="{{ status.id }}" {% if form.instance.status.id == status.id %}selected{% endif %}>{{ status.status_name }}</option>
+                {% endfor %}
+            </select>
         </div>
         <div class="col-sm-4 form-group mb-4">
             <label for="priority" class="form-label fw-semibold">Priority<span class="text-danger">*</span></label>
-            {{ task_form.priority }}
+            <select class="form-select" id="priority" name="priority">
+                {% for priority in priorities %}
+                    <option value="{{ priority.id }}" {% if form.instance.priority.id == priority.id %}selected{% endif %}>{{ priority.priority_name }}</option>
+                {% endfor %}
+            </select>
         </div>
         <div class="col-sm-4 form-group mb-4">
             <label for="dependencies" class="form-label fw-semibold">Dependencies</label>
@@ -31,7 +39,15 @@
         </div>
         <div class="col-sm-4 form-group mb-4">
             <label for="assigned_to" class="form-label fw-semibold">Assigned To</label>
-            {{ task_form.assigned_to }}
+            <select class="form-control form-select" id="assigned_to" name="assigned_to">
+                {% for person in peoples %}
+                    <option value="{{ person.id }}" data-image="{{ person.profile_image.url }}">
+                        {{ person.full_name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Assign me input -->
             <input type="hidden" name="assign_me" id="assignMeInput" value="false">
             <button type="button" class="btn btn-sm" id="assign_me">Assign me</button>
         </div>
@@ -63,10 +79,33 @@
 
 <!-- JavaScript for file handling and preview -->
 <script>
-document.getElementById('assign_me').addEventListener('click', function() {
-    document.getElementById('assignMeInput').value = 'true';
-    alert("You have Assign this task")
-});
+
+    function formatOption(option) {
+        if (!option.id) return option.text;
+
+        const imgUrl = option.element.getAttribute('data-image');
+        const text = option.text;
+
+        return $(
+            `<span><img src="${imgUrl}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">${text}</span>`
+        );
+    }
+
+    $(document).ready(function () {
+        $('#assigned_to').select2({
+            templateResult: formatOption,
+            templateSelection: formatOption,
+            theme: 'bootstrap-5',
+            width: '100%'
+        });
+
+        document.getElementById('assign_me').addEventListener('click', function () {
+            document.getElementById('assignMeInput').value = 'true';
+            const meId = "{{ request.user.profile.id }}";
+            $('#assigned_to').val(meId).trigger('change');
+        });
+    });
+
 
 const dragDropArea = document.getElementById('dragDropArea');
 const browseButton = document.getElementById('browseButton');

@@ -17,33 +17,34 @@ from django.db import IntegrityError
 from django.contrib import messages
 from shutil import move
 
+
 class KanbanBoardView(LoginRequiredMixin, View):
     template_name = 'tasks/board.html'
 
     def get(self, request, *args, **kwargs):
         label = self.kwargs.get('label')
-        if label:
-            project = get_object_or_404(Project, code=label.upper())
-            statuses = StatusList.objects.all()
+        project = get_object_or_404(Project, code=label.upper())
+        statuses = StatusList.objects.all()
 
-            for status in statuses:
-                status.tasks = project.tasks.filter(status=status)
+        for status in statuses:
+            status.tasks = project.tasks.filter(status=status).order_by('id')
 
-            context = {
-                'project': project,
-                'statuses': statuses,
-            }
-            return render(request, self.template_name, context)
-
-        form = ProjectSelectForm()
-        return render(request, 'projects/project_list.html', {'form': form})
+        context = {
+            'project': project,
+            'statuses': statuses,
+        }
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        form = ProjectSelectForm(request.POST)
-        if form.is_valid():
-            project = form.cleaned_data['project']
-            return redirect('kanban_board', label=project.code.lower())
-        return render(request, 'projects/project_list.html', {'form': form})
+        task_id = request.POST.get('task_id')
+        new_status_id = request.POST.get('new_status')
+        try:
+            task = Task.objects.get(id=task_id)
+            task.status_id = new_status_id
+            task.save()
+            return JsonResponse({'success': True})
+        except Task.DoesNotExist:
+            return JsonResponse({'success': False}, status=404)
 
 
 @csrf_exempt
@@ -158,7 +159,10 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
         project = get_object_or_404(Project, code=label)
         task_form = TaskForm()
-        return render(request, self.template_name, {'task_form': task_form, 'project': project})
+        statuses  = StatusList.objects.all()
+        priorities = PriorityList.objects.all()
+        peoples = Profile.objects.all()
+        return render(request, self.template_name, {'task_form': task_form, 'project': project, 'statuses': statuses, 'priorities': priorities, 'peoples': peoples})
 
     def post(self, request, *args, **kwargs):
         label = kwargs.get('label')

@@ -112,4 +112,13 @@
     margin-top: 5px;
     display: block;
 }
-ex
+.ui-state-highlight {
+    height: 100px;
+    background: #e6e6e6;
+    border: 2px dashed #ccc;
+    margin-bottom: 1rem;
+}
+.tilt {
+    transform: rotate(1deg);
+}
+
