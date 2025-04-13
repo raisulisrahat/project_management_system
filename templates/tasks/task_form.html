@@ -4,12 +4,12 @@
 
 {% block content %}
 <div class="mt-5">
-    <p class="fs-6 fw-semibold">Create a New Task for {{ project.name }}</p>
+    <p class="fs-6 fw-semibold">Create a new task for <span class="text-primary">{{ project.name }}</span></p>
 
     <!-- Task Form -->
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="col-sm-4 form-group mb-4">
+        <div class="col-sm-3 form-group mb-4">
             <label for="summary" class="form-label fw-semibold">Summary<span class="text-danger">*</span></label>
             {{ task_form.summary }}
         </div>
@@ -17,7 +17,7 @@
             <label for="description" class="form-label fw-semibold">Description</label>
             <div class="">{{ task_form.description }}</div>
         </div>
-        <div class="col-sm-4 form-group mb-4">
+        <div class="col-sm-3 form-group mb-4">
             <label for="status" class="form-label fw-semibold">Status<span class="text-danger">*</span></label>
             <select class="form-select" id="status" name="status">
                 {% for status in statuses %}
@@ -25,7 +25,7 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-sm-4 form-group mb-4">
+        <div class="col-sm-3 form-group mb-4">
             <label for="priority" class="form-label fw-semibold">Priority<span class="text-danger">*</span></label>
             <select class="form-select" id="priority" name="priority">
                 {% for priority in priorities %}
@@ -33,36 +33,46 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-sm-4 form-group mb-4">
+        <div class="col-sm-3 form-group mb-4">
             <label for="dependencies" class="form-label fw-semibold">Dependencies</label>
             {{ task_form.dependencies }}
         </div>
-        <div class="col-sm-4 form-group mb-4">
+        <div class="col-sm-3 form-group mb-4">
             <label for="assigned_to" class="form-label fw-semibold">Assigned To</label>
-            <select class="form-control form-select" id="assigned_to" name="assigned_to">
+            <div class="d-flex justify-content-sm-between align-items-center">
+                <select class="form-control form-select" id="assigned_to" name="assigned_to">
+                    <option value="" class="form-control">Unassigned</option>
+                    {% for person in peoples %}
+                        <option value="{{ person.id }}" data-image="{{ person.profile_image.url }}">
+                            {{ person.full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <!-- Assign me input -->
+                <input type="hidden" name="assign_me" id="assignMeInput" value="false">
+            <div class="col-sm-3 mt-sm-3">
+                <button type="button" class="btn btn-sm bg-light-subtle shadow-sm" id="assign_me">Assign me</button>
+            </div>
+            </div>
+        </div>
+        <div class="col-sm-3 form-group mb-4">
+            <label for="reporter" class="form-label fw-semibold">Reporter</label>
+            <select class="form-control form-select" name="reporter">
                 {% for person in peoples %}
                     <option value="{{ person.id }}" data-image="{{ person.profile_image.url }}">
                         {{ person.full_name }}
                     </option>
                 {% endfor %}
             </select>
-
-            <!-- Assign me input -->
-            <input type="hidden" name="assign_me" id="assignMeInput" value="false">
-            <button type="button" class="btn btn-sm" id="assign_me">Assign me</button>
-        </div>
-        <div class="col-sm-4 form-group mb-4">
-            <label for="reporter" class="form-label fw-semibold">Reporter</label>
-            {{ task_form.reporter }}
         </div>
 
         <!-- File upload with custom Browse button and preview -->
-        <div class="col-sm-4 form-group mb-4">
+        <div class="col-sm-3 form-group mb-4">
             <label for="attachments" class="form-label fw-semibold">Attachments</label>
             <div id="dragDropArea" class="drag-drop-area">
                 <span class="fw-semibold">Drag and drop your files here or
                     <!-- Custom Browse button -->
-                    <button type="button" id="browseButton" class="btn bg-primary-subtle shadow-sm ms-2">Browse</button>
+                    <button type="button" id="browseButton" class="btn bg-primary-subtle mt-sm-1 shadow-sm ms-2">Browse</button>
                     <!-- Hidden file input element -->
                     <input type="file" id="fileInput" name="attachments" class="d-none" multiple>
                 </span>
@@ -87,7 +97,7 @@
         const text = option.text;
 
         return $(
-            `<span><img src="${imgUrl}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">${text}</span>`
+            `<span class="form-control form-select"><img src="${imgUrl}" style="width: 30px; height: 30px; border-radius: 50%; ">${text}</span>`
         );
     }
 
