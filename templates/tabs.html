@@ -43,7 +43,7 @@
             </div>
             <span class="vr vr-blurry"></span>
             <div class="col-sm-1  text-center">
-                <a href="{% url 'kanban_board' project.label %}" class="link-offset-3 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
+                <a href="{% url 'backlog' project.label %}" class="{% if request.resolver_match.url_name == 'backlog' %}active{% endif %} link-offset-3 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
                     <i class="me-1" aria-hidden="true">{% bs_icon 'list-nested' extra_classes='fw-semibold' %}</i>
                     <span class="eme01">Backlog</span>
                 </a>

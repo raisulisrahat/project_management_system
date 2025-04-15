@@ -5,16 +5,15 @@
 
 {% block content %}
 
-    <div class="d-flex justify-content-sm-between">
-        <div class="d-flex align-items-center justify-content-sm-start gap-2">
+    <div class="d-flex justify-content-sm-between mb-3">
+        <div class="d-flex align-items-center gap-2">
             <a href="{% url 'projects' %}" class="text-decoration-none text-dark eme01">Projects</a> /
-            <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark eme01"> {{ project.name }}</a> /
-            <a href="{% url 'task_lists' project.label %}" class="text-decoration-none text-dark eme01"> Lists</a>
+            <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark eme01">{{ project.name }}</a> /
+            <a href="{% url 'task_lists' project.label %}" class="text-decoration-none text-dark eme01">Lists</a>
         </div>
-
-        <!-- Use <a> tag to properly link to the task creation page for the project -->
-        <a href="{% url 'task_create' project.label %}" class="btn bg-primary-subtle eme01 my-sm-2">Create Task</a>
+        <a href="{% url 'task_create' project.label %}" class="btn btn-sm btn-primary">Create Task</a>
     </div>
+
     <div class="my-sm-2">
         {% include "tabs.html" %}
     </div>

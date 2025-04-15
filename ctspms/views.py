@@ -63,6 +63,20 @@ def upload_temp_file(request):
         return JsonResponse({'success': True, 'file_path': file_path})
 
     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+class BacklogView(View):
+    def get(self, request, label):  # <- change to match URL parameter
+        project = get_object_or_404(Project, code=label.upper())
+        backlog_status = StatusList.objects.filter(project=project, status_name__iexact="Backlog").first()
+
+        tasks = Task.objects.filter(project=project, status=backlog_status).order_by('-created_at') if backlog_status else []
+
+        return render(request, 'tasks/backlog.html', {
+            'project': project,
+            'tasks': tasks,
+        })
+
+
 @require_GET
 def ajax_search(request):
     query = request.GET.get('q', '')  # Get the query from the GET request
