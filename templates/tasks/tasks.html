@@ -73,5 +73,29 @@
             {% endfor %}
         </tbody>
     </table>
+<div class="d-flex justify-content-center mt-3">
+    <ul class="pagination justify-content-center">
+        {% if tasks.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ tasks.previous_page_number }}">Previous</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+
+        {% for num in tasks.paginator.page_range %}
+            {% if tasks.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > tasks.number|add:'-3' and num < tasks.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if tasks.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ tasks.next_page_number }}">Next task</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+    </ul>
+</div>
+<p>Page: {{ tasks.number }} of {{ tasks.paginator.num_pages }}</p>
 
 {% endblock %}

@@ -1,4 +1,6 @@
 import os, uuid
+
+from django.core.paginator import Paginator
 from django.views import View
 from django.http import JsonResponse,Http404, HttpResponseForbidden
 from django.views.decorators.http import require_GET
@@ -46,6 +48,21 @@ class KanbanBoardView(LoginRequiredMixin, View):
         except Task.DoesNotExist:
             return JsonResponse({'success': False}, status=404)
 
+class BacklogView(View):
+    template_name = 'tasks/backlog.html'
+
+    def get(self, request, *args, **kwargs):  # <- change to match URL parameter
+        label = self.kwargs.get('label')
+        project = get_object_or_404(Project, code=label.upper())
+        backlog_status = StatusList.objects.filter(status__iexact="Backlog").first()
+        tasks = Task.objects.filter(project=project, status=backlog_status).order_by('-created_at') if backlog_status else []
+
+        context = {
+            'project': project,
+            'backlog_status': backlog_status,
+            'tasks': tasks,
+        }
+        return render(request, self.template_name, context)
 
 @csrf_exempt
 def upload_temp_file(request):
@@ -64,17 +81,7 @@ def upload_temp_file(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
-class BacklogView(View):
-    def get(self, request, label):  # <- change to match URL parameter
-        project = get_object_or_404(Project, code=label.upper())
-        backlog_status = StatusList.objects.filter(project=project, status_name__iexact="Backlog").first()
 
-        tasks = Task.objects.filter(project=project, status=backlog_status).order_by('-created_at') if backlog_status else []
-
-        return render(request, 'tasks/backlog.html', {
-            'project': project,
-            'tasks': tasks,
-        })
 
 
 @require_GET
@@ -221,12 +228,14 @@ class StatusCreateView(LoginRequiredMixin, CreateView):
 class ProjectListView(LoginRequiredMixin, ListView):
     model = Project
     template_name = 'projects/project_list.html'
-    context_object_name = 'projects'  # Context variable in the template
+    context_object_name = 'projects'
+    paginate_by = 10
 
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
     template_name = 'tasks/tasks.html'
     context_object_name = 'tasks'
+    paginate_by = 6
 
     def get(self, request, *args, **kwargs):
         if 'label' in self.kwargs:

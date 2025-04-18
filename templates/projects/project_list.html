@@ -5,39 +5,62 @@
 
 <div class="d-flex justify-content-sm-between mb-3">
     <p class="fs-5 fw-bold">Projects</p>
-    <a class="btn btn-sm btn-primary" href="{% url 'project_create' %}" data-toggle="modal" data-target="#exampleModalCenter">Create Project</a>
+    <div class="d-flex align-items-center">
+        <a href="{% url 'project_create' %}" class="btn btn-sm btn-primary">Create Project</a>
+    </div>
 </div>
-        <table class="table table-hover shadow-sm">
-            <thead>
-                <tr>
-                    <th scope="col">Project Name</th>
-                    <th scope="col">Key</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Lead</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for project in projects %}
-                <tr>
-                    <td class="fw-medium">
-                        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none" style="color: #3e98ff;">
-                            {{ project.name }}
-                        </a>
-                    </td>
-                    <td class="fw-medium text-secondary">{{ project.label }}</td>
-                    <td class="fw-medium text-secondary">{{ project.type }}</td>
-                    <td class="fw-medium">
-                        <a href="" class="text-decoration-none gap-2" style="color: #3e98ff;">
-                            <img src="{{ project.lead.user.profile.profile_image.url }}" alt="{{ project.lead }}" class="rounded-circle" width="30" height="30">  {{ project.lead }}
-                        </a>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5">No projects found yet.</td>
-                </tr>
+<table class="table table-hover shadow-sm">
+    <thead>
+        <tr>
+            <th scope="col">Project Name</th>
+            <th scope="col">Key</th>
+            <th scope="col">Type</th>
+            <th scope="col">Lead</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for project in projects %}
+        <tr>
+            <td class="fw-medium">
+                <a href="{% url 'project_detail' project.label %}" class="text-decoration-none" style="color: #3e98ff;">
+                    {{ project.name }}
+                </a>
+            </td>
+            <td class="fw-medium text-secondary">{{ project.label }}</td>
+            <td class="fw-medium text-secondary">{{ project.type }}</td>
+            <td class="fw-medium">
+                <a href="" class="text-decoration-none gap-2" style="color: #3e98ff;">
+                    <img src="{{ project.lead.user.profile.profile_image.url }}" alt="{{ project.lead }}" class="rounded-circle" width="30" height="30">  {{ project.lead }}
+                </a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="5">No projects found yet.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    <div class="d-flex justify-content-center mt-3">
+        <ul class="pagination justify-content-center">
+            {% if projects.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ projects.previous_page_number }}">Previous</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+            {% for num in projects.paginator.page_renge %}
+                {% if projects.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% else num > projects.number|add:'-3' and num < projects.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
             {% endfor %}
-            </tbody>
-        </table>
 
+            {% if projects.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ projects.next_page_number }}">Next</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+            {% endif %}
+        </ul>
+    </div>
 {% endblock %}
