@@ -19,71 +19,6 @@ from django.db import IntegrityError
 from django.contrib import messages
 from shutil import move
 
-
-class KanbanBoardView(LoginRequiredMixin, View):
-    template_name = 'tasks/board.html'
-
-    def get(self, request, *args, **kwargs):
-        label = self.kwargs.get('label')
-        project = get_object_or_404(Project, code=label.upper())
-        statuses = StatusList.objects.all()
-
-        for status in statuses:
-            status.tasks = project.tasks.filter(status=status).order_by('id')
-
-        context = {
-            'project': project,
-            'statuses': statuses,
-        }
-        return render(request, self.template_name, context)
-
-    def post(self, request, *args, **kwargs):
-        task_id = request.POST.get('task_id')
-        new_status_id = request.POST.get('new_status')
-        try:
-            task = Task.objects.get(id=task_id)
-            task.status_id = new_status_id
-            task.save()
-            return JsonResponse({'success': True})
-        except Task.DoesNotExist:
-            return JsonResponse({'success': False}, status=404)
-
-class BacklogView(View):
-    template_name = 'tasks/backlog.html'
-
-    def get(self, request, *args, **kwargs):  # <- change to match URL parameter
-        label = self.kwargs.get('label')
-        project = get_object_or_404(Project, code=label.upper())
-        backlog_status = StatusList.objects.filter(status__iexact="Backlog").first()
-        tasks = Task.objects.filter(project=project, status=backlog_status).order_by('-created_at') if backlog_status else []
-
-        context = {
-            'project': project,
-            'backlog_status': backlog_status,
-            'tasks': tasks,
-        }
-        return render(request, self.template_name, context)
-
-@csrf_exempt
-def upload_temp_file(request):
-    if request.method == 'POST' and request.FILES.get('file'):
-        uploaded_file = request.FILES['file']
-
-        temp_dir = os.path.join(settings.MEDIA_ROOT, 'temp')
-        os.makedirs(temp_dir, exist_ok=True)
-
-        file_name = f"{uuid.uuid4()}_{uploaded_file.name}"
-        file_path = os.path.join(temp_dir, file_name)
-
-        default_storage.save(file_path, ContentFile(uploaded_file.read()))
-
-        return JsonResponse({'success': True, 'file_path': file_path})
-
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
-
-
-
-
 @require_GET
 def ajax_search(request):
     query = request.GET.get('q', '')  # Get the query from the GET request
@@ -115,6 +50,13 @@ def ajax_search(request):
     return JsonResponse({'error': 'No query provided'}, status=400)
 
 # Create Views
+
+class ProjectListView(LoginRequiredMixin, ListView):
+    model = Project
+    template_name = 'projects/project_list.html'
+    context_object_name = 'projects'
+    paginate_by = 10
+
 class ProjectCreateView(LoginRequiredMixin, View):
     model = Project
     template_name = 'projects/project_form.html'
@@ -146,6 +88,109 @@ class ProjectCreateView(LoginRequiredMixin, View):
             print(project_form.errors)  # Print form errors in the console for debugging
 
         return render(request, self.template_name, {'form': project_form})
+
+class ProjectDetailView(LoginRequiredMixin, DetailView):
+    model = Project
+    template_name = 'projects/summary.html'
+    context_object_name = 'project'
+
+    def get_object(self):
+        label = self.kwargs.get('label')
+        project = Project.objects.filter(code__iexact=label).first()
+
+        if not project:
+            projects = Project.objects.all()
+            for proj in projects:
+                if proj.label() == label:
+                    project = proj
+                    break
+
+        if not project:
+            raise Http404("Project does not exist")
+
+        return project
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Task status breakdown for doughnut chart
+        task_statuses = context['project'].tasks.values_list('status__status_name', flat=True).distinct()
+        task_counts = [context['project'].tasks.filter(status__status_name=status).count() for status in task_statuses]
+
+        # Task priority breakdown for bar chart
+        task_priorities = context['project'].tasks.values_list('priority__priority_name', flat=True).distinct()
+        task_priority_counts = [context['project'].tasks.filter(priority__priority_name=priority).count() for priority
+                                in task_priorities]
+
+        # Generate a list of unique assigned users for the team workload section
+        assigned_users = set()
+        user_task_count = {}  # To store task count per user
+
+        for task in context['project'].tasks.all():
+            assigned_users.add(task.assigned_to)
+            user_task_count[task.assigned_to] = user_task_count.get(task.assigned_to, 0) + 1
+
+        # Calculate total tasks and percentage for each user
+        total_tasks = context['project'].tasks.count()
+        user_task_percentages = {user: (count / total_tasks) * 100 for user, count in user_task_count.items()}
+
+        # Create a list of tuples (user, percentage) instead of a dictionary
+        user_task_percentages_list = [(user, user_task_percentages.get(user, 0)) for user in assigned_users]
+
+        # Pass data to the template
+        context['unique_assigned_users'] = list(assigned_users)
+        context['user_task_percentages'] = user_task_percentages_list  # Pass as list of tuples
+
+        # Pass chart data to template context
+        context['task_statuses'] = list(task_statuses)
+        context['task_counts'] = task_counts
+        context['task_priorities'] = list(task_priorities)
+        context['task_priority_counts'] = task_priority_counts
+
+        return context
+
+
+class ProjectUpdateView(LoginRequiredMixin, View):
+    template_name = 'projects/project_form_modify.html'
+
+    def get_object(self, label):
+        return get_object_or_404(Project, code__iexact=label)
+
+    def get(self, request, label):
+        project = self.get_object(label)
+        form = ProjectForm(instance=project)
+        return render(request, self.template_name, {
+            'form': form,
+            'project': project
+        })
+
+    def post(self, request, label):
+        project = self.get_object(label)
+        form = ProjectForm(request.POST, instance=project)
+
+        if form.is_valid():
+            updated_project = form.save()
+            return redirect('project_detail', label=updated_project.code.lower())  # or use .label if it's a property
+        return render(request, self.template_name, {
+            'form': form,
+            'project': project
+        })
+
+class ProjectDeleteView(LoginRequiredMixin, View):
+    template_name = 'projects/project_confirm_delete.html'
+
+    def get_object(self, label):
+        return get_object_or_404(Project, code__iexact=label)
+
+    def get(self, request, label):
+        project = self.get_object(label)
+        return render(request, self.template_name, {'project': project})
+
+    def post(self, request, label):
+        project = self.get_object(label)
+        project.delete()
+        return redirect('projects')
+
 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
@@ -218,24 +263,13 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
         return render(request, self.template_name, {'task_form': task_form, 'project': project})
 
 
-class StatusCreateView(LoginRequiredMixin, CreateView):
-    model = StatusList
-    template_name = 'tasks/board.html'  # Add the correct template path
-    fields = ['status_name']  # Include necessary fields
-    success_url = reverse_lazy('task_create')  # Redirect to task list after creating
 
 # List Views
-class ProjectListView(LoginRequiredMixin, ListView):
-    model = Project
-    template_name = 'projects/project_list.html'
-    context_object_name = 'projects'
-    paginate_by = 10
-
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
     template_name = 'tasks/tasks.html'
     context_object_name = 'tasks'
-    paginate_by = 6
+    paginate_by = 10
 
     def get(self, request, *args, **kwargs):
         if 'label' in self.kwargs:
@@ -262,66 +296,6 @@ class TaskListView(LoginRequiredMixin, ListView):
 
 
 # Detail View
-class ProjectDetailView(LoginRequiredMixin, DetailView):
-    model = Project
-    template_name = 'projects/summary.html'
-    context_object_name = 'project'
-
-    def get_object(self):
-        label = self.kwargs.get('label')
-        project = Project.objects.filter(code__iexact=label).first()
-
-        if not project:
-            projects = Project.objects.all()
-            for proj in projects:
-                if proj.label() == label:
-                    project = proj
-                    break
-
-        if not project:
-            raise Http404("Project does not exist")
-
-        return project
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        # Task status breakdown for doughnut chart
-        task_statuses = context['project'].tasks.values_list('status__status_name', flat=True).distinct()
-        task_counts = [context['project'].tasks.filter(status__status_name=status).count() for status in task_statuses]
-
-        # Task priority breakdown for bar chart
-        task_priorities = context['project'].tasks.values_list('priority__priority_name', flat=True).distinct()
-        task_priority_counts = [context['project'].tasks.filter(priority__priority_name=priority).count() for priority
-                                in task_priorities]
-
-        # Generate a list of unique assigned users for the team workload section
-        assigned_users = set()
-        user_task_count = {}  # To store task count per user
-
-        for task in context['project'].tasks.all():
-            assigned_users.add(task.assigned_to)
-            user_task_count[task.assigned_to] = user_task_count.get(task.assigned_to, 0) + 1
-
-        # Calculate total tasks and percentage for each user
-        total_tasks = context['project'].tasks.count()
-        user_task_percentages = {user: (count / total_tasks) * 100 for user, count in user_task_count.items()}
-
-        # Create a list of tuples (user, percentage) instead of a dictionary
-        user_task_percentages_list = [(user, user_task_percentages.get(user, 0)) for user in assigned_users]
-
-        # Pass data to the template
-        context['unique_assigned_users'] = list(assigned_users)
-        context['user_task_percentages'] = user_task_percentages_list  # Pass as list of tuples
-
-        # Pass chart data to template context
-        context['task_statuses'] = list(task_statuses)
-        context['task_counts'] = task_counts
-        context['task_priorities'] = list(task_priorities)
-        context['task_priority_counts'] = task_priority_counts
-
-        return context
-
 
 class TaskDetailView(DetailView):
     model = Task
@@ -384,3 +358,75 @@ class TaskDetailView(DetailView):
 
         return redirect('task_detail', label=task.project.code, unique_id=task.unique_id())
 
+
+
+class KanbanBoardView(LoginRequiredMixin, View):
+    template_name = 'tasks/board.html'
+
+    def get(self, request, *args, **kwargs):
+        label = self.kwargs.get('label')
+        project = get_object_or_404(Project, code=label.upper())
+        statuses = StatusList.objects.all()
+
+        for status in statuses:
+            status.tasks = project.tasks.filter(status=status).order_by('id')
+
+        context = {
+            'project': project,
+            'statuses': statuses,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        task_id = request.POST.get('task_id')
+        new_status_id = request.POST.get('new_status')
+        try:
+            task = Task.objects.get(id=task_id)
+            task.status_id = new_status_id
+            task.save()
+            return JsonResponse({'success': True})
+        except Task.DoesNotExist:
+            return JsonResponse({'success': False}, status=404)
+
+class BacklogView(View):
+    template_name = 'tasks/backlog.html'
+
+    def get(self, request, *args, **kwargs):  # <- change to match URL parameter
+        label = self.kwargs.get('label')
+        project = get_object_or_404(Project, code=label.upper())
+        backlog_status = StatusList.objects.filter(status__iexact="Backlog").first()
+        tasks = Task.objects.filter(project=project, status=backlog_status).order_by('-created_at') if backlog_status else []
+
+        context = {
+            'project': project,
+            'backlog_status': backlog_status,
+            'tasks': tasks,
+        }
+        return render(request, self.template_name, context)
+
+@csrf_exempt
+def upload_temp_file(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        uploaded_file = request.FILES['file']
+
+        temp_dir = os.path.join(settings.MEDIA_ROOT, 'temp')
+        os.makedirs(temp_dir, exist_ok=True)
+
+        file_name = f"{uuid.uuid4()}_{uploaded_file.name}"
+        file_path = os.path.join(temp_dir, file_name)
+
+        default_storage.save(file_path, ContentFile(uploaded_file.read()))
+
+        return JsonResponse({'success': True, 'file_path': file_path})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+
+
+
+class StatusCreateView(LoginRequiredMixin, CreateView):
+    model = StatusList
+    template_name = 'tasks/board.html'  # Add the correct template path
+    fields = ['status_name']  # Include necessary fields
+    success_url = reverse_lazy('task_create')  # Redirect to task list after creating

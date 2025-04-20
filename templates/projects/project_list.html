@@ -16,6 +16,7 @@
             <th scope="col">Key</th>
             <th scope="col">Type</th>
             <th scope="col">Lead</th>
+            <th scope="col">More</th>
         </tr>
     </thead>
     <tbody>
@@ -33,6 +34,21 @@
                     <img src="{{ project.lead.user.profile.profile_image.url }}" alt="{{ project.lead }}" class="rounded-circle" width="30" height="30">  {{ project.lead }}
                 </a>
             </td>
+           <td class="fw-medium me-0">
+               <div class="dropdown">
+                <button class="btn btn-sm border-0 bg-transparent" type="button" id="menuItem{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuItem{{ forloop.counter }}">
+                    <li>
+                        <a href="{% url 'project_update' project.label %}" class="dropdown-item">Edit Project</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'project_delete' project.label %}" class="dropdown-item">Delete</a>
+                    </li>
+                </ul>
+               </div>
+           </td>
         </tr>
     {% empty %}
         <tr>
@@ -41,26 +57,39 @@
     {% endfor %}
     </tbody>
 </table>
-    <div class="d-flex justify-content-center mt-3">
-        <ul class="pagination justify-content-center">
-            {% if projects.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ projects.previous_page_number }}">Previous</a></li>
-            {% else %}
-                <li class="page-item disabled"><span class="page-link">Previous</span></li>
-            {% endif %}
-            {% for num in projects.paginator.page_renge %}
-                {% if projects.number == num %}
-                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                    {% else num > projects.number|add:'-3' and num < projects.number|add:'3' %}
-                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-                {% endif %}
-            {% endfor %}
+<div class="d-flex justify-content-center mt-3">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}"> &lt; </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&lt;</span>
+            </li>
+        {% endif %}
 
-            {% if projects.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ projects.next_page_number }}">Next</a></li>
-            {% else %}
-                <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
             {% endif %}
-        </ul>
-    </div>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}"> &gt; </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link"> &gt; </span>
+            </li>
+        {% endif %}
+    </ul>
+</div>
 {% endblock %}

@@ -67,8 +67,8 @@
                         {% for task in project.tasks.all %}
                             {% for comment in task.comments.all %}
                                 <li class="list-group-item gap-sm-1">
-                                    <p class="fw-semibold eme01 text-primary my-sm-0">{{ task.unique_id }}: </p>
-                                    <p class="eme01 fw-medium my-0">{{ comment.comments_message|safe }} <span class="eme01 fw-lighter mt-0">comment by <a href="" class="text-primary text-decoration-none mb-sm-0">{{ comment.user.first_name }}</a></span></p>
+                                    <p class="fw-semibold eme01 my-sm-0">{{ task.unique_id }}:
+                                        <span class="eme01 fw-medium my-0">{{ comment.comments_message }} <span class="eme01 fw-lighter mt-0">comment by <a href="" class="text-primary text-decoration-none mb-sm-0">{{ comment.user.first_name }}</a></span></span></p>
                                 </li>
                             {% endfor %}
                         {% endfor %}
@@ -186,5 +186,15 @@
                 </div>
             </div>
         </div>
+
+<script>
+    CKEDITOR.on('instanceReady', function (ev) {
+        if (ev.editor.name === 'comments_message') {
+            ev.editor.config.autoParagraph = false;
+            ev.editor.config.enterMode = CKEDITOR.ENTER_BR;
+            ev.editor.config.shiftEnterMode = CKEDITOR.ENTER_P;
+        }
+    });
+</script>
 
 {% endblock %}

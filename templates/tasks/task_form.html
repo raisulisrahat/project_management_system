@@ -11,7 +11,7 @@
         {% csrf_token %}
         <div class="col-sm-3 form-group mb-4">
             <label for="summary" class="form-label fw-semibold">Summary<span class="text-danger">*</span></label>
-            {{ task_form.summary }}
+            <input class="form-control" type="text" id="summary" name="summary" required>
         </div>
         <div class="col-sm-4 form-group mb-4">
             <label for="description" class="form-label fw-semibold">Description</label>

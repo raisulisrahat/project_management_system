@@ -214,4 +214,3 @@ CKEDITOR_CONFIGS = {
         'filebrowserUploadMethod': 'form',  # Upload method (form-based)
     },
 }
-

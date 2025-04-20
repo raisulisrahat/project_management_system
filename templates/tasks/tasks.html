@@ -4,98 +4,110 @@
 {% block title %}Task List{% endblock %}
 
 {% block content %}
-
-    <div class="d-flex justify-content-sm-between mb-3">
-        <div class="d-flex align-items-center gap-2">
-            <a href="{% url 'projects' %}" class="text-decoration-none text-dark eme01">Projects</a> /
-            <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark eme01">{{ project.name }}</a> /
-            <a href="{% url 'task_lists' project.label %}" class="text-decoration-none text-dark eme01">Lists</a>
-        </div>
-        <a href="{% url 'task_create' project.label %}" class="btn btn-sm btn-primary">Create Task</a>
+<div class="d-flex justify-content-sm-between mb-3">
+    <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'projects' %}" class="text-decoration-none text-dark eme01">Projects</a> /
+        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark eme01">{{ project.name }}</a> /
+        <a href="{% url 'task_lists' project.label %}" class="text-decoration-none text-dark eme01">Lists</a>
     </div>
+    <a href="{% url 'task_create' project.label %}" class="btn btn-sm btn-primary">Create Task</a>
+</div>
 
-    <div class="my-sm-2">
-        {% include "tabs.html" %}
-    </div>
-    <table class="table shadow-sm">
-        <thead>
-            <tr>
-                <th>Key</th>
-                <th>Summary</th>
-                <th>Assigned To</th>
-                <th>Start Date</th>
-                <th>Due Date</th>
-                <th>Priorities</th>
-                <th>Status</th>
-                <th>Reporter</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for task in tasks %}
-            <tr>
-                <td>
-                    <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none text-dark">{{ task.unique_id }}</a>
-                </td>
-                <td>
-                    <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none text-dark">{{ task.summary }}</a>
-                </td>
-                <td>
-                    <button type="submit" class="btn btn-sm p-0 m-0">
-                        {{ task.assigned_to }}
-                    </button>
-                </td>
-                <td>
-                    <button type="submit" class="btn btn-sm p-0 m-0">
-                        {{ task.start_date.date }}
-                    </button>
-                </td>
-                <td>
-                    <button type="submit" class="btn btn-sm p-0 m-0">
-                        {{ task.due_date.date }}
-                    </button>
-                </td>
-                <td>
-                    <button type="submit" class="btn btn-sm p-0 m-0">
-                        {{ task.priority }}
-                    </button>
-                </td>
-                <td>
-                    <button type="submit" class="btn btn-sm p-0 m-0">
-                        {{ task.status }}
-                    </button>
-                </td>
-                <td>
-                    <button type="submit" class="btn btn-sm p-0 m-0">
-                        {{ task.reporter }}
-                    </button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="my-sm-2">
+    {% include "tabs.html" %}
+</div>
+<table class="table shadow-sm">
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Summary</th>
+            <th>Assigned To</th>
+            <th>Start Date</th>
+            <th>Due Date</th>
+            <th>Priorities</th>
+            <th>Status</th>
+            <th>Reporter</th>
+            <th>More</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>
+                <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none text-dark">{{ task.unique_id }}</a>
+            </td>
+            <td>
+                <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none text-dark">{{ task.summary }}</a>
+            </td>
+            <td>
+                <button type="submit" class="btn btn-sm p-0 m-0">
+                    <img src="{{ task.assigned_to.user.profile.profile_image.url }}" alt="{{ task.assigned_to }}" class="rounded-circle" width="30" height="30">
+                    {{ task.assigned_to }}
+                </button>
+            </td>
+            <td>
+                <button type="submit" class="btn btn-sm p-0 m-0">
+                    {{ task.start_date.date }}
+                </button>
+            </td>
+            <td>
+                <button type="submit" class="btn btn-sm p-0 m-0">
+                    {{ task.due_date.date }}
+                </button>
+            </td>
+            <td>
+                <button type="submit" class="btn btn-sm p-0 m-0">
+                    {{ task.priority }}
+                </button>
+            </td>
+            <td>
+                <button type="submit" class="btn btn-sm p-0 m-0">
+                    {{ task.status }}
+                </button>
+            </td>
+            <td>
+                <button type="submit" class="btn btn-sm p-0 m-0">
+                    <img src="{{ task.reporter.user.profile.profile_image.url }}" alt="{{ task.reporter }}" class="rounded-circle" width="30" height="30">
+                    {{ task.reporter }}
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 <div class="d-flex justify-content-center mt-3">
     <ul class="pagination justify-content-center">
-        {% if tasks.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ tasks.previous_page_number }}">Previous</a></li>
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}"> &lt; </a>
+            </li>
         {% else %}
-            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            <li class="page-item disabled">
+                <span class="page-link">&lt;</span>
+            </li>
         {% endif %}
 
-        {% for num in tasks.paginator.page_range %}
-            {% if tasks.number == num %}
-                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-            {% elif num > tasks.number|add:'-3' and num < tasks.number|add:'3' %}
-                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
             {% endif %}
         {% endfor %}
 
-        {% if tasks.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ tasks.next_page_number }}">Next task</a></li>
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}"> &gt; </a>
+            </li>
         {% else %}
-            <li class="page-item disabled"><span class="page-link">Next</span></li>
+            <li class="page-item disabled">
+                <span class="page-link"> &gt; </span>
+            </li>
         {% endif %}
     </ul>
 </div>
-<p>Page: {{ tasks.number }} of {{ tasks.paginator.num_pages }}</p>
-
 {% endblock %}
