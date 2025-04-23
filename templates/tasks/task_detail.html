@@ -12,7 +12,6 @@
         {{ task.unique_id }}
     </p>
 </div>
-
 <!-- Task and Comments Section -->
 <div class="row gap-4">
     <!-- Task Information Section -->
@@ -96,10 +95,8 @@
                             <span class="eme01 mt-sm-2 fw-semibold">{{ comment.user.profile.full_name }}</span>
                             <span class="eme01 fst-italic mt-sm-2 text-secondary">{{ comment.created_at }}</span>
                         </div>
-
                         <!-- Show Comment Text Initially -->
                         <p id="comment-text-{{ comment.id }}" class="eme01 mt-2">{{ comment.comments_message|safe }}</p>
-
                         <!-- Hidden Edit Form (Visible when Edit is clicked) -->
                         <form method="post" action="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" enctype="multipart/form-data" id="edit-form-{{ comment.id }}" style="display: none;" class="figurex">
                             {% csrf_token %}
@@ -130,32 +127,56 @@
 
     <!-- Sidebar with Task Details -->
     <div class="col-lg-3 p-5 mb-4 bg-white text-dark shadow-sm">
-        <p class="fw-semibold">Task Details</p>
-
+        <p class="fw-semibold fs-5">Task Details</p>
         <div class="row gap-sm-2 align-items-center">
-            <div class="col-sm-5">
-                <p class="fw-semibold">Priority:</p>
+            <div class="col-sm-4">
+                <p class="fw-semibold">Status:</p>
             </div>
-            <div class="col-sm-6">
-                <p class="btn btn-secondary text-center px-sm-2 py-sm-1">{{ task.priority.priority_name }}</p>
+            <div class="col-sm-7 mb-0">
+                <p class="btn btn-sm btn-light">{{ task.status.status_name }}</p>
             </div>
         </div>
         <div class="row gap-sm-2 align-items-center">
-            <div class="col-sm-5">
+            <div class="col-sm-4">
+                <p class="fw-semibold">Priority:</p>
+            </div>
+            <div class="col-sm-7">
+                <p class="btn btn-sm btn-light">{{ task.priority.priority_name }}</p>
+            </div>
+        </div>
+        <div class="row gap-sm-2 align-items-center">
+            <div class="col-sm-4">
                 <p class="fw-semibold">Start Date:</p>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-7">
                 <p class="">{{ task.start_date.date }}</p>
             </div>
         </div>
         <div class="row gap-sm-2 align-items-center">
-            <div class="col-sm-5">
+            <div class="col-sm-4">
                 <p class="fw-semibold">End Date:</p>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-7">
                 <p class="">{{ task.due_date.date }}</p>
             </div>
         </div>
+        <div class="row gap-sm-2 align-items-center">
+            <div class="col-sm-4">
+                <p class="fw-semibold">Assigned:</p>
+            </div>
+            <div class="col-sm-7">
+                <p class="eme01">{{ task.assigned_to }}</p>
+            </div>
+        </div>
+        <div class="row gap-sm-2 align-items-center">
+            <div class="col-sm-4">
+                <p class="fw-semibold">Reporter:</p>
+            </div>
+            <div class="col-sm-7">
+                <p class="eme01">{{ task.reporter }}</p>
+            </div>
+        </div>
+        <hr>
     </div>
 </div>
 
@@ -192,6 +213,4 @@
     }
     CKEDITOR.replace('description-input');
 </script>
-
 {% endblock %}
-

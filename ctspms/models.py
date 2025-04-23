@@ -17,35 +17,6 @@ class ProjectType(models.Model):
     def __str__(self):
         return self.type_name
 
-class Issue(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    issue = models.CharField(max_length=100)
-    description = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return self.issue
-
-class TagList(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tag = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.tag
-
-class StatusList(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    status_name = models.CharField(max_length=20, default='To Do')
-
-    def __str__(self):
-        return self.status_name
-
-class PriorityList(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    priority_name = models.CharField(max_length=20, default='Normal')
-
-    def __str__(self):
-        return self.priority_name
-
 class Project(models.Model):
     ACCESS_TYPES = (
         ('Open', 'Open'),
@@ -90,6 +61,34 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+class Issue(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    issue = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.issue
+
+class TagList(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tag = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.tag
+
+class PriorityList(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    priority_name = models.CharField(max_length=20, default='Normal')
+
+    def __str__(self):
+        return self.priority_name
+
+class StatusList(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    status_name = models.CharField(max_length=20, default='To Do')
+
+    def __str__(self):
+        return self.status_name
 
 
 class Task(models.Model):
@@ -129,8 +128,21 @@ class Task(models.Model):
     def unique_id(self):
         # Use the project's label (HMS, PMS, etc.) and the project_task_number
         return f'{self.project.label()}-{self.project_task_number}'
+    @property
+    def is_done(self):
+        return self.status.status_name == 'Done'
 
-
+# class Backlog(models.Model):
+#     STATUS_TYPES = (
+#         ('Backlog', 'Backlog'),
+#         ('Complete', 'Complete'), # only team can see private project
+#     )
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+#     status = models.ForeignKey(max_length=40, choices=STATUS_TYPES, default='Backlog')
+#
+#     def __str__(self):
+#         return self.task.summary
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')

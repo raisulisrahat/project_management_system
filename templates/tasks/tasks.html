@@ -71,6 +71,24 @@
                     {{ task.reporter }}
                 </button>
             </td>
+            <td class="fw-medium me-0">
+               <div class="dropdown">
+                    <button class="btn btn-sm border-0 bg-transparent" type="button" id="menuListItem{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuListItem{{ forloop.counter }}">
+                        <li>
+                            <a href="{% url 'task_update' project.label task.unique_id %}" class="dropdown-item">Edit task</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'task_delete' project.label task.unique_id %}" class="dropdown-item">Delete</a>
+                        </li>
+                        <li>
+                            <p class="dropdown-item">None</p>
+                        </li>
+                    </ul>
+               </div>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -111,3 +129,4 @@
     </ul>
 </div>
 {% endblock %}
+

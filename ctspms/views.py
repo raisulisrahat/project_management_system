@@ -1,5 +1,5 @@
 import os, uuid
-
+from django.db.models import Q
 from django.core.paginator import Paginator
 from django.views import View
 from django.http import JsonResponse,Http404, HttpResponseForbidden
@@ -358,6 +358,51 @@ class TaskDetailView(DetailView):
 
         return redirect('task_detail', label=task.project.code, unique_id=task.unique_id())
 
+class TaskUpdateView(LoginRequiredMixin, View):
+    template_name = 'tasks/task_form_modify.html'
+
+    def get_object(self):
+        label = self.kwargs.get('label')
+        unique_id = self.kwargs.get('unique_id')
+        project = get_object_or_404(Project, code=label.upper())
+        task_number = unique_id.split('-')[-1]
+        return get_object_or_404(Task, project=project, project_task_number=task_number)
+
+    def get(self, request, *args, **kwargs):
+        task = self.get_object()
+        form = TaskForm(instance=task)
+        return render(request, self.template_name, {'form': form, 'task': task})
+
+    def post(self, request, *args, **kwargs):
+        task = self.get_object()
+        form = TaskForm(request.POST, request.FILES, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('project_detail', label=task.project.code)  # or 'task_detail' if exists
+        return render(request, self.template_name, {'form': form, 'task': task})
+
+
+
+class TaskDeleteView(LoginRequiredMixin, View):
+    template_name = 'tasks/task_confirm_delete.html'
+
+    def get_object(self):
+        label = self.kwargs.get('label')
+        unique_id = self.kwargs.get('unique_id')
+        project = get_object_or_404(Project, code=label.upper())
+        task_number = unique_id.split('-')[-1]
+        return get_object_or_404(Task, project=project, project_task_number=task_number)
+
+    def get(self, request, *args, **kwargs):
+        task = self.get_object()
+        return render(request, self.template_name, {'task': task})
+
+    def post(self, request, *args, **kwargs):
+        task = self.get_object()
+        project_code = task.project.code
+        task.delete()
+        return redirect('project_detail', label=project_code)  # Or a task list view if exists
+
 
 
 class KanbanBoardView(LoginRequiredMixin, View):
@@ -366,17 +411,18 @@ class KanbanBoardView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         label = self.kwargs.get('label')
         project = get_object_or_404(Project, code=label.upper())
-        statuses = StatusList.objects.all()
 
+        # ❗️Filter out specific statuses (case-insensitive)
+        statuses = StatusList.objects.exclude(
+            Q(status_name__iexact='Backlog') | Q(status_name__iexact='Complete')
+        )
         for status in statuses:
             status.tasks = project.tasks.filter(status=status).order_by('id')
-
         context = {
             'project': project,
             'statuses': statuses,
         }
         return render(request, self.template_name, context)
-
     def post(self, request, *args, **kwargs):
         task_id = request.POST.get('task_id')
         new_status_id = request.POST.get('new_status')
@@ -388,21 +434,25 @@ class KanbanBoardView(LoginRequiredMixin, View):
         except Task.DoesNotExist:
             return JsonResponse({'success': False}, status=404)
 
-class BacklogView(View):
+class BacklogView(LoginRequiredMixin, View):
     template_name = 'tasks/backlog.html'
 
-    def get(self, request, *args, **kwargs):  # <- change to match URL parameter
+    def get(self, request, *args, **kwargs):
         label = self.kwargs.get('label')
         project = get_object_or_404(Project, code=label.upper())
-        backlog_status = StatusList.objects.filter(status__iexact="Backlog").first()
-        tasks = Task.objects.filter(project=project, status=backlog_status).order_by('-created_at') if backlog_status else []
+
+        done_status = StatusList.objects.filter(status_name__iexact="done").first()
+        if done_status:
+            tasks = Task.objects.filter(project=project).exclude(status=done_status)
+        else:
+            tasks = Task.objects.filter(project=project)  # fallback
 
         context = {
             'project': project,
-            'backlog_status': backlog_status,
             'tasks': tasks,
         }
         return render(request, self.template_name, context)
+
 
 @csrf_exempt
 def upload_temp_file(request):
