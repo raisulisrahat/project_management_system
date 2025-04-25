@@ -32,8 +32,8 @@ def ajax_search(request):
         results['projects'] = project_results
 
         # 2. Search for tasks
-        task_queryset = Task.objects.filter(task_name__icontains=query)
-        task_results = [{'summary': task.summary, 'unique_id': task.unique_id()} for task in task_queryset]
+        task_queryset = Task.objects.filter(summary__icontains=query)
+        task_results = [{'summary': task.summary, 'unique_id': task.unique_id} for task in task_queryset]
         results['tasks'] = task_results
 
         # 3. Search for issues
@@ -395,7 +395,8 @@ class TaskDeleteView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         task = self.get_object()
-        return render(request, self.template_name, {'task': task})
+        project = task.project
+        return render(request, self.template_name, {'task': task, 'project': project})
 
     def post(self, request, *args, **kwargs):
         task = self.get_object()

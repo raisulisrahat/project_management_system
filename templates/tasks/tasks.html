@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Task List{% endblock %}
 
 {% block content %}
@@ -73,10 +72,10 @@
             </td>
             <td class="fw-medium me-0">
                <div class="dropdown">
-                    <button class="btn btn-sm border-0 bg-transparent" type="button" id="ListItem{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-sm border-0 bg-transparent" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-three-dots"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="ListItem{{ forloop.counter }}">
+                    <ul class="dropdown-menu dropdown-menu-end">
                         <li>
                             <a href="{% url 'task_update' project.label task.unique_id %}" class="dropdown-item">Edit task</a>
                         </li>

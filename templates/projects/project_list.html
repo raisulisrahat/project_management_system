@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block title %}List Projects{% endblock %}
-
+{% load static %}
 {% block content %}
-
 <div class="d-flex justify-content-sm-between mb-3">
     <p class="fs-5 fw-bold">Projects</p>
     <div class="d-flex align-items-center">
@@ -36,10 +35,10 @@
             </td>
            <td class="fw-medium me-0">
                <div class="dropdown">
-                <button class="btn btn-sm border-0 bg-transparent" type="button" id="menuItem{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-sm border-0 bg-transparent" type="button"  data-bs-toggle="dropdown">
                     <i class="bi bi-three-dots"></i>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuItem{{ forloop.counter }}">
+                <ul class="dropdown-menu dropdown-menu-end">
                     <li>
                         <a href="{% url 'project_update' project.label %}" class="dropdown-item">Edit Project</a>
                     </li>

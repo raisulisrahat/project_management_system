@@ -1,5 +1,5 @@
 {% load static %}
-<script src="{% static 'js/scripts.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
 <div class="container-fluid">
     <!-- Logo Section -->
     <a class="text-decoration-none text-secondary-emphasis" href="{% url 'dashboard' %}">
@@ -70,3 +70,76 @@
         </div>
     </div>
 </div>
+<script>
+$(document).ready(function () {
+    $('#search_input').on('keyup', function () {  // also fixed the input ID here
+        const query = $(this).val();
+
+        if (query.length > 2) {
+            $.ajax({
+                url: `/search/`,
+                data: { q: query },
+                dataType: 'json',
+                success: function (data) {
+                    const $results = $('#search-results');
+                    $results.empty();
+
+                    if (data.results) {
+                        const { projects, tasks, issues, departments } = data.results;
+
+                        // Projects
+                        if (projects.length > 0) {
+                            $results.append('<h6>Projects</h6><ul class="list-group">');
+                            $.each(projects, function (i, project) {
+                                $results.append(`<li class="list-group-item">${project.title} (${project.label})</li>`);
+                            });
+                            $results.append('</ul>');
+                        }
+
+                        // Tasks
+                        if (tasks.length > 0) {
+                            $results.append('<h6>Tasks</h6><ul class="list-group">');
+                            $.each(tasks, function (i, task) {
+                                $results.append(`<li class="list-group-item">${task.summary} (${task.unique_id})</li>`);
+                            });
+                            $results.append('</ul>');
+                        }
+
+                        // Issues
+                        if (issues.length > 0) {
+                            $results.append('<h6>Issues</h6><ul class="list-group">');
+                            $.each(issues, function (i, issue) {
+                                $results.append(`<li class="list-group-item">${issue.title}</li>`);
+                            });
+                            $results.append('</ul>');
+                        }
+
+                        // Departments
+                        if (departments.length > 0) {
+                            $results.append('<h6>Departments</h6><ul class="list-group">');
+                            $.each(departments, function (i, department) {
+                                $results.append(`<li class="list-group-item">${department.department_name}</li>`);
+                            });
+                            $results.append('</ul>');
+                        }
+
+                        if (
+                            projects.length === 0 &&
+                            tasks.length === 0 &&
+                            issues.length === 0 &&
+                            departments.length === 0
+                        ) {
+                            $results.append('<p>No results found.</p>');
+                        }
+                    } else {
+                        $results.append('<p>No results found.</p>');
+                    }
+                }
+            });
+        } else {
+            $('#search-results').empty();
+        }
+    });
+});
+
+</script>
