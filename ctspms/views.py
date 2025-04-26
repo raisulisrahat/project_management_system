@@ -1,10 +1,11 @@
 import os, uuid
+
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.views import View
 from django.http import JsonResponse,Http404, HttpResponseForbidden
-from django.views.decorators.http import require_GET
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
@@ -18,6 +19,8 @@ from .forms import CommentForm, TaskForm, ProjectForm, ProjectSelectForm
 from django.db import IntegrityError
 from django.contrib import messages
 from shutil import move
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 @require_GET
 def ajax_search(request):
@@ -404,26 +407,23 @@ class TaskDeleteView(LoginRequiredMixin, View):
         task.delete()
         return redirect('project_detail', label=project_code)  # Or a task list view if exists
 
-
-
 class KanbanBoardView(LoginRequiredMixin, View):
     template_name = 'tasks/board.html'
 
     def get(self, request, *args, **kwargs):
         label = self.kwargs.get('label')
         project = get_object_or_404(Project, code=label.upper())
+        statuses = StatusList.objects.all()
 
-        # ❗️Filter out specific statuses (case-insensitive)
-        statuses = StatusList.objects.exclude(
-            Q(status_name__iexact='Backlog') | Q(status_name__iexact='Complete')
-        )
         for status in statuses:
             status.tasks = project.tasks.filter(status=status).order_by('id')
+
         context = {
             'project': project,
             'statuses': statuses,
         }
         return render(request, self.template_name, context)
+
     def post(self, request, *args, **kwargs):
         task_id = request.POST.get('task_id')
         new_status_id = request.POST.get('new_status')
@@ -434,6 +434,34 @@ class KanbanBoardView(LoginRequiredMixin, View):
             return JsonResponse({'success': True})
         except Task.DoesNotExist:
             return JsonResponse({'success': False}, status=404)
+
+
+# class KanbanBoardView(LoginRequiredMixin, View):
+#     template_name = 'tasks/board.html'
+#
+#     def get(self, request, *args, **kwargs):
+#         label = self.kwargs.get('label')
+#         project = get_object_or_404(Project, code=label.upper())
+#         statuses = StatusList.objects.all()
+#
+#         # ❗️Filter out specific statuses (case-insensitive)
+#         for status in statuses:
+#             status.tasks = project.tasks.filter(status=status).order_by('id')
+#         context = {
+#             'project': project,
+#             'statuses': statuses,
+#         }
+#         return render(request, self.template_name, context)
+#     def post(self, request, *args, **kwargs):
+#         task_id = request.POST.get('task_id')
+#         new_status_id = request.POST.get('new_status')
+#         try:
+#             task = Task.objects.get(id=task_id)
+#             task.status_id = new_status_id
+#             task.save()
+#             return JsonResponse({'success': True})
+#         except Task.DoesNotExist:
+#             return JsonResponse({'success': False}, status=404)
 
 class BacklogView(LoginRequiredMixin, View):
     template_name = 'tasks/backlog.html'
@@ -454,6 +482,18 @@ class BacklogView(LoginRequiredMixin, View):
         }
         return render(request, self.template_name, context)
 
+@require_POST
+@login_required
+def move_to_backlog(request):
+    task_id = request.POST.get('task_id')
+    backlog_status = StatusList.objects.filter(status_name__iexact="Backlog").first()
+    try:
+        task = Task.objects.get(id=task_id)
+        task.status = backlog_status
+        task.save()
+        return JsonResponse({'success': True})
+    except Task.DoesNotExist:
+        return JsonResponse({'success': False}, status=404)
 
 @csrf_exempt
 def upload_temp_file(request):
@@ -471,8 +511,6 @@ def upload_temp_file(request):
         return JsonResponse({'success': True, 'file_path': file_path})
 
     return JsonResponse({'success': False, 'error': 'Invalid request'})
-
-
 
 
 
