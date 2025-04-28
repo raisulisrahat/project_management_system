@@ -2,16 +2,18 @@
 {% load static %}
 
 {% block content %}
-<div class="d-flex justify-content-between mb-3">
-    <div>
+
+<!-- Breadcrumb -->
+<div class="d-flex justify-content-sm-between mb-3">
+    <div class="d-flex align-items-center gap-2">
         <a href="{% url 'projects' %}" class="text-decoration-none text-dark">Projects</a> /
         <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark">{{ project.name }}</a> /
-        <span class="text-muted">Backlog</span>
+        <a href="{% url 'backlog' project.label %}" class="text-decoration-none text-dark">Backlog</a>
     </div>
-    <a href="{% url 'kanban_board' project.label %}" class="btn btn-outline-secondary btn-sm">← Board</a>
+    <a href="{% url 'task_create' project.label %}" class="btn btn-sm btn-primary">Create Task</a>
 </div>
 
-<h5 class="mb-3">Backlog Tasks</h5>
+{% include "tabs.html" %}
 
 <div class="list-group shadow-sm">
     {% for task in tasks %}
