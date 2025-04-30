@@ -16,13 +16,15 @@ class ProjectForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        fields = ('name', 'description', 'code', 'type', 'access', 'lead_team')
+        fields = ('name', 'description', 'code', 'type', 'access', 'lead_team', 'end_date')
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}),
             'type': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Type'}),
             'code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Key'}),
             'access': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Access'}),
             'lead_team': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Team Member'}),
+            # 'start_date': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Start Date'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'End Date'}),
         }
 
 

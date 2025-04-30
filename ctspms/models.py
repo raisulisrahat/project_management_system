@@ -30,7 +30,7 @@ class Project(models.Model):
     lead = models.ForeignKey(Profile, on_delete=models.CASCADE)
     description = RichTextUploadingField(null=True, blank=True)
     type = models.ForeignKey(ProjectType, on_delete=models.CASCADE)
-    start_date = models.DateTimeField(auto_now_add=True)
+    start_date = models.DateTimeField(auto_now_add=True, )
     end_date = models.DateTimeField(null=True, blank=True)
     code = models.CharField(max_length=10, unique=True, null=True, blank=True)  # Unique project code field
 
@@ -106,6 +106,7 @@ class Task(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField(null=True, blank=True)
     project_task_number = models.PositiveIntegerField(null=True, blank=True)  # Task number within project
+    is_in_backlog = models.BooleanField(default=False)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):

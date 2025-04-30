@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from ctspms.views import ProjectCreateView, ProjectListView, ProjectDetailView, ProjectUpdateView, ProjectDeleteView, TaskCreateView, BacklogView, TaskListView, TaskUpdateView, TaskDeleteView, KanbanBoardView,  TaskDetailView, upload_temp_file, ajax_search, move_to_backlog
 urlpatterns = [
     # Project URLs
@@ -8,11 +8,11 @@ urlpatterns = [
     path('projects/<str:label>/summary/', ProjectDetailView.as_view(), name='project_detail'),
     path('projects/<str:label>/tasks/board/', KanbanBoardView.as_view(), name='kanban_board'),
     path('projects/<str:label>/tasks/backlog/', BacklogView.as_view(), name='backlog'),
-    path('projects/<str:label>/tasks/', TaskListView.as_view(), name='task_lists'),
-    path('projects/<str:label>/tasks/<str:unique_id>/', TaskDetailView.as_view(), name='task_detail'),
     path('projects/<str:label>/tasks/create/', TaskCreateView.as_view(), name='task_create'),
-    path('projects/<str:label>/tasks/<str:unique_id>/edit/', TaskUpdateView.as_view(), name='task_update'),
-    path('projects/<str:label>/tasks/<str:unique_id>/delete/', TaskDeleteView.as_view(), name='task_delete'),
+    path('projects/<str:label>/tasks/', TaskListView.as_view(), name='task_lists'),
+    re_path(r'^projects/(?P<label>[\w\-]+)/tasks/(?P<unique_id>[A-Z]+-\d+)/$', TaskDetailView.as_view(), name='task_detail'),
+    re_path(r'^projects/(?P<label>[\w\-]+)/tasks/(?P<unique_id>[A-Z]+-\d+)/edit/$', TaskUpdateView.as_view(), name='task_update'),
+    re_path(r'^projects/(?P<label>[\w\-]+)/tasks/(?P<unique_id>[A-Z]+-\d+)/delete/$', TaskDeleteView.as_view(), name='task_delete'),
     path('projects/<str:label>/edit/', ProjectUpdateView.as_view(), name='project_update'),
     path('projects/<str:label>/delete/', ProjectDeleteView.as_view(), name='project_delete'),
     path('upload-temp-file/', upload_temp_file, name='upload_temp_file'),

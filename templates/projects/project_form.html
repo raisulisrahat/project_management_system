@@ -4,61 +4,63 @@
 {% block title %}Create Project{% endblock %}
 
 {% block content %}
-
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-md-5">
-                    <div class="form-group p-sm-4  bg-white">
-                        <div class="row mb-2">
-                            <div class="col-sm-7">
-                                <label for="name" class="fw-semibold">Name<span class="text-danger">*</span></label>
-                                <input for="name" type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
-                            </div>
+<div class="">
+    <p class="fw-semibold fs-6">Creat Project</p>
+</div>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group p-sm-4  bg-white">
+                    <div class="row mb-2">
+                        <div class="col-sm-7">
+                            <label for="name" class="fw-semibold">Name<span class="text-danger">*</span></label>
+                            <input for="name" type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
                         </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-12 expt01">
-                                <label for="description" class="fw-semibold">Description</label>
-                                <div>
-                                    {{ form.description }}
-                                </div>
-                                {{ form.media }}
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-3">
-                                <label for="code" class="fw-semibold">Key</label>
-                                {{ form.code }}
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-7">
-                                <label for="type" class="fw-semibold">Type<span class="text-danger">*</span></label>
-                                {{  form.type }}
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-7">
-                                <label for="access" class="fw-semibold">Access</label>
-                                {{  form.access }}
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-7">
-                                <label for="lead_team" class="fw-semibold">Teams</label>
-                                {{  form.lead_team }}
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-sm btn-primary">Create</button>
                     </div>
-                </div>
-                <div class="col-md-7">
-                    <div class="form-group p-sm-4 bg-white">
-
+                    <div class="row mb-2">
+                        <div class="col-sm-12 expt01">
+                            <label for="description" class="fw-semibold">Description</label>
+                            <div>
+                                {{ form.description }}
+                            </div>
+                            {{ form.media }}
+                        </div>
                     </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <label for="code" class="fw-semibold">Key</label>
+                            {{ form.code }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-7">
+                            <label for="type" class="fw-semibold">Type<span class="text-danger">*</span></label>
+                            {{  form.type }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-7">
+                            <label for="access" class="fw-semibold">Access</label>
+                            {{  form.access }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-7">
+                            <label for="lead_team" class="fw-semibold">Teams</label>
+                            {{  form.lead_team }}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary">Create</button>
                 </div>
             </div>
-        </form>
+            <div class="col-md-7">
+                <div class="form-group p-sm-4 bg-white">
+
+                </div>
+            </div>
+        </div>
+    </form>
 
 
 {% endblock %}

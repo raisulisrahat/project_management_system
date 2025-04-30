@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Create Task{% endblock %}
-
+ <script src="{% static 'js/jquery-3.7.1.min.js' %}" type="text/javascript"></script>
 {% block content %}
 <div class="mt-5">
     <p class="fs-6 fw-semibold">Create a new task for <span class="text-primary">{{ project.name }}</span></p>

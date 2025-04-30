@@ -427,41 +427,28 @@ class KanbanBoardView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         task_id = request.POST.get('task_id')
         new_status_id = request.POST.get('new_status')
+        is_backlog = request.POST.get('is_backlog') == 'true'
+        is_complete = request.POST.get('is_complete') == 'true'
+
         try:
             task = Task.objects.get(id=task_id)
-            task.status_id = new_status_id
+
+            if is_backlog:
+                # Just flag it as in backlog, don't change status
+                task.is_in_backlog = True
+            elif is_complete:
+                task.status = StatusList.objects.get(status_name__iexact='Done')
+                task.is_in_backlog = True
+            else:
+                # Move between normal statuses
+                task.status_id = new_status_id
+                task.is_in_backlog = False
+
             task.save()
             return JsonResponse({'success': True})
         except Task.DoesNotExist:
             return JsonResponse({'success': False}, status=404)
 
-
-# class KanbanBoardView(LoginRequiredMixin, View):
-#     template_name = 'tasks/board.html'
-#
-#     def get(self, request, *args, **kwargs):
-#         label = self.kwargs.get('label')
-#         project = get_object_or_404(Project, code=label.upper())
-#         statuses = StatusList.objects.all()
-#
-#         # ❗️Filter out specific statuses (case-insensitive)
-#         for status in statuses:
-#             status.tasks = project.tasks.filter(status=status).order_by('id')
-#         context = {
-#             'project': project,
-#             'statuses': statuses,
-#         }
-#         return render(request, self.template_name, context)
-#     def post(self, request, *args, **kwargs):
-#         task_id = request.POST.get('task_id')
-#         new_status_id = request.POST.get('new_status')
-#         try:
-#             task = Task.objects.get(id=task_id)
-#             task.status_id = new_status_id
-#             task.save()
-#             return JsonResponse({'success': True})
-#         except Task.DoesNotExist:
-#             return JsonResponse({'success': False}, status=404)
 
 class BacklogView(LoginRequiredMixin, View):
     template_name = 'tasks/backlog.html'
@@ -472,7 +459,7 @@ class BacklogView(LoginRequiredMixin, View):
 
         done_status = StatusList.objects.filter(status_name__iexact="done").first()
         if done_status:
-            tasks = Task.objects.filter(project=project).exclude(status=done_status)
+            tasks = Task.objects.filter(project=project, is_in_backlog=True)
         else:
             tasks = Task.objects.filter(project=project)  # fallback
 
@@ -486,14 +473,21 @@ class BacklogView(LoginRequiredMixin, View):
 @login_required
 def move_to_backlog(request):
     task_id = request.POST.get('task_id')
-    backlog_status = StatusList.objects.filter(status_name__iexact="Backlog").first()
+    mark_complete = request.POST.get('complete') == 'true'
+
     try:
         task = Task.objects.get(id=task_id)
-        task.status = backlog_status
+        task.is_in_backlog = True
+
+        if mark_complete:
+            done_status = StatusList.objects.filter(status_name__iexact="Done").first()
+            if done_status:
+                task.status = done_status
         task.save()
         return JsonResponse({'success': True})
     except Task.DoesNotExist:
         return JsonResponse({'success': False}, status=404)
+
 
 @csrf_exempt
 def upload_temp_file(request):
