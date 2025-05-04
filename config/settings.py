@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ctspms.apps.CtspmsConfig',
     'account.apps.AccountConfig',
+    'chat.apps.ChatConfig',
     'fontawesomefree',
     'bootstrap5',
     'django_bootstrap_icons',
