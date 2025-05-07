@@ -1,39 +1,50 @@
-<div id="calendar" style="height: 800px;"></div>
+{% extends "base.html" %}
+{% load static %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+    <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+{% block content %}
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const Calendar = toastui.Calendar;
 
-    const calendar = new Calendar('#calendar', {
-      defaultView: 'month',
-      taskView: true,
-      scheduleView: ['time'],
-      useDetailPopup: true,
-      useFormPopup: false,
-      calendars: [
-        {
-          id: '1',
-          name: 'Tasks',
-          backgroundColor: '#357edd',
-          borderColor: '#357edd'
-        },
-        {
-          id: '2',
-          name: 'Meetings',
-          backgroundColor: '#fa8c16',
-          borderColor: '#fa8c16'
+
+  <div id="calendar" style="height: 800px;"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const Calendar = toastui.Calendar;
+
+      const calendar = new Calendar('#calendar', {
+        defaultView: 'month',
+        taskView: true,
+        scheduleView: ['time'],
+        useDetailPopup: true,
+        useFormPopup: false,
+        calendars: [
+          {
+            id: '1',
+            name: 'Tasks',
+            backgroundColor: '#357edd',
+            borderColor: '#357edd'
+          },
+          {
+            id: '2',
+            name: 'Meetings',
+            backgroundColor: '#fa8c16',
+            borderColor: '#fa8c16'
+          }
+        ]
+      });
+
+      const events = {{ events|safe }};
+      calendar.createSchedules(events);
+
+      calendar.on('clickSchedule', function(event) {
+        const url = event.schedule.raw.url;
+        if (url) {
+          window.location.href = url;
         }
-      ]
+      });
     });
+  </script>
+{% endblock %}
 
-    const events = {{ events|safe }};
-    calendar.createSchedules(events);
-
-    calendar.on('clickSchedule', function(event) {
-      const url = event.schedule.raw.url;
-      if (url) {
-        window.location.href = url;
-      }
-    });
-  });
-</script>

@@ -1,5 +1,4 @@
-import os, uuid
-
+import os, uuid, json
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -10,11 +9,12 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import RedirectView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from ctspms.models import StatusList, TagList, PriorityList, Issue, Project, Task, Comment, Attachment, Timelog
 from account.models import Department, Role, User, Profile
+from chat.models import Meeting
 from .forms import CommentForm, TaskForm, ProjectForm, ProjectSelectForm
 from django.db import IntegrityError
 from django.contrib import messages
@@ -488,6 +488,50 @@ def move_to_backlog(request):
     except Task.DoesNotExist:
         return JsonResponse({'success': False}, status=404)
 
+class CalendarView(LoginRequiredMixin, View):
+    template_name = 'tasks/calendar.html'
+
+    def get(self, request, *args, **kwargs):
+        tasks = Task.objects.all()
+        meetings = Meeting.objects.all()
+
+        events = []
+
+        for task in tasks:
+            events.append({
+                'id': f'task-{task.id}',
+                'calendarId': '1',
+                'title': f'Task: {task.summary}',
+                'category': 'time',
+                'start': task.start_date.isoformat(),
+                'end': (task.due_date or task.start_date).isoformat(),
+                'location': '',
+                'color': '#ffffff',
+                'bgColor': '#357edd',
+                'borderColor': '#357edd',
+                'raw': {
+                    'url': reverse('task_detail', kwargs={'label': task.project.code, 'unique_id': task.unique_id()})
+                }
+            })
+
+        for meeting in meetings:
+            events.append({
+                'id': f'meeting-{meeting.id}',
+                'calendarId': '2',
+                'title': f'Meeting: {meeting.title}',
+                'category': 'time',
+                'start': meeting.start_time.isoformat(),
+                'end': meeting.end_time.isoformat(),
+                'location': '',
+                'color': '#ffffff',
+                'bgColor': '#fa8c16',
+                'borderColor': '#fa8c16',
+                'raw': {
+                    'url': reverse('meeting_detail', kwargs={'pk': meeting.pk})
+                }
+            })
+
+        return render(request, self.template_name, {'events': json.dumps(events)})
 
 @csrf_exempt
 def upload_temp_file(request):
