@@ -36,29 +36,30 @@
             <!-- User Profile and Dropdown -->
             <div class="nav-item dropdown">
                 {% if user.is_authenticated %}
-                <a class="nav-link dropdown-toggle" id="profileDropdown" role="button"
-                   data-bs-toggle="dropdown" aria-expanded="false">
-
-                        <img src="{{ user.profile.profile_image.url }}" alt="{{ user.profile.full_name }}"
-                             class="rounded-circle" height="38px" width="38px">
-                    
+                <a class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{{ user.profile.profile_image.url }}" alt="{{ user.profile.full_name }}" class="rounded-circle" height="38px" width="38px">
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="profileDropdown">
                     <li>
                         <a class="ms-3 text-decoration-none" href="{% url 'profile' user.profile.id %}">
-                            <i class="fa-solid fa-user" aria-hidden="true"></i><span class="ms-2 eme01">Profile</span>
+                            <i class="fa-solid fa-user" aria-hidden="true"></i>
+                            <p class="ms-2">Profile</p>
                         </a>
                     </li>
                     <li>
                         <a class="ms-3 text-decoration-none" href="{% url 'settings' %}">
-                            <i class="fa-solid fa-gear" aria-hidden="true"></i><span class="ms-2 eme01">Settings</span>
+                            <div class="d-flex align-content-lg-between gap-3">
+                                <i class="fa-solid fa-gear" aria-hidden="true"></i>
+                                <p class="ms-2">Settings</p>
+                            </div>
                         </a>
                     </li>
-                    <li><hr class="dropdown-divider"></li>
+                    <li><hr></li>
                     <li>
                         <a class="ms-3 text-decoration-none" href="{% url 'logout' %}">
-                            <div class="btn btn-sm btn-primary text-bg-dark">
-                                <i class="fa fa-sign-out" aria-hidden="true"></i><span class="ms-2 eme01">Logout</span>
+                            <div class="text-bg-dark">
+                                <i class="fa fa-sign-out" aria-hidden="true"></i>
+                                <p class="ms-2">Logout</p>
                             </div>
                         </a>
                     </li>

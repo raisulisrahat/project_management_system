@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'fontawesomefree',
     'bootstrap5',
     'django_bootstrap_icons',
+    'django_google_fonts',
     'ckeditor',
     'ckeditor_uploader',
     'cities_light',

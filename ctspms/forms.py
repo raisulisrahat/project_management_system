@@ -10,7 +10,6 @@ from ctspms.models import Comment, Project, Task, StatusList
 class ProjectSelectForm(forms.Form):
     project = forms.ModelChoiceField(queryset=Project.objects.all(), label="Select Project", widget=forms.Select(attrs={'class': 'form-control'}))
 
-
 class ProjectForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorUploadingWidget(attrs={'cols': 80, 'rows': 10}), required=False)
 
