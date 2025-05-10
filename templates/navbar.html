@@ -1,5 +1,6 @@
 {% load static %}
-<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
 <div class="container-fluid">
     <!-- Logo Section -->
     <a class="text-decoration-none text-secondary-emphasis" href="{% url 'dashboard' %}">
@@ -21,8 +22,7 @@
             <!-- Search Box -->
             <div class="nav-item">
                 <form id="search-form" class="d-flex align-items-center position-relative">
-                    <i class="fa fa-search position-absolute top-50 translate-middle-y"
-                       style="left: 10px;"></i>
+                    <i class="fa fa-search position-absolute top-50 translate-middle-y" style="left: 10px;"></i>
                     <input type="text" id="search_input" class="form-control border-1 form-input shadow-sm" style="text-indent: 30px;" placeholder=" Search "/>
                 </form>
                 <div id="search-results"></div>
@@ -36,31 +36,37 @@
             <!-- User Profile and Dropdown -->
             <div class="nav-item dropdown">
                 {% if user.is_authenticated %}
-                <a class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ user.profile.profile_image.url }}" alt="{{ user.profile.full_name }}" class="rounded-circle" height="38px" width="38px">
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="profileDropdown">
+                </div>
+                <ul class="dropdown-menu p-2 dropdown-menu-end" style="min-width: 250px;" aria-labelledby="profileDropdown">
                     <li>
-                        <a class="ms-3 text-decoration-none" href="{% url 'profile' user.profile.id %}">
+                        <div class="d-flex justify-content-between align-items-center gap-3 py-2 ms-2 mb-3">
+                            <img src="{{ user.profile.profile_image.url }}" alt="{{ user.profile.full_name }}" class="rounded" height="38px" width="38px">
+                            <div class="flex-column">
+                                <span class="eme01">{{ user.profile.full_name }}</span>
+                                <span class="eme02 text-black-50">{{ user.email }}</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="ms-3 text-decoration-none text-dark" href="{% url 'profile' user.profile.id %}">
                             <i class="fa-solid fa-user" aria-hidden="true"></i>
-                            <p class="ms-2">Profile</p>
+                            <span class="ms-2">Profile Details</span>
                         </a>
                     </li>
+                    <li><hr class="dropdown-divider"></li>
                     <li>
-                        <a class="ms-3 text-decoration-none" href="{% url 'settings' %}">
-                            <div class="d-flex align-content-lg-between gap-3">
-                                <i class="fa-solid fa-gear" aria-hidden="true"></i>
-                                <p class="ms-2">Settings</p>
-                            </div>
+                        <a class="ms-3 text-decoration-none text-dark" href="{% url 'settings' %}">
+                            <i class="fa-solid fa-gear" aria-hidden="true"></i>
+                            <span class="ms-1">Settings</span>
                         </a>
                     </li>
-                    <li><hr></li>
+                    <li><hr class="dropdown-divider"></li>
                     <li>
-                        <a class="ms-3 text-decoration-none" href="{% url 'logout' %}">
-                            <div class="text-bg-dark">
-                                <i class="fa fa-sign-out" aria-hidden="true"></i>
-                                <p class="ms-2">Logout</p>
-                            </div>
+                        <a class="ms-3 text-decoration-none text-dark" href="{% url 'logout' %}">
+                            <i class="fa fa-sign-out" aria-hidden="true"></i>
+                            <span class="ms-2">Logout</span>
                         </a>
                     </li>
                 </ul>
