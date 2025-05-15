@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Task List{% endblock %}
-
 {% block content %}
 <div class="d-flex justify-content-sm-between mb-3">
     <div class="d-flex align-items-center gap-2">
@@ -39,40 +38,40 @@
                 <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none text-dark">{{ task.summary }}</a>
             </td>
             <td>
-                <button type="submit" class="btn btn-sm p-0 m-0">
+                <button class="border-0 p-0 bg-transparent" type="button" >
                     <img src="{{ task.assigned_to.user.profile.profile_image.url }}" alt="{{ task.assigned_to }}" class="rounded-circle" width="30" height="30">
                     {{ task.assigned_to }}
                 </button>
             </td>
             <td>
-                <button type="submit" class="btn btn-sm p-0 m-0">
+                <button class="border-0 p-0 bg-transparent" type="button" >
                     {{ task.start_date.date }}
                 </button>
             </td>
             <td>
-                <button type="submit" class="btn btn-sm p-0 m-0">
+                <button class="border-0 p-0 bg-transparent" type="button" >
                     {{ task.due_date.date }}
                 </button>
             </td>
             <td>
-                <button type="submit" class="btn btn-sm p-0 m-0">
+                <button class="border-0 p-0 bg-transparent" type="button" ">
                     {{ task.priority }}
                 </button>
             </td>
             <td>
-                <button type="submit" class="btn btn-sm p-0 m-0">
+                <button class="border-0 p-0 bg-transparent" type="button" >
                     {{ task.status }}
                 </button>
             </td>
             <td>
-                <button type="submit" class="btn btn-sm p-0 m-0">
+                <button type="button" class="btn btn-sm p-0 m-0">
                     <img src="{{ task.reporter.user.profile.profile_image.url }}" alt="{{ task.reporter }}" class="rounded-circle" width="30" height="30">
                     {{ task.reporter }}
                 </button>
             </td>
             <td class="fw-medium me-0">
                <div class="dropdown">
-                    <button class="btn btn-sm border-0 bg-transparent" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="border-0 p-0 bg-transparent" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-three-dots"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
