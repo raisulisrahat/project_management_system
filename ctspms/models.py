@@ -133,18 +133,6 @@ class Task(models.Model):
     def is_done(self):
         return self.status.status_name == 'Done'
 
-# class Backlog(models.Model):
-#     STATUS_TYPES = (
-#         ('Backlog', 'Backlog'),
-#         ('Complete', 'Complete'), # only team can see private project
-#     )
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-#     status = models.ForeignKey(max_length=40, choices=STATUS_TYPES, default='Backlog')
-#
-#     def __str__(self):
-#         return self.task.summary
-
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
@@ -166,49 +154,49 @@ class Timelog(models.Model):
     def __str__(self):
         return f'Time log by {self.people.full_name} on {self.task}'
 
-# class Notification(models.Model):
-#     NOTIFICATION_TYPES  = (
-#         ('task_created', 'Task Created'),
-#         ('task_updated', 'Task Updated'),
-#         ('task_assigned', 'Task Assigned'),
-#         ('task_completed', 'Task Completed'),
-#         ('comment_added', 'Comment Added'),
-#         ('task_due', 'Task Due Soon'),
-#         ('project_updated', 'Project Updated'),
-#         ('task_mentioned', 'Task Mentioned'),
-#     )
-#
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
-#     people = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='notifications')
-#     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='notifications')
-#     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='notifications')
-#     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='notifications')
-#     read = models.BooleanField(default=False)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     def __str__(self):
-#         # Return a readable description based on the type of notification
-#         if self.notification_type == 'task_assigned':
-#             return f'{self.people.full_name()} assigned to Task: {self.task.summary}'
-#         elif self.notification_type == 'comment_added':
-#             return f'New comment added on Task: {self.task.summary}'
-#         elif self.notification_type == 'task_updated':
-#             return f'Task {self.task.summary} updated'
-#         elif self.notification_type == 'task_due':
-#             return f'Task {self.task.summary} is due soon'
-#         elif self.notification_type == 'project_updated':
-#             return f'Project {self.project.name} updated'
-#         else:
-#             return f'Notification: {self.notification_type}'
-#
-#     def mark_as_read(self):
-#         """Method to mark the notification as read"""
-#         self.read = True
-#         self.save()
-#
-#     def mark_as_unread(self):
-#         """Method to mark the notification as unread"""
-#         self.read = False
-#         self.save()
+class Notification(models.Model):
+    NOTIFICATION_TYPES  = (
+        ('task_created', 'Task Created'),
+        ('task_updated', 'Task Updated'),
+        ('task_assigned', 'Task Assigned'),
+        ('task_completed', 'Task Completed'),
+        ('comment_added', 'Comment Added'),
+        ('task_due', 'Task Due Soon'),
+        ('project_updated', 'Project Updated'),
+        ('task_mentioned', 'Task Mentioned'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+    people = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='notifications')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='notifications')
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='notifications')
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='notifications')
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        # Return a readable description based on the type of notification
+        if self.notification_type == 'task_assigned':
+            return f'{self.people.full_name()} assigned to Task: {self.task.summary}'
+        elif self.notification_type == 'comment_added':
+            return f'New comment added on Task: {self.task.summary}'
+        elif self.notification_type == 'task_updated':
+            return f'Task {self.task.summary} updated'
+        elif self.notification_type == 'task_due':
+            return f'Task {self.task.summary} is due soon'
+        elif self.notification_type == 'project_updated':
+            return f'Project {self.project.name} updated'
+        else:
+            return f'Notification: {self.notification_type}'
+
+    def mark_as_read(self):
+        """Method to mark the notification as read"""
+        self.read = True
+        self.save()
+
+    def mark_as_unread(self):
+        """Method to mark the notification as unread"""
+        self.read = False
+        self.save()
 

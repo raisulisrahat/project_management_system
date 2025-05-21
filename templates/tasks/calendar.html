@@ -1,11 +1,18 @@
 {% extends "base.html" %}
 {% load static %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
-    <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
 {% block content %}
 
+<!-- Breadcrumb -->
+<div class="d-flex justify-content-sm-between mb-3">
+    <div class="d-flex align-items-center gap-2">
+{#        <a href="{% url 'projects' %}" class="text-decoration-none text-dark">Projects</a> /#}
+{#        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark">{{ project.name }}</a> /#}
+{#        <a href="{% url 'calendar_view' project.label %}" class="text-decoration-none text-dark">Calendar</a>#}
+    </div>
+{#    <a href="{% url 'task_create' project.label %}" class="btn btn-sm btn-primary">Create Task</a>#}
+</div>
 
+{#{% include "tabs.html" %}#}
 
   <div id="calendar" style="height: 800px;"></div>
 

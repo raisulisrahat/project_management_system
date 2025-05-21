@@ -228,12 +228,16 @@ def two_factor_auth_view(request):
     return render(request, 'users/2fa.html')
 # 4. Logout view
 class CustomLogoutView(LogoutView):
-    next_page = reverse_lazy('login')  # Redirect to login page after logout
+    next_page = reverse_lazy('login')
 
     def dispatch(self, request, *args, **kwargs):
-        # Display a logout success message
         messages.success(request, "You have successfully logged out.")
         return super().dispatch(request, *args, **kwargs)
+
+    # Allow GET requests
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
 
 
 @login_required

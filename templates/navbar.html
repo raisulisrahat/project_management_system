@@ -1,6 +1,7 @@
 {% load static %}
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
-    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+
 <div class="container-fluid">
     <!-- Logo Section -->
     <a class="text-decoration-none text-secondary-emphasis" href="{% url 'dashboard' %}">
@@ -27,57 +28,62 @@
                 </form>
                 <div id="search-results"></div>
             </div>
+
             <!-- Notifications Icon -->
             <div class="nav-item mt-1">
                 <a class="nav-link" href="{% url 'dashboard' %}">
                     <i class="fas fa-bell fs-5"></i>
                 </a>
             </div>
+
             <!-- User Profile and Dropdown -->
             <div class="nav-item dropdown">
                 {% if user.is_authenticated %}
-                <div class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link dropdown-toggle p-0" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ user.profile.profile_image.url }}" alt="{{ user.profile.full_name }}" class="rounded-circle" height="38px" width="38px">
-                </div>
-                <ul class="dropdown-menu p-2 dropdown-menu-end" style="min-width: 250px;" aria-labelledby="profileDropdown">
-                    <li>
-                        <div class="d-flex justify-content-between align-items-center gap-2 py-2 ms-2 mb-3">
-                            <img src="{{ user.profile.profile_image.url }}" alt="{{ user.profile.full_name }}" class="rounded" height="42px" width="46px">
-                            <div class="flex-column">
-                                <span class="eme01">{{ user.profile.full_name }}</span>
-                                <span class="eme02 text-black-50">{{ user.email }}</span>
-                            </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow p-3 rounded-4" style="min-width: 260px;" aria-labelledby="profileDropdown">
+                    <li class="d-flex align-items-center mb-3">
+                        <img src="{{ user.profile.profile_image.url }}" alt="{{ user.profile.full_name }}" class="rounded me-3" height="46" width="46">
+                        <div>
+                            <div class="fw-semibold eme01">{{ user.profile.full_name }}</div>
+                            <div class="text-muted small eme02">{{ user.email }}</div>
                         </div>
                     </li>
+                    <li><hr class="dropdown-divider text-black-50"></li>
                     <li>
-                        <a class="ms-3 text-decoration-none text-dark" href="{% url 'profile' user.profile.id %}">
-                            <i class="fa-solid fa-user" aria-hidden="true"></i>
-                            <span class="ms-2">Profile Details</span>
+                        <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'profile' user.profile.id %}">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Profile details</span>
                         </a>
                     </li>
-                    <li><hr class="dropdown-divider"></li>
                     <li>
-                        <a class="ms-3 text-decoration-none text-dark" href="{% url 'settings' %}">
-                            <i class="fa-solid fa-gear" aria-hidden="true"></i>
-                            <span class="ms-1">Settings</span>
+                        <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'settings' %}">
+                            <i class="fa-solid fa-gear"></i>
+                            <span>Settings</span>
                         </a>
                     </li>
-                    <li><hr class="dropdown-divider"></li>
+                    <li><hr class="dropdown-divider text-black-50"></li>
                     <li>
-                        <a class="ms-3 text-decoration-none text-dark" href="{% url 'logout' %}">
-                            <i class="fa fa-sign-out" aria-hidden="true"></i>
-                            <span class="ms-2">Logout</span>
-                        </a>
+                        <form method="POST" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger">
+                                <i class="fa fa-sign-out"></i>
+                                <span>Logout</span>
+                            </button>
+                        </form>
                     </li>
                 </ul>
                 {% endif %}
             </div>
+
         </div>
     </div>
 </div>
+
 <script>
 $(document).ready(function () {
-    $('#search_input').on('keyup', function () {  // also fixed the input ID here
+    $('#search_input').on('keyup', function () {
         const query = $(this).val();
 
         if (query.length > 2) {
@@ -92,7 +98,6 @@ $(document).ready(function () {
                     if (data.results) {
                         const { projects, tasks, issues, departments } = data.results;
 
-                        // Projects
                         if (projects.length > 0) {
                             $results.append('<h6>Projects</h6><ul class="list-group">');
                             $.each(projects, function (i, project) {
@@ -101,7 +106,6 @@ $(document).ready(function () {
                             $results.append('</ul>');
                         }
 
-                        // Tasks
                         if (tasks.length > 0) {
                             $results.append('<h6>Tasks</h6><ul class="list-group">');
                             $.each(tasks, function (i, task) {
@@ -110,7 +114,6 @@ $(document).ready(function () {
                             $results.append('</ul>');
                         }
 
-                        // Issues
                         if (issues.length > 0) {
                             $results.append('<h6>Issues</h6><ul class="list-group">');
                             $.each(issues, function (i, issue) {
@@ -119,7 +122,6 @@ $(document).ready(function () {
                             $results.append('</ul>');
                         }
 
-                        // Departments
                         if (departments.length > 0) {
                             $results.append('<h6>Departments</h6><ul class="list-group">');
                             $.each(departments, function (i, department) {
@@ -146,5 +148,4 @@ $(document).ready(function () {
         }
     });
 });
-
 </script>

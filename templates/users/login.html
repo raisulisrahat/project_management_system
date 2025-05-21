@@ -13,7 +13,7 @@
                     <!-- Replace with your logo path -->
                     <img src="{% static 'image/flowtrex-icon-lg.png' %}" alt="Flowtrex" width="120">
                     <p class="mb-1 fw-bold fs-2 text-white">Flowtrex</p>
-                    <p class="fw-normal text-white">Next Gen ERP System</p>
+                    <p class="fw-normal text-white">Next Gen Project Management System</p>
                 </div>
             </div>
 
@@ -28,19 +28,20 @@
                         </ul>
                     {% endif %}
                     
-                    <form method="POST" action="{% url 'login' %}">
+                    <form method="POST"  action="{% url 'login' %}">
                         {% csrf_token %}
                         <div class="mb-3">
                             <p class="text-center fw-bold fs-3 text-dark">Sign In</p>
                         </div>
                         <!-- Username input -->
-                        <div class="form-outline mb-4">
-                            <input type="text" placeholder="Your Username" id="username" name="username" class="form-control" required />
+                        <div class="form-floating mb-3">
+                          <input type="text" name="username" class="form-control" id="floatingInput" placeholder="Username">
+                          <label for="floatingInput" class="eme01">Enter your username</label>
                         </div>
-                        
                         <!-- Password input -->
-                        <div class="form-outline mb-4">
-                            <input type="password" placeholder="Your Password" id="password" name="password" class="form-control" required />
+                        <div class="form-floating">
+                          <input name="password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                          <label for="floatingPassword" class="eme01">Enter your password</label>
                         </div>
                         
                         <!-- Sign In Button -->
@@ -48,7 +49,7 @@
                             <a href="{% url 'register' %}" class="text-secondary-emphasis text-decoration-none">Register a new user</a>
                             <a href="{% url 'password_reset' %}" class="text-secondary-emphasis text-decoration-none">Forgot Password?</a>
                         </div>
-                        <input type="submit" value="Log In" class="btn btn-primary btn-ghost-primary btn-block">
+                        <input type="submit" value="Log In" class="btn btn-primary btn-sm px-3 btn-block">
                     </form>
                 </div>
             </div>
