@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'cities_light',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -66,7 +67,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
+# If using Redis for Channels (recommended):
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 DATABASES = {
     'default': {

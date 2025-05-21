@@ -30,11 +30,16 @@
             </div>
 
             <!-- Notifications Icon -->
-            <div class="nav-item mt-1">
-                <a class="nav-link" href="{% url 'dashboard' %}">
-                    <i class="fas fa-bell fs-5"></i>
-                </a>
+            <div class="nav-item dropdown mt-1">
+              <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-bell fs-5"></i>
+                <span id="notification-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; display: none;">0</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end shadow p-2 rounded-4" style="min-width: 300px; max-height: 400px; overflow-y: auto;" aria-labelledby="notificationDropdown" id="notification-list">
+                <li class="text-center text-muted small">No notifications</li>
+              </ul>
             </div>
+
 
             <!-- User Profile and Dropdown -->
             <div class="nav-item dropdown">
@@ -82,6 +87,42 @@
 </div>
 
 <script>
+
+const socket = new WebSocket("ws://" + window.location.host + "/ws/notifications/");
+
+socket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    const notificationList = $('#notification-list');
+    const countBadge = $('#notification-count');
+
+    // Create new list item
+    const newNotification = `
+        <li class="dropdown-item small border-bottom">
+            <div class="fw-semibold">${data.title}</div>
+            <div class="text-muted small">${data.message}</div>
+        </li>
+    `;
+
+    // Remove "No notifications"
+    notificationList.find('li.text-muted').remove();
+
+    // Append new item
+    notificationList.prepend(newNotification);
+
+    // Update count
+    let currentCount = parseInt(countBadge.text()) || 0;
+    countBadge.text(currentCount + 1).show();
+};
+
+$('#notificationDropdown').on('click', function () {
+    $('#notification-count').hide().text('0');
+
+    $.post('/notifications/mark_read/', {
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+    });
+});
+
+
 $(document).ready(function () {
     $('#search_input').on('keyup', function () {
         const query = $(this).val();
