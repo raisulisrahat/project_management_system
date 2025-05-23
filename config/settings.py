@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'ctspms.apps.CtspmsConfig',
     'account.apps.AccountConfig',
     'chat.apps.ChatConfig',

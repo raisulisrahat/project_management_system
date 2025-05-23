@@ -1,4 +1,6 @@
 {% load static %}
+{% load humanize %}
+
 <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
 <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
 
@@ -35,8 +37,30 @@
                 <i class="fas fa-bell fs-5"></i>
                 <span id="notification-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; display: none;">0</span>
               </a>
-              <ul class="dropdown-menu dropdown-menu-end shadow p-2 rounded-4" style="min-width: 300px; max-height: 400px; overflow-y: auto;" aria-labelledby="notificationDropdown" id="notification-list">
-                <li class="text-center text-muted small">No notifications</li>
+              <ul class="dropdown-menu dropdown-menu-end shadow p-2 rounded-4"
+                  style="min-width: 320px; max-height: 400px; overflow-y: auto;"
+                  aria-labelledby="notificationDropdown" id="notification-list">
+
+                {% for notification in user.profile.notifications.all|slice:":10" %}
+                <li class="dropdown-item small {% if not notification.read %}fw-bold{% endif %} border-bottom">
+                    <div class="fw-semibold">{{ notification.notification_type|capfirst }}</div>
+                    <div class="text-muted small">
+                        {% if notification.task %}
+                            {{ notification.task.summary }}
+                        {% else %}
+                            {{ notification.message }}
+                        {% endif %}
+                    </div>
+                    <div class="text-muted small">{{ notification.created_at|naturaltime }}</div>
+                </li>
+                {% empty %}
+                <li class="dropdown-item text-muted small text-center">No notifications</li>
+                {% endfor %}
+
+                <li><hr class="dropdown-divider"></li>
+                <li class="text-center">
+                  <button id="mark-all-read" class="btn btn-sm btn-outline-secondary">Mark all as read</button>
+                </li>
               </ul>
             </div>
 
@@ -87,40 +111,49 @@
 </div>
 
 <script>
+    const socket = new WebSocket("ws://" + window.location.host + "/ws/notifications/");
 
-const socket = new WebSocket("ws://" + window.location.host + "/ws/notifications/");
-
-socket.onmessage = function (e) {
+    socket.onmessage = function (e) {
     const data = JSON.parse(e.data);
     const notificationList = $('#notification-list');
     const countBadge = $('#notification-count');
 
-    // Create new list item
     const newNotification = `
-        <li class="dropdown-item small border-bottom">
-            <div class="fw-semibold">${data.title}</div>
-            <div class="text-muted small">${data.message}</div>
+        <li class="dropdown-item small fw-bold border-bottom">
+            <div class="fw-semibold">${data.content.notification_type.replace('_', ' ').toUpperCase()}</div>
+            <div class="text-muted small">${data.content.message}</div>
+            <div class="text-muted small">${new Date(data.content.created_at).toLocaleString()}</div>
         </li>
     `;
 
-    // Remove "No notifications"
-    notificationList.find('li.text-muted').remove();
-
-    // Append new item
+    // Remove placeholder
+    notificationList.find('.text-muted.text-center').remove();
     notificationList.prepend(newNotification);
 
-    // Update count
+    // Update badge count
     let currentCount = parseInt(countBadge.text()) || 0;
     countBadge.text(currentCount + 1).show();
-};
+    };
 
-$('#notificationDropdown').on('click', function () {
+    // On dropdown open, mark all as read
+    $('#notificationDropdown').on('click', function () {
     $('#notification-count').hide().text('0');
-
-    $.post('/notifications/mark_read/', {
+    $.post("{% url 'mark_notifications_read' %}", {
         csrfmiddlewaretoken: '{{ csrf_token }}'
+    }, function () {
+        $('#notification-list .fw-bold').removeClass('fw-bold');
     });
-});
+    });
+
+    // Separate 'Mark all as read' button
+    $('#notification-list').on('click', '#mark-all-read', function () {
+    $('#notification-count').hide().text('0');
+    $.post("{% url 'mark_notifications_read' %}", {
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+    }, function () {
+        $('#notification-list .fw-bold').removeClass('fw-bold');
+    });
+    });
 
 
 $(document).ready(function () {

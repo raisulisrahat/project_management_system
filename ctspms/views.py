@@ -21,30 +21,15 @@ from django.contrib import messages
 from shutil import move
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+
 
 @csrf_exempt
 @login_required
 def mark_notifications_read(request):
-    request.user.profile.notifications.filter(read=False).update(read=True)
-    return JsonResponse({'status': 'success'})
-
-def notify_user(notification):
-    channel_layer = get_channel_layer()
-    content = {
-        "type": "send_notification",
-        "content": {
-            "title": "New Notification",
-            "message": str(notification),
-            "id": str(notification.id),
-            "created_at": notification.created_at.isoformat(),
-        }
-    }
-    async_to_sync(channel_layer.group_send)(
-        f"user_{notification.people.user.id}",
-        content
-    )
+    """Mark all unread notifications for the logged-in user as read."""
+    unread = request.user.profile.notifications.filter(read=False)
+    updated_count = unread.update(read=True)
+    return JsonResponse({'status': 'success', 'updated': updated_count})
 
 @require_GET
 def ajax_search(request):

@@ -1,6 +1,6 @@
-from django.urls import path
-from ctspms import consumers
+from django.urls import re_path
+from ctspms.consumers import NotificationConsumer
 
 websocket_urlpatterns = [
-    path("ws/notifation", consumers.NotificationConsumer.as_asgi()),
+    re_path("ws/notifation/$", NotificationConsumer.as_asgi()),
 ]
