@@ -171,7 +171,7 @@ class Notification(models.Model):
     people = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='notifications')
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='notifications')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='notifications')
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='notifications')
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)
     read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
