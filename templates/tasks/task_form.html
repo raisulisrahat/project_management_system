@@ -2,12 +2,11 @@
 {% load static humanize %}
 
 {% block title %}Create Task{% endblock %}
-
+{% block extra_css %}
+<!-- Only if additional styling needed -->
+{% endblock %}
 {% block content %}
-    <script src="{% static 'js/jquery-3.7.1.min.js' %}" type="text/javascript"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-<div class="mt-5">
+    <div class="mt-5">
     <p class="fs-6 fw-semibold">Create a new task for <span class="text-primary">{{ project.name }}</span></p>
 
     <!-- Task Form -->
@@ -80,7 +79,9 @@
         </div>
     </form>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
 function formatOption(option) {
     if (!option.id) return option.text;
@@ -99,8 +100,7 @@ $(function() {
 
     $('#assign_me').click(function() {
         $('#assignMeInput').val('true');
-        $('#assigned_to').val("{{ request.user.profile.id }}").trigger('change');
-    });
+        $('#assigned_to').val("{{ request.user.profile.id }}").trigger('change');});
 
     const dragDropArea = document.getElementById('dragDropArea');
     const browseButton = document.getElementById('browseButton');
@@ -150,4 +150,5 @@ $(function() {
     }
 });
 </script>
+
 {% endblock %}

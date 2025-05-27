@@ -8,35 +8,35 @@
 
     <div class="p-sm-3 my-sm-3 shadow-sm bg-white">
         <div class="row mx-sm-1">
-            <div class="col-sm-1">
+            <div class="col-sm-2">
                 <a href="{% url 'project_detail' project.label %}" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
                     <i class="me-1" aria-hidden="true">{% bs_icon 'layout-wtf' extra_classes='fw-semibold' %}</i>
                     <span class="eme01">Summary</span>
                 </a>
             </div>
                 <span class="vr vr-blurry"></span>
-            <div class="col-sm-1 text-center">
+            <div class="col-sm-2 text-center">
                 <a href="{% url 'task_lists' project.label %}" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
                     <i class="me-1" aria-hidden="true">{% bs_icon 'card-list' extra_classes='fw-semibold' %}</i>
                     <span class="eme01">Lists</span>
                 </a>
             </div>
                 <span class="vr vr-blurry"></span>
-            <div class="col-sm-1 text-center">
+            <div class="col-sm-2 text-center">
                 <a href="{% url 'kanban_board' project.label %}" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
                     <i class="me-1" aria-hidden="true">{% bs_icon 'kanban' %}</i>
                     <span class="eme01">Board</span>
                 </a>
             </div>
                 <span class="vr vr-blurry"></span>
-            <div class="col-sm-1 text-center">
+            <div class="col-sm-2 text-center">
                 <a href="{% url 'calendar_view' project.label %}" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
                     <i class="me-1" aria-hidden="true">{% bs_icon 'calendar' extra_classes='fw-semibold' %}</i>
                     <span class="eme01">Calendar</span>
                 </a>
             </div>
             <span class="vr vr-blurry"></span>
-            <div class="col-sm-1  text-center">
+            <div class="col-sm-2  text-center">
                 <a href="{% url 'backlog' project.label %}" class="{% if request.resolver_match.url_name == 'backlog' %}active{% endif %} link-offset-3 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
                     <i class="me-1" aria-hidden="true">{% bs_icon 'list-nested' extra_classes='fw-semibold' %}</i>
                     <span class="eme01">Backlog</span>
