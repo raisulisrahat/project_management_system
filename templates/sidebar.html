@@ -1,129 +1,89 @@
-<div class="sidebar border-end shadow-sm">
-    <ul class="list-unstyled p-3">
-        <!-- Home link -->
-        <li class="p-sm-1 my-sm-2">
-            <a href="{% url 'dashboard' %}" class="row text-decoration-none text-secondary-emphasis">
-                <div class="col-sm-1 me-1">
-                    <i class="fa-solid fa-house"></i>
-                </div>
-                <div class="col-sm-8">
-                 <span class="">Home</span>
-                </div>
-            </a>
-        </li>
+{% load static %}
 
-        <!-- My tasks link -->
-        <li class="p-sm-1 my-sm-2">
-            <a class="row text-decoration-none text-secondary-emphasis"  href="{% url 'projects' %}">
-{#                data-bs-toggle="collapse" href="#collapseTask" role="button" aria-expanded="false" aria-controls="collapseTask">#}
-                <div class="col-sm-1 me-1">
-                    <i class="fa-solid fa-list-check"></i>
-                </div>
-                <div class="col-sm-8">
-                    <span class="">My Tasks</span>
-                </div>
-            </a>
-        </li>
+<div class="flex h-full flex-col bg-gray-800">
 
-        <!-- Messages link -->
-        <li class="p-sm-1 my-sm-2">
-            <a href="#" class="row text-decoration-none text-secondary-emphasis">
-                <div class="col-sm-1 me-1">
-                    <i class="fa-solid fa-message"></i>
-                </div>
-                <div class="col-sm-8">
-                    <span class="">Messages</span>
-                </div>
-            </a>
-        </li>
+    <div class="px-4 pt-6 pb-4">
+        <a class="flex items-center gap-3" href="{% url 'dashboard' %}">
+            <img src="{% static 'image/Flowtrex-icon.png' %}" alt="Flowtrex" class="h-9 w-auto">
+            <span class="text-xl font-bold text-white">Flowtrex</span>
+        </a>
+    </div>
 
-        <!-- Divider -->
-        <hr>
+    <nav class="flex-grow space-y-1 px-3">
+        <a href="{% url 'dashboard' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">
+            <i class="fa-solid fa-house w-6 text-center text-gray-400"></i>
+            <span>Home</span>
+        </a>
 
-        <!-- Projects link (Dropdown) -->
-        <li class="p-sm-1 my-sm-2">
-            <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseProject" role="button" aria-expanded="false" aria-controls="collapseProject">
-                <div class="col-sm-1 me-2">
-                    <i class="fas fa-project-diagram"></i>
-                </div>
-                <div class="col-sm-8">
-                    <span class="mb-0">Projects</span>
-                </div>
-            </a>
-                <ul class="collapse list-group list-group-flush" id="collapseProject">
-{#                    {% for project in projects|slice:":2" %}#}
-{#                    <li class="list-group-item">#}
-{#                        <a href="{% url 'project_detail' project.label %}" class="dropdown-item text-secondary-emphasis">#}
-{#                            <div class="row align-items-center">#}
-{#                                <div class="col-sm-1">#}
-{#                                    <i class="fa-solid fa-square-caret-right"></i>#}
-{#                                </div>#}
-{#                                <div class="col-sm-8">#}
-{#                                    <p class="eme01 mb-0">{{ project.label }}</p>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </a>#}
-{#                    </li>#}
-{#                    {% endfor %}#}
-                    <li class="list-group-item">
-                        <a href="{% url 'project_create' %}" class="row text-decoration-none text-secondary-emphasis">
-                            <div class="col-sm-1">
-                                <i class="fa-solid fa-plus"></i>
-                            </div>
-                            <div class="col-sm-8">
-                                <p class="eme01 mb-0">Create Projects</p>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="list-group-item emx4">
-                        <a href="{% url 'projects' %}" class="row text-decoration-none text-secondary-emphasis">
-                            <div class="col-sm-1">
-                                <i class="fa-solid fa-folder-open"></i>
-                            </div>
-                            <div class="col-sm-8">
-                                <span class="eme01 mb-0">View Projects</span>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        <hr>
-        <li class="p-sm-1 my-sm-2">
-            <a class="d-flex align-items-center text-decoration-none text-secondary-emphasis" data-bs-toggle="collapse" href="#collapseTeams" role="button" aria-expanded="false" aria-controls="collapseTeams">
-                <div class="col-sm-1 me-2">
-                    <i class="fa-solid fa-user-group"></i>
-                </div>
-                <div class="col-sm-8">
-                    <span class="">Teams</span>
-                </div>
-            </a>
-        </li>
-        <ul class="collapse list-group list-group-flush" id="collapseTeams">
-            <li class="list-group-item">
-                    <a href="{% url 'team_create' %}" class="row text-decoration-none text-secondary-emphasis">
-                        <div class="col-sm-1">
-                            <i class="fa-solid fa-plus"></i>
-                        </div>
-                        <div class="col-sm-8">
-                            <p class="eme01 mb-0">Create Teams</p>
-                        </div>
-                    </a>
-                </li>
-                <li class="list-group-item emx4">
-                    <a href="{% url 'teams' %}" class="row text-decoration-none text-secondary-emphasis">
-                        <div class="col-sm-1">
-                            <i class="fa-solid fa-folder-open"></i>
-                        </div>
-                        <div class="col-sm-8">
-                            <span class="eme01 mb-0">View Teams</span>
-                        </div>
-                    </a>
-                </li>
-        </ul>
-    </ul>
+        <a href="{% url 'projects' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">
+            <i class="fa-solid fa-list-check w-6 text-center text-gray-400"></i>
+            <span>My Tasks</span>
+        </a>
 
-    <!-- Footer -->
-    <div class="sidebar-footer border-top">
-        <p class="ms-3 mb-0 fw-semibold">Version 1.0.2</p>
+        <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">
+            <i class="fa-solid fa-message w-6 text-center text-gray-400"></i>
+            <span>Messages</span>
+        </a>
+
+        <hr class="my-4 border-t border-gray-700">
+
+        <div>
+            <button type="button" class="sidebar-dropdown-toggle flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-project-diagram w-6 text-center text-gray-400"></i>
+                    <span>Projects</span>
+                </div>
+                <i class="fa-solid fa-chevron-down h-5 w-5 shrink-0 transition-transform duration-200"></i>
+            </button>
+            <div class="hidden space-y-1 pt-1">
+                <a href="{% url 'projects' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    View Projects
+                </a>
+                <a href="{% url 'project_create' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    Create Project
+                </a>
+            </div>
+        </div>
+
+        <div>
+            <button type="button" class="sidebar-dropdown-toggle flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-user-group w-6 text-center text-gray-400"></i>
+                    <span>Teams</span>
+                </div>
+                <i class="fa-solid fa-chevron-down h-5 w-5 shrink-0 transition-transform duration-200"></i>
+            </button>
+            <div class="hidden space-y-1 pt-1">
+                <a href="{% url 'teams' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    View Teams
+                </a>
+                <a href="{% url 'team_create' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    Create Team
+                </a>
+            </div>
+        </div>
+
+    </nav>
+
+    <div class="border-t border-gray-700 p-4">
+        <p class="text-sm font-semibold text-gray-400">Version 2.1.0</p>
     </div>
 </div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdownToggles = document.querySelectorAll('.sidebar-dropdown-toggle');
+
+        dropdownToggles.forEach(function (toggle) {
+            toggle.addEventListener('click', function () {
+                const dropdown = this.nextElementSibling;
+                const chevron = this.querySelector('.fa-chevron-down');
+
+                dropdown.classList.toggle('hidden');
+                chevron.classList.toggle('rotate-180');
+            });
+        });
+    });
+</script>
+{% endblock %}

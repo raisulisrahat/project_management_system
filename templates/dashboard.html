@@ -2,226 +2,221 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <p class="fs-4 py-3 fw-semibold">Welcome to Dashboard, <span class="fw-semibold fs-5 text-info">{{ user.first_name }}</span></p>
-    <div class="d-flex justify-content-center">
-        <div class="d-flex justify-content-center bg-white shadow-sm rounded gap-3 fw-semibold">
-            <div class="d-flex align-items-center p-3 gap-2">
-                <i class="fa fa-project-diagram" style="font-weight: 500; color: #3d99f5;"></i> Total Project <span style="font-weight: 500; color: #dc3545;"> {{ prj_no }}</span>
+    <h1 class="text-3xl font-bold text-gray-800">Welcome to the Dashboard, <span class="text-cyan-600">{{ user.first_name }}</span></h1>
+
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Total Projects</p>
+                <p class="text-3xl font-bold text-gray-800">{{ prj_no }}</p>
             </div>
-            <div class="d-flex align-items-center p-3 gap-2 fw-semibold">
-                <i class="fa-solid fa-list-check" style="font-weight: 500; color: #3d99f5;"></i> Total Task <span style="font-weight: 500; color: #dc3545;">{{ ts_no }}</span>
+            <div class="bg-blue-100 p-3 rounded-full">
+                <i class="fa fa-project-diagram fa-lg text-blue-500"></i>
             </div>
-            <div class="d-flex align-items-center p-3 gap-2 fw-semibold">
-                <i class="fa-solid fa-user-group" style="font-weight: 500; color: #3d99f5;"></i> Team <span style="font-weight: 500; color: #dc3545">{{ team.count }}</span>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Total Tasks</p>
+                <p class="text-3xl font-bold text-gray-800">{{ ts_no }}</p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-full">
+                <i class="fa-solid fa-list-check fa-lg text-green-500"></i>
+            </div>
+        </div>
+        <div class="bg-white p-5 rounded-lg shadow-md flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Team Members</p>
+                <p class="text-3xl font-bold text-gray-800">{{ team.count }}</p>
+            </div>
+            <div class="bg-purple-100 p-3 rounded-full">
+                <i class="fa-solid fa-user-group fa-lg text-purple-500"></i>
             </div>
         </div>
     </div>
-    
-    <div class="d-flex mt-5 gap-3">
-        <div class="p-5 rounded bg-white shadow-sm">
-            <canvas id="barChart" width="450" height="300"></canvas>
+
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Tasks per Project</h3>
+            <div class="relative h-72">
+                 <canvas id="barChart"></canvas>
+            </div>
         </div>
 
-        <div class="p-5 rounded bg-white shadow-sm">
-            <canvas id="doughnutChart" width="330"></canvas>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Task Distribution</h3>
+            <div class="relative h-72">
+                <canvas id="doughnutChart"></canvas>
+            </div>
         </div>
-            <div class="p-4 rounded bg-white shadow-sm">
-            <canvas id="lineChart" width="480" height="330"></canvas>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Task Progress</h3>
+            <div class="relative h-72">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+
+</div>
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Ongoing Projects</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Project Name</th>
+                            <th scope="col" class="px-6 py-3">Key</th>
+                            <th scope="col" class="px-6 py-3">Type</th>
+                            <th scope="col" class="px-6 py-3">Lead</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for project in projects %}
+                        <tr class="bg-white border-b hover:bg-gray-50">
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                <a href="{% url 'project_detail' project.label %}" class="text-cyan-600 hover:underline">
+                                    {{ project.name }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4">{{ project.label }}</td>
+                            <td class="px-6 py-4">{{ project.type }}</td>
+                            <td class="px-6 py-4">
+                                <a href="{% url 'profile' project.lead.user.profile.id %}" class="hover:underline">
+                                    {{ project.lead }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3" class="px-6 py-4 text-center">No projects found.</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Ongoing Tasks</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">ID</th>
+                            <th scope="col" class="px-6 py-3">Task Name</th>
+                            <th scope="col" class="px-6 py-3">Status</th>
+                            <th scope="col" class="px-6 py-3">Priority</th>
+                            <th scope="col" class="px-6 py-3">Assigned To</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for task in tasks %}
+                        <tr class="bg-white border-b hover:bg-gray-50">
+                            <td class="px-6 py-4 font-medium text-gray-900">
+                                <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-cyan-600 hover:underline">
+                                    {{ task.unique_id }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ task.summary }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ task.status }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ task.priority }}</td>
+                            <td class="px-6 py-4">
+                                <a href="{% url 'profile' task.assigned_to.user.profile.id %}" class="hover:underline">
+                                    {{ task.assigned_to.full_name }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3" class="px-6 py-4 text-center">No tasks found.</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+{% endblock %}
+
+
 {% block extra_js %}
-<!-- Script for Chart.js -->
-    <script>
-        // Bar Chart
-        var ctx = document.getElementById('barChart').getContext('2d');
-        var barChart = new Chart(ctx, {
+<script>
+    // Bar Chart
+    var ctxBar = document.getElementById('barChart')?.getContext('2d');
+    if (ctxBar) {
+        var barChart = new Chart(ctxBar, {
             type: 'bar',
             data: {
-                labels: {{ project_labels|safe }},  // Safely pass the project labels as a JS array
+                labels: {{ project_labels|safe }},
                 datasets: [{
                     label: 'Project Task Count',
-                    data: {{ project_task_counts|safe }},  // Safely pass the project task counts as a JS array
-                    backgroundColor: [
-                      'rgba(255, 99, 132, 0.2)',
-                      'rgba(255, 159, 64, 0.2)',
-                      'rgba(255, 205, 86, 0.2)',
-                      'rgba(75, 192, 192, 0.2)',
-                      'rgba(54, 162, 235, 0.2)',
-                      'rgba(153, 102, 255, 0.2)',
-                      'rgba(201, 203, 207, 0.2)'
-                    ],
-                    borderColor: [
-                      'rgb(255, 99, 132)',
-                      'rgb(255, 159, 64)',
-                      'rgb(255, 205, 86)',
-                      'rgb(75, 192, 192)',
-                      'rgb(54, 162, 235)',
-                      'rgb(153, 102, 255)',
-                      'rgb(201, 203, 207)'
-                    ],
+                    data: {{ project_task_counts|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(54, 162, 235)',
                     borderWidth: 1
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return Number.isInteger(value) ? value : null;
-                            },
-                            stepSize: 1
-                        }
+                        ticks: { stepSize: 1 }
                     }
                 }
             }
         });
+    }
 
-        // Doughnut Chart
-        var doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
-        var doughnutChart = new Chart(doughnutCtx, {
-            type: 'doughnut',
-            data: {
-                labels: {{ project_labels|safe }},  // Safely pass project labels as labels
-                datasets: [{
-                    data: {{ project_task_counts|safe }},  // Task counts per project (ensure it's an array)
-                    backgroundColor: [
-                      'rgb(255,99,132)',
-                      'rgb(48,205,106)',
-                      'rgba(255, 205, 86)',
-                      'rgba(75, 192, 192)',
-                      'rgba(54, 162, 235)',
-                      'rgba(153, 102, 255)',
-                      'rgba(201, 203, 207)'
-                    ],
-                    hoverOffset: 4
-                }]
-            }
-        });
-
-
-        // Line Chart
-        var lineCtx = document.getElementById('lineChart').getContext('2d');
-        var lineChart = new Chart(lineCtx, {
+    // Line Chart
+    var ctxLine = document.getElementById('lineChart')?.getContext('2d');
+    if (ctxLine) {
+        var lineChart = new Chart(ctxLine, {
             type: 'line',
             data: {
-                labels: {{ project_labels|safe }},  // Project names as labels on x-axis
+                labels: {{ project_labels|safe }},
                 datasets: [{
                     label: 'Task Count per Project',
-                    data: {{ project_task_counts|safe }},  // Task counts per project
-                    borderColor: 'rgb(75, 192, 192)',  // Line color
+                    data: {{ project_task_counts|safe }},
+                    borderColor: 'rgb(75, 192, 192)',
                     tension: 0.1,
                     fill: false
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return Number.isInteger(value) ? value : null;
-                            },
-                            stepSize: 1
-                        }
+                        ticks: { stepSize: 1 }
                     }
                 }
             }
         });
+    }
+    // Doughnut Chart
 
-    </script>
+    var doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+    var doughnutChart = new Chart(doughnutCtx, {
+    type: 'doughnut',
+    data: {
+    labels: {{ project_labels|safe }}, // Safely pass project labels as labels
+    datasets: [{
+    data: {{ project_task_counts|safe }}, // Task counts per project (ensure it's an array)
+    backgroundColor: [
+                    'rgb(255,99,132)',
+                    'rgb(48,205,106)',
+                    'rgba(255, 205, 86)',
+                    'rgba(75, 192, 192)',
+                    'rgba(54, 162, 235)',
+                    'rgba(153, 102, 255)',
+                    'rgba(201, 203, 207)'],
+    hoverOffset: 4
+            }]
+        }
+    });
+</script>
 {% endblock %}
-
-
-
-  <div class="gap-5 justify-content-center mt-5">
-    <div class="row">
-    <div class="col">
-        <h4 class="p-2 bg-white shadow-sm rounded">Ongoing Projects</h4>
-        <table class="table table-hover table-striped shadow-sm">
-            <thead>
-                <tr>
-                    <th scope="col">Project Name</th>
-                    <th scope="col">Key</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Lead</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for project in projects %}
-                <tr>
-                    <td class="fw-semibold eme01">
-                        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark">
-                            {{ project.name }}
-                        </a>
-                    </td>
-                    <td class="fw-semibold eme01">
-                        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark">
-                            {{ project.label }}
-                        </a>
-                    </td>
-                    <td class="fw-semibold eme01 text-secondary">{{ project.type }}</td>
-                    <td class="fw-semibold eme01">
-                        <a href="{% url 'profile' user.profile.id %}" class="text-decoration-none text-dark">
-                            {{ project.lead }}
-                        </a>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5">No projects found yet.</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-
-    <div class="col">
-        <h4 class="p-2 bg-white shadow-sm rounded">Ongoing Tasks</h4>
-        <table class="table table-hover table-striped shadow-sm">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Task Name</th>
-                    <th scope="col">Priority</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Assignment</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for task in tasks %}
-                <tr>
-                    <th scope="row" class="fw-semibold eme01">
-                        <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none text-dark">
-                            {{ task.unique_id }}
-                        </a>
-                    </th>
-                    <td class="fw-semibold eme01">
-                        <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-decoration-none text-dark">
-                            {{ task.summary }}
-                        </a>
-                    </td>
-                    <td class="fw-semibold eme01 text-secondary">{{ task.priority }}</td>
-                    <td class="fw-semibold eme01 text-secondary">{{ task.status }}</td>
-                    <td class="fw-semibold eme01 text-secondary">
-                        <a href="{% url 'profile' task.assigned_to.user.profile.id %}" class="text-decoration-none text-dark">
-                            {{ task.assigned_to.full_name }}
-                        </a>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5">No tasks found yet.</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    </div>
-  </div>
-{% endblock %}
-
-
-{#{% url 'profile' project.lead.full_name %}#}
-{#{% url 'profile' task.assigned_to.full_name %}#}
