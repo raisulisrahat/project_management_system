@@ -1,163 +1,138 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
+
+{% block title %}Kanban Board - {{ project.name }}{% endblock %}
+
 {% block content %}
-
-{% block extra_css %}
-    <style>
-
-.kanban-wrapper {
-    display: flex;
-    overflow-x: auto;
-    gap: 1rem;
-    padding-bottom: 1rem;
-    scroll-behavior: smooth;
-}
-.kanban-column {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    min-width: 270px;
-    max-width: 300px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 0.75rem;
-    max-height: calc(100vh - 200px);
-    overflow-y: auto;
-}
-.kanban-column:empty {
-    padding-bottom: 1rem;
-}
-.kanban-task {
-    margin-bottom: 0.5rem;
-    cursor: grab;
-}
-.kanban-task .card-body {
-    padding: 0.75rem;
-}
-.create-task-btn {
-    background-color: #e9ecef;
-    border: none;
-    color: #495057;
-    font-weight: 600;
-    padding: 0.5rem;
-    border-radius: 5px;
-    text-align: start;
-    margin-top: 0.5rem;
-    cursor: pointer;
-}
-.kanban-wrapper::-webkit-scrollbar {
-    height: 8px;
-}
-.kanban-wrapper::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 8px;
-}
-</style>
-{% endblock %}
-<!-- Breadcrumb -->
-<div class="d-flex justify-content-sm-between mb-3">
-    <div class="d-flex align-items-center gap-2">
-        <a href="{% url 'projects' %}" class="text-decoration-none text-dark">Projects</a> /
-        <a href="{% url 'project_detail' project.label %}" class="text-decoration-none text-dark">{{ project.name }}</a> /
-        <a href="{% url 'kanban_board' project.label %}" class="text-decoration-none text-dark">Board</a>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <nav class="flex items-center text-sm font-medium text-gray-500">
+            <a href="{% url 'projects' %}" class="hover:text-gray-700">Projects</a>
+            <span class="mx-2">/</span>
+            <a href="{% url 'project_detail' project.label %}" class="hover:text-gray-700">{{ project.name }}</a>
+            <span class="mx-2">/</span>
+            <span class="text-gray-800">Board</span>
+        </nav>
+        <a href="{% url 'task_create' project.label %}" class="w-full sm:w-auto text-center px-4 py-2 text-sm font-medium text-white bg-cyan-600 rounded-lg shadow-sm hover:bg-cyan-700">
+            Create Task
+        </a>
     </div>
-    <a href="{% url 'task_create' project.label %}" class="btn btn-sm btn-primary">Create Task</a>
-</div>
 
-{% include "tabs.html" %}
+    <div class="my-4">
+        {% include "tabs.html" %}
+    </div>
 
-<!-- Kanban Columns -->
-<div class="kanban-wrapper">
-    {% for status in statuses %}
-        <div class="kanban-column" data-status-id="{{ status.id }}">
-            <div class="mb-2 d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-1">
-                    <i class="bi bi-grip-vertical text-muted"></i>
-                    <strong class="text-secondary">{{ status.status_name }}</strong>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <div class="btn btn-sm btn-light fw-semibold">+</div>
-                </div>
-            </div>
-
-            {% for task in status.tasks %}
-                <div class="kanban-task card border-0 shadow-sm" data-task-id="{{ task.id }}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center my-2">
-                            <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="text-muted text-decoration-none">
-                                <p class="fw-semibold mb-1">{{ task.summary }}</p>
-                            </a>
-                            <div class="dropdown">
-                                <button class="btn btn-sm border-0 bg-transparent" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-three-dots"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a href="{% url 'task_update' project.label task.unique_id %}" class="dropdown-item">Edit task</a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'task_delete' project.label task.unique_id %}" class="dropdown-item">Delete</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="dropdown-item move-to-backlog">Move to Backlog</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-light text-dark small">{{ task.unique_id }}</span>
-                            <img src="{{ task.assigned_to.profile_image.url }}" class="rounded-circle" width="28" height="28" alt="{{ task.assigned_to.full_name }}">
-                        </div>
+    <div class="flex gap-6 pb-4">
+        {% for status in statuses %}
+            <div class="kanban-column flex h-full w-72 flex-shrink-0 flex-col rounded-lg bg-gray-100 p-3" data-status-id="{{ status.id }}">
+                <div class="mb-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-semibold text-gray-700">{{ status.status_name }}</h3>
+                        <span class="flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-600">
+                            {{ status.tasks_in_status|length }}
+                        </span>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
-    {% endfor %}
-</div>
 
+                {# FIXED: Added min-h-24 to ensure empty columns are droppable #}
+                <div class="kanban-tasks-container flex-grow space-y-3 min-h-24">
+                    {% for task in status.tasks_in_status %}
+                        <div class="kanban-task rounded-md border border-gray-200 bg-white p-4 shadow-sm" data-task-id="{{ task.id }}">
+                            <div class="flex items-start justify-between">
+                                <a href="{% url 'task_detail' task.project.label task.unique_id %}" class="pr-2 font-medium text-gray-800 hover:text-cyan-600">
+                                    {{ task.summary }}
+                                </a>
+                                <div class="relative flex-shrink-0">
+                                    <button type="button" class="kanban-action-toggle rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+                                    <div class="kanban-action-dropdown hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                                        <div class="py-1">
+                                            <a href="{% url 'task_update' project.label task.unique_id %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</a>
+                                            <a href="{% url 'task_delete' project.label task.unique_id %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete</a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 move-to-backlog">Move to Backlog</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-center justify-between">
+                                <span class="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">{{ task.unique_id }}</span>
+                                {% if task.assigned_to %}
+                                    <img src="{{ task.assigned_to.user.profile.profile_image.url }}" class="h-7 w-7 rounded-full object-cover" alt="{{ task.assigned_to.full_name }}" title="{{ task.assigned_to.full_name }}">
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
+
 {% block extra_js %}
 <script>
 $(function () {
-    $(".kanban-column").each(function () {
-        $(this).sortable({
-            connectWith: ".kanban-column",
-            items: ".kanban-task",
-            placeholder: "ui-sortable-placeholder",
-            stop: function (event, ui) {
-                let taskId = ui.item.data("task-id");
-                let newStatusId = ui.item.closest(".kanban-column").data("status-id");
+    // Initialize jQuery UI Sortable for drag-and-drop
+    $(".kanban-tasks-container").sortable({
+        connectWith: ".kanban-tasks-container", // Allow moving cards between columns
+        items: ".kanban-task",
+        placeholder: "rounded-md border-2 border-dashed border-gray-300 h-24 my-3", // Tailwind styled placeholder
+        stop: function (event, ui) {
+            const taskId = ui.item.data("task-id");
+            const newStatusId = ui.item.closest(".kanban-column").data("status-id");
 
-                $.ajax({
-                    url: window.location.href,
-                    method: "POST",
-                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
-                    data: {
-                        task_id: taskId,
-                        new_status: newStatusId
-                    },
-                    success: function () {
-                        ui.item.hide().fadeIn(200);
-                    },
-                    error: function () {
-                        alert("Failed to update task status.");
-                    }
-                });
-            }
-        }).disableSelection();
+            // FIXED: Send data as JSON to match the backend view
+            $.ajax({
+                url: window.location.href, // Post to the same KanbanBoardView
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                contentType: "application/json", // Specify content type
+                data: JSON.stringify({        // Stringify the data
+                    task_id: taskId,
+                    new_status_id: newStatusId
+                }),
+                success: function () {
+                    ui.item.hide().fadeIn(300); // Visual feedback
+                },
+                error: function () {
+                    alert("Failed to update task status.");
+                    // For production, you'd want a nicer notification system
+                    $(this).sortable('cancel'); // Revert the move on error
+                }
+            });
+        }
+    }).disableSelection();
+
+    // --- Dropdown Logic ---
+    const closeAllDropdowns = () => {
+        document.querySelectorAll('.kanban-action-dropdown').forEach(dropdown => dropdown.classList.add('hidden'));
+    };
+    window.addEventListener('click', closeAllDropdowns);
+
+    $(document).on('click', '.kanban-action-toggle', function(event) {
+        event.stopPropagation();
+        const dropdown = this.nextElementSibling;
+        const isHidden = dropdown.classList.contains('hidden');
+        closeAllDropdowns();
+        if (isHidden) {
+            dropdown.classList.remove('hidden');
+        }
     });
 
+    // --- Move to Backlog AJAX Call ---
     $(document).on('click', '.move-to-backlog', function (e) {
         e.preventDefault();
-        const taskId = $(this).closest('.kanban-task').data('task-id');
+        const card = $(this).closest('.kanban-task');
+        const taskId = card.data('task-id');
 
+        // FIXED: Send data as JSON
         $.ajax({
             url: "{% url 'move_to_backlog' %}",
             method: "POST",
             headers: { "X-CSRFToken": "{{ csrf_token }}" },
-            data: { task_id: taskId },
+            contentType: "application/json",
+            data: JSON.stringify({ task_id: taskId }),
             success: function () {
-                location.reload();
+                card.fadeOut(400, function() { $(this).remove(); }); // Animate removal from board
             },
             error: function () {
                 alert("Failed to move task to backlog.");
@@ -167,4 +142,3 @@ $(function () {
 });
 </script>
 {% endblock %}
-

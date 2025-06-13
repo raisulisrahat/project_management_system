@@ -2,14 +2,32 @@
 {% block title %}Delete Task{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h3 class="mb-3">Delete Task <strong>{{ task.summary }}</strong>?</h3>
-    <p>This action is irreversible. Are you sure?</p>
+<div class="max-w-lg mx-auto mt-10 bg-white p-8 rounded-xl shadow-md border border-gray-200">
+    <div class="text-center">
+        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+            <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        </div>
 
-    <form method="post">
+        <h1 class="mt-4 text-2xl font-bold text-gray-900">Delete Task</h1>
+        <p class="mt-2 text-sm text-gray-600">
+            Are you sure you want to delete the task <strong class="font-semibold text-gray-800">"{{ task.summary }}"</strong>?
+        </p>
+        <p class="mt-1 text-sm font-bold text-red-600">This action cannot be undone.</p>
+    </div>
+
+    <form method="post" class="mt-8">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Yes, delete it</button>
-        <a href="{% url 'task_lists' project.label %}" class="btn btn-secondary">Cancel</a>
+        <div class="grid grid-cols-2 gap-4">
+            {# The cancel link correctly points back to the task list for the project #}
+            <a href="{% url 'task_lists' project.code %}" class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
+                Cancel
+            </a>
+            <button type="submit" class="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                Yes, Delete Task
+            </button>
+        </div>
     </form>
 </div>
 {% endblock %}

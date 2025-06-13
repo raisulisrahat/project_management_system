@@ -1,94 +1,142 @@
 {% extends "base.html" %}
 {% block title %}List Projects{% endblock %}
 {% load static %}
+
 {% block content %}
-<div class="d-flex justify-content-sm-between mb-3">
-    <p class="fs-5 fw-bold">Projects</p>
-    <div class="d-flex align-items-center">
-        <a href="{% url 'project_create' %}" class="btn btn-sm btn-primary">Create Project</a>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Projects</h1>
+        <a href="{% url 'project_create' %}" class="w-full sm:w-auto text-center px-4 py-2 text-sm font-medium text-white bg-cyan-600 rounded-lg shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+            Create Project
+        </a>
     </div>
-</div>
-<table class="table table-hover shadow-sm">
-    <thead>
-        <tr>
-            <th scope="col">Project Name</th>
-            <th scope="col">Key</th>
-            <th scope="col">Type</th>
-            <th scope="col">Lead</th>
-            <th scope="col">More</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for project in projects %}
-        <tr>
-            <td class="fw-medium">
-                <a href="{% url 'project_detail' project.label %}" class="text-decoration-none" style="color: #3e98ff;">
-                    {{ project.name }}
-                </a>
-            </td>
-            <td class="fw-medium text-secondary">{{ project.label }}</td>
-            <td class="fw-medium text-secondary">{{ project.type }}</td>
-            <td class="fw-medium">
-                <a href="" class="text-decoration-none gap-2" style="color: #3e98ff;">
-                    <img src="{{ project.lead.user.profile.profile_image.url }}" alt="{{ project.lead }}" class="rounded-circle" width="30" height="30">  {{ project.lead }}
-                </a>
-            </td>
-           <td class="fw-medium me-0">
-               <div class="dropdown">
-                <button class="btn btn-sm border-0 bg-transparent" type="button"  data-bs-toggle="dropdown">
-                    <i class="bi bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a href="{% url 'project_update' project.label %}" class="dropdown-item">Edit Project</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'project_delete' project.label %}" class="dropdown-item">Delete</a>
-                    </li>
-                </ul>
-               </div>
-           </td>
-        </tr>
-    {% empty %}
-        <tr>
-            <td colspan="5">No projects found yet.</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-<div class="d-flex justify-content-center mt-3">
-    <ul class="pagination justify-content-center">
+
+    <div class="bg-white rounded-lg shadow-md">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-600">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Project Name</th>
+                        <th scope="col" class="px-6 py-3">Key</th>
+                        <th scope="col" class="px-6 py-3">Type</th>
+                        <th scope="col" class="px-6 py-3">Lead</th>
+                        <th scope="col" class="px-6 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for project in projects %}
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="px-6 py-4 font-bold text-gray-900 whitespace-nowrap">
+                            <a href="{% url 'project_detail' project.label %}" class="text-cyan-600 hover:underline">
+                                {{ project.name }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-gray-500">{{ project.label }}</td>
+                        <td class="px-6 py-4 text-gray-500">{{ project.type }}</td>
+                        <td class="px-6 py-4">
+                            <a href="#" class="flex items-center gap-2 text-gray-800 hover:underline">
+                                <img src="{{ project.lead.user.profile.profile_image.url }}" alt="{{ project.lead }}" class="h-8 w-8 rounded-full object-cover">
+                                <span class="font-medium">{{ project.lead }}</span>
+                            </a>
+                        </td>
+                       <td class="px-6 py-4 text-right">
+                           <div class="relative inline-block text-left">
+                                <button type="button" class="table-action-toggle p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <div class="table-action-dropdown hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div class="py-1">
+                                        <a href="{% url 'project_update' project.label %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit Project</a>
+                                        <a href="{% url 'project_delete' project.label %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Project</a>
+                                    </div>
+                                </div>
+                           </div>
+                       </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                            You haven't created any projects yet.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="flex items-center justify-center gap-1 mt-6" aria-label="Pagination">
+
+        {# Previous Page Link #}
         {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}"> &lt; </a>
-            </li>
+            <a href="?page={{ page_obj.previous_page_number }}" class="inline-flex items-center justify-center px-3 h-9 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100">
+                &lt; Prev
+            </a>
         {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">&lt;</span>
-            </li>
+            <span class="inline-flex items-center justify-center px-3 h-9 text-sm font-medium text-gray-400 bg-gray-50 border border-gray-300 rounded-md cursor-not-allowed">
+                &lt; Prev
+            </span>
         {% endif %}
 
+        {# Page Number Links #}
         {% for num in page_obj.paginator.page_range %}
             {% if num == page_obj.number %}
-                <li class="page-item active">
-                    <span class="page-link">{{ num }}</span>
-                </li>
+                <span class="inline-flex items-center justify-center w-9 h-9 text-sm font-bold text-white bg-cyan-600 border-cyan-600 rounded-md z-10" aria-current="page">{{ num }}</span>
             {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                </li>
+                <a href="?page={{ num }}" class="inline-flex items-center justify-center w-9 h-9 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100">{{ num }}</a>
             {% endif %}
         {% endfor %}
 
+        {# Next Page Link #}
         {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}"> &gt; </a>
-            </li>
+            <a href="?page={{ page_obj.next_page_number }}" class="inline-flex items-center justify-center px-3 h-9 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-100">
+                Next &gt;
+            </a>
         {% else %}
-            <li class="page-item disabled">
-                <span class="page-link"> &gt; </span>
-            </li>
+            <span class="inline-flex items-center justify-center px-3 h-9 text-sm font-medium text-gray-400 bg-gray-50 border border-gray-300 rounded-md cursor-not-allowed">
+                Next &gt;
+            </span>
         {% endif %}
-    </ul>
-</div>
+    </nav>
+    {% endif %}
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // --- Reusable Dropdown Logic for Multiple Dropdowns in a Table ---
+
+    // Function to close all open dropdowns
+    const closeAllDropdowns = () => {
+        document.querySelectorAll('.table-action-dropdown').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+    };
+
+    // Close all dropdowns if user clicks outside of them
+    window.addEventListener('click', function() {
+        closeAllDropdowns();
+    });
+
+    // Add click listener to all toggle buttons
+    document.querySelectorAll('.table-action-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevents window click event from firing immediately
+
+            const dropdown = this.nextElementSibling;
+            const isHidden = dropdown.classList.contains('hidden');
+
+            // First, close all other dropdowns
+            closeAllDropdowns();
+
+            // If the clicked one was hidden, show it
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

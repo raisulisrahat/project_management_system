@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-theme="business">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +21,17 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body class="emx3 bg-gray-100">
+    <header class="bg-white border-b border-b-gray-200 p-4 flex justify-between items-center">
+        <button id="sidebar-toggle" class="md:hidden text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
 
+        <div class="w-full">
+            {% include "navbar.html" %}
+        </div>
+    </header>
     <div class="relative min-h-screen md:flex">
 
         <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden hidden"></div>
@@ -32,17 +42,7 @@
 
         <div class="flex-1 flex flex-col">
 
-            <header class="bg-white shadow-md p-4 flex justify-between items-center">
-                <button id="sidebar-toggle" class="md:hidden text-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                    </svg>
-                </button>
 
-                <div class="w-full">
-                    {% include "navbar.html" %}
-                </div>
-            </header>
 
             <main class="flex-1 p-6 lg:p-8">
                 {% block content %}{% endblock %}

@@ -1,1 +1,19 @@
+/*
+ * Point to your tailwind.config.js file in the project root.
+ */
+@config "../../tailwind.config.js";
+
 @import "tailwindcss";
+
+/*
+ * >> THIS IS THE LINE TO FIX <<
+ * Please delete and re-type it carefully.
+ * Ensure there is one space after "daisyui" and before "with".
+ * Ensure the quotes are straight "".
+ */
+@plugin "daisyui" {
+  themes: [
+    "autumn",  /* Default theme */
+    "business"
+  ]
+}

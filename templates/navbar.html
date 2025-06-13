@@ -2,30 +2,30 @@
 {% load humanize %}
 
 <div class="w-full flex items-center justify-between">
-
-
-
+    <a class="flex items-center gap-3" href="{% url 'dashboard' %}">
+        <img src="{% static 'image/Flowtrex-icon.png' %}" alt="Flowtrex" class="h-7 w-auto">
+        <span class="text-xl font-bold text-black">Flowtrex</span>
+    </a>
     <div class="flex flex-1 items-center justify-end gap-4 md:gap-6">
-
         <div class="relative w-full max-w-xs">
             <form id="search-form" class="w-full">
                 <div class="relative">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <i class="fa fa-search text-gray-400"></i>
                     </div>
-                    <input type="text" id="search_input" class="block w-full rounded-md border-gray-300 py-2 pl-10 pr-3 text-sm shadow-sm focus:border-cyan-500 focus:ring-cyan-500" placeholder="Search...">
+                    <input type="text" id="search_input" class="block w-full rounded-lg border-1 border-gray-900 py-2 pl-10 pr-3 text-sm focus:border-cyan-500 focus:ring-cyan-500" placeholder="Search...">
                 </div>
             </form>
             <div id="search-results" class="absolute z-20 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg focus:outline-none"></div>
         </div>
 
         <div class="relative">
-            <button id="notification-toggle" type="button" class="relative rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
+            <button id="notification-toggle" type="button" class="relative rounded-md text-gray-500 hover:bg-blue-100 p-2">
                 <i class="fas fa-bell text-xl"></i>
                 <span id="notification-count" class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white" style="display: none;">0</span>
             </button>
 
-            <div id="notification-dropdown" class="hidden absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <div id="notification-dropdown" class="hidden absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-gray-50 ring-opacity-5 focus:outline-none">
                 <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="notification-toggle">
                     <div class="flex justify-between items-center px-4 py-2 border-b">
                         <p class="text-sm font-semibold text-gray-700">Notifications</p>

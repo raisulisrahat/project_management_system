@@ -1,154 +1,203 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static humanize %}
 
 {% block title %}Create Task{% endblock %}
-{% block extra_css %}
-<!-- Only if additional styling needed -->
-{% endblock %}
-{% block content %}
-    <div class="mt-5">
-    <p class="fs-6 fw-semibold">Create a new task for <span class="text-primary">{{ project.name }}</span></p>
 
-    <!-- Task Form -->
+{% block content %}
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="col-sm-3 form-group mb-4">
-            <label for="summary" class="form-label fw-semibold">Summary<span class="text-danger">*</span></label>
-            <input class="form-control" type="text" id="summary" name="summary" required>
-        </div>
-        <div class="col-sm-4 form-group mb-4">
-            <label for="description" class="form-label fw-semibold">Description</label>
-            <div class="">{{ task_form.description }}</div>
-        </div>
-        <div class="col-sm-3 form-group mb-4">
-            <label for="status" class="form-label fw-semibold">Status<span class="text-danger">*</span></label>
-            <select class="form-select" id="status" name="status">
-                {% for status in statuses %}
-                    <option value="{{ status.id }}" {% if task_form.instance.status.id == status.id %}selected{% endif %}>{{ status.status_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-sm-3 form-group mb-4">
-            <label for="priority" class="form-label fw-semibold">Priority<span class="text-danger">*</span></label>
-            <select class="form-select" id="priority" name="priority">
-                {% for priority in priorities %}
-                    <option value="{{ priority.id }}" {% if task_form.instance.priority.id == priority.id %}selected{% endif %}>{{ priority.priority_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-sm-3 form-group mb-4">
-            <label for="dependencies" class="form-label fw-semibold">Dependencies</label>
-            {{ task_form.dependencies }}
-        </div>
-                <div class="d-flex align-content-center gap-2">
-        <div class="col-sm-3 form-group mb-4">
-            <label for="assigned_to" class="form-label fw-semibold">Assigned To</label>
 
-                <select id="assigned_to" name="assigned_to" class="form-select">
-                    <option value="">Unassigned</option>
-                    {% for person in peoples %}
-                        <option value="{{ person.id }}" data-image="{{ person.profile_image.url }}">{{ person.full_name }}</option>
-                    {% endfor %}
-                </select>
-                <input type="hidden" name="assign_me" id="assignMeInput" value="false">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Create a New Task</h1>
+            <p class="text-sm text-gray-500 mt-1">
+                For project: <span class="font-semibold text-cyan-600">{{ project.name }}</span>
+            </p>
         </div>
-                <button type="button" class="bg-transparent mt-2 border-0" id="assign_me">Assign me</button>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+
+                <div class="md:col-span-2">
+                    <label for="id_summary" class="block text-sm font-medium text-gray-700">Summary <span class="text-red-500">*</span></label>
+                    <div class="mt-1">
+                        {{ form.summary }}
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="id_description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <div class="mt-1">
+                        {{ form.description }}
+                    </div>
+                </div>
+
+                <div>
+                    <label for="id_status" class="block text-sm font-medium text-gray-700">Status <span class="text-red-500">*</span></label>
+                    <div class="mt-1">
+                        {{ form.status }}
+                    </div>
+                </div>
+
+                <div>
+                    <label for="id_priority" class="block text-sm font-medium text-gray-700">Priority <span class="text-red-500">*</span></label>
+                    <div class="mt-1">
+                        {{ form.priority }}
+                    </div>
+                </div>
+
+                <div class="flex items-end gap-2">
+                    <div class="flex-grow">
+                        <label for="id_assigned_to" class="block text-sm font-medium text-gray-700">Assigned To</label>
+                        <div class="mt-1">
+                            {{ form.assigned_to }}
+                        </div>
+                    </div>
+                    <button type="button" id="assign_me" class="h-10 px-3 text-sm font-medium text-cyan-700 bg-cyan-100 rounded-md hover:bg-cyan-200">
+                        Assign me
+                    </button>
+                    <input type="hidden" name="assign_me" id="assignMeInput" value="false">
+                </div>
+
+                <div>
+                    <label for="id_reporter" class="block text-sm font-medium text-gray-700">Reporter</label>
+                    <div class="mt-1">
+                        {{ form.reporter }}
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="id_dependencies" class="block text-sm font-medium text-gray-700">Dependencies</label>
+                    <div class="mt-1">
+                        {{ form.dependencies }}
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Attachments</label>
+                    <div class="mt-1">
+                        {# This is your custom dropzone UI #}
+                        <label for="id_attachments" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                </svg>
+                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                            </div>
+                            {# This renders the actual <input type="file"> which is hidden #}
+                            {{ form.attachments }}
+                        </label>
+                    </div>
+                    <div id="filePreview" class="mt-4 flex flex-wrap gap-4"></div>
+                </div>
             </div>
 
-        <div class="col-sm-3 form-group mb-4">
-            <label for="reporter" class="form-label fw-semibold">Reporter</label>
-            <select class="form-select" name="reporter">
-                {% for person in peoples %}
-                    <option value="{{ person.id }}" data-image="{{ person.profile_image.url }}">{{ person.full_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            {{ form.media }}
 
-        <!-- File upload with drag & drop -->
-        <div class="col-sm-3 form-group mb-4">
-            <label class="form-label fw-semibold">Attachments</label>
-            <div id="dragDropArea" class="drag-drop-area border border-dashed p-3 text-center rounded">
-                <span class="fw-semibold">Drag & drop files here or <button type="button" id="browseButton" class="bg-primary-subtle px-2 py-1 rounded-1 border-0">Browse</button></span>
-                <input type="file" id="fileInput" name="attachments" class="d-none" multiple>
+            <div class="mt-8 pt-5 border-t border-gray-200">
+                <div class="flex justify-end gap-3">
+                    <a href="{% url 'project_detail' project.label %}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+                        Cancel
+                    </a>
+                    <button type="submit" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-cyan-600 border border-transparent rounded-md shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+                        Create Task
+                    </button>
+                </div>
             </div>
-            <div id="filePreview" class="file-preview d-flex flex-wrap gap-2 mt-2"></div>
-        </div>
-        {{ task_form.media }}
-        <div class="form-group mt-3">
-            <button type="submit" class="btn btn-primary">Submit</button>
         </div>
     </form>
-</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function formatOption(option) {
+// Function to format Select2 options with user profile images
+function formatUserOption(option) {
     if (!option.id) return option.text;
     const imgUrl = $(option.element).data('image');
-    return $(`<span><img src="${imgUrl}" class="rounded-circle me-2" style="width:30px;height:30px;">${option.text}</span>`);
+    if (!imgUrl) return option.text;
+
+    // NOTE: For Select2 to render HTML, you must use templateResult and templateSelection
+    return $(`
+        <span class="flex items-center">
+            <img src="${imgUrl}" class="h-6 w-6 rounded-full object-cover mr-2" />
+            <span>${option.text}</span>
+        </span>
+    `);
 }
 
 $(function() {
-    $('#assigned_to').select2({
-        theme: 'bootstrap4',
-        templateResult: formatOption,
-        templateSelection: formatOption,
-        width: '100%'
+    // Initialize Select2 for user selection fields
+    $('#id_assigned_to, #id_reporter').select2({
+        // NOTE: The 'bootstrap4' theme is removed to avoid style conflicts.
+        // For a full Tailwind look, a dedicated Select2 theme for Tailwind would be needed.
+        width: '100%',
+        templateResult: formatUserOption,
+        templateSelection: formatUserOption,
+        escapeMarkup: function (markup) { return markup; } // Allow HTML in selections
     });
-    $
 
+    // "Assign me" button functionality
     $('#assign_me').click(function() {
         $('#assignMeInput').val('true');
-        $('#assigned_to').val("{{ request.user.profile.id }}").trigger('change');});
+        $('#id_assigned_to').val("{{ request.user.profile.id }}").trigger('change');
+    });
 
+    // --- Drag and Drop Logic ---
     const dragDropArea = document.getElementById('dragDropArea');
-    const browseButton = document.getElementById('browseButton');
-    const fileInput = document.getElementById('fileInput');
+    const fileInput = document.getElementById('id_attachments'); // Target the actual Django form input
     const filePreview = document.getElementById('filePreview');
 
-    browseButton.addEventListener('click', () => fileInput.click());
-    dragDropArea.addEventListener('dragover', e => { e.preventDefault(); dragDropArea.classList.add('bg-light'); });
-    dragDropArea.addEventListener('dragleave', () => dragDropArea.classList.remove('bg-light'));
-    dragDropArea.addEventListener('drop', e => {
-        e.preventDefault(); dragDropArea.classList.remove('bg-light');
-        handleFiles(e.dataTransfer.files);
+    // Make the entire drop zone clickable, not just a button
+    dragDropArea.addEventListener('click', () => fileInput.click());
+
+    dragDropArea.addEventListener('dragover', e => {
+        e.preventDefault();
+        // UPDATED: Use Tailwind class for hover effect
+        dragDropArea.classList.add('bg-cyan-50', 'border-cyan-400');
     });
+    dragDropArea.addEventListener('dragleave', () => {
+        dragDropArea.classList.remove('bg-cyan-50', 'border-cyan-400');
+    });
+    dragDropArea.addEventListener('drop', e => {
+        e.preventDefault();
+        dragDropArea.classList.remove('bg-cyan-50', 'border-cyan-400');
+        // When files are dropped, assign them to the hidden file input
+        fileInput.files = e.dataTransfer.files;
+        handleFiles(fileInput.files);
+    });
+    // Also handle files when selected via the browse dialog
     fileInput.addEventListener('change', () => handleFiles(fileInput.files));
 
     function handleFiles(files) {
-        filePreview.innerHTML = '';
+        filePreview.innerHTML = ''; // Clear previous previews
         Array.from(files).forEach(file => {
-            const ext = file.name.split('.').pop().toLowerCase();
             const item = document.createElement('div');
-            item.className = 'file-preview-item text-center';
+            item.className = 'relative w-24 h-24 border rounded-md p-1'; // Use Tailwind classes
 
-            if (['jpg','jpeg','png','gif','bmp'].includes(ext)) {
-                const img = document.createElement('img'); img.src = URL.createObjectURL(file);
-                img.style.width = '80px'; item.appendChild(img);
-            } else if (ext === 'pdf') {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const data = new Uint8Array(reader.result);
-                    pdfjsLib.getDocument({data}).promise.then(pdf => pdf.getPage(1).then(page => {
-                        const scale = 0.3;
-                        const viewport = page.getViewport({scale});
-                        const canvas = document.createElement('canvas');
-                        canvas.width = viewport.width; canvas.height = viewport.height;
-                        page.render({canvasContext: canvas.getContext('2d'), viewport: viewport});
-                        item.appendChild(canvas);
-                    }));
-                };
-                reader.readAsArrayBuffer(file);
+            // Add a remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'absolute -top-2 -right-2 h-5 w-5 bg-red-500 text-white rounded-full text-xs leading-none';
+            removeBtn.innerHTML = '&times;';
+            removeBtn.onclick = () => {
+                // This is a simplified removal. A full implementation would require managing the FileList object.
+                item.remove();
+            };
+            item.appendChild(removeBtn);
+
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'w-full h-full object-cover rounded';
+                item.appendChild(img);
             } else {
-                const icon = document.createElement('i'); icon.className = 'bi bi-file-earmark-fill fs-1';
-                item.appendChild(icon);
+                const ext = file.name.split('.').pop().toLowerCase();
+                const placeholder = document.createElement('div');
+                placeholder.className = 'flex flex-col items-center justify-center h-full bg-gray-100 rounded';
+                placeholder.innerHTML = `<i class="bi bi-file-earmark-fill text-2xl text-gray-400"></i><span class="text-xs text-gray-500 mt-1">${ext}</span>`;
+                item.appendChild(placeholder);
             }
-            const name = document.createElement('div'); name.textContent = file.name; name.className='small'; item.appendChild(name);
             filePreview.appendChild(item);
         });
     }
 });
 </script>
-
 {% endblock %}

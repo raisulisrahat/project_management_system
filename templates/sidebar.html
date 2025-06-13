@@ -1,34 +1,26 @@
 {% load static %}
-
-<div class="flex h-full flex-col bg-gray-800">
-
-    <div class="px-4 pt-6 pb-4">
-        <a class="flex items-center gap-3" href="{% url 'dashboard' %}">
-            <img src="{% static 'image/Flowtrex-icon.png' %}" alt="Flowtrex" class="h-9 w-auto">
-            <span class="text-xl font-bold text-white">Flowtrex</span>
-        </a>
-    </div>
-
-    <nav class="flex-grow space-y-1 px-3">
-        <a href="{% url 'dashboard' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">
+<div class="relative">
+<div class="flex h-full flex-col fixed left-0 right-0 border-r border-r-gray-200 bg-white">
+    <nav class="flex-grow space-y-1 mt-3 px-3">
+        <a href="{% url 'dashboard' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium text-black hover:bg-blue-100">
             <i class="fa-solid fa-house w-6 text-center text-gray-400"></i>
             <span>Home</span>
         </a>
 
-        <a href="{% url 'projects' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">
+        <a href="{% url 'projects' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium text-black hover:bg-blue-100">
             <i class="fa-solid fa-list-check w-6 text-center text-gray-400"></i>
             <span>My Tasks</span>
         </a>
 
-        <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">
+        <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium text-black hover:bg-blue-100">
             <i class="fa-solid fa-message w-6 text-center text-gray-400"></i>
             <span>Messages</span>
         </a>
 
-        <hr class="my-4 border-t border-gray-700">
+        <hr class="my-4 border-t border-gray-200">
 
         <div>
-            <button type="button" class="sidebar-dropdown-toggle flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">
+            <button type="button" class="sidebar-dropdown-toggle flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-medium text-black hover:bg-blue-100">
                 <div class="flex items-center gap-3">
                     <i class="fas fa-project-diagram w-6 text-center text-gray-400"></i>
                     <span>Projects</span>
@@ -36,17 +28,17 @@
                 <i class="fa-solid fa-chevron-down h-5 w-5 shrink-0 transition-transform duration-200"></i>
             </button>
             <div class="hidden space-y-1 pt-1">
-                <a href="{% url 'projects' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                <a href="{% url 'projects' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-black hover:bg-blue-100">
                     View Projects
                 </a>
-                <a href="{% url 'project_create' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                <a href="{% url 'project_create' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-black hover:bg-blue-100">
                     Create Project
                 </a>
             </div>
         </div>
 
         <div>
-            <button type="button" class="sidebar-dropdown-toggle flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">
+            <button type="button" class="sidebar-dropdown-toggle flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-medium text-black hover:bg-blue-100">
                 <div class="flex items-center gap-3">
                     <i class="fa-solid fa-user-group w-6 text-center text-gray-400"></i>
                     <span>Teams</span>
@@ -54,10 +46,10 @@
                 <i class="fa-solid fa-chevron-down h-5 w-5 shrink-0 transition-transform duration-200"></i>
             </button>
             <div class="hidden space-y-1 pt-1">
-                <a href="{% url 'teams' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                <a href="{% url 'teams' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-black hover:bg-blue-100">
                     View Teams
                 </a>
-                <a href="{% url 'team_create' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                <a href="{% url 'team_create' %}" class="flex items-center gap-3 rounded-md py-2 pl-12 pr-3 text-sm font-medium text-black hover:bg-blue-100">
                     Create Team
                 </a>
             </div>
@@ -65,11 +57,11 @@
 
     </nav>
 
-    <div class="border-t border-gray-700 p-4">
-        <p class="text-sm font-semibold text-gray-400">Version 2.1.0</p>
+    <div class="border-t  bottom-0 border-gray-100 p-4">
+        <p class="text-sm font-semibold text-black">Version 2.1.0</p>
     </div>
 </div>
-
+</div>
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {

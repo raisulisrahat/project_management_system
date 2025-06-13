@@ -1,5 +1,5 @@
 from django.urls import path, re_path
-from ctspms.views import ProjectCreateView, ProjectListView, ProjectDetailView, ProjectUpdateView, ProjectDeleteView, TaskCreateView, BacklogView, CalendarView, TaskListView, TaskUpdateView, TaskDeleteView, KanbanBoardView,  TaskDetailView, upload_temp_file, ajax_search, move_to_backlog, mark_notifications_read
+from ctspms.views import ProjectCreateView, ProjectListView, ProjectDetailView, ProjectUpdateView, ProjectDeleteView, TaskCreateView,  CalendarView, TaskListView, KanbanBoardView, TaskDetailView, TaskUpdateView, TaskDeleteView, BacklogView, upload_temp_file, move_to_backlog, ajax_search, mark_notifications_read
 urlpatterns = [
     # Project URLs
     path('search/', ajax_search, name='ajax_search'),
@@ -19,6 +19,5 @@ urlpatterns = [
     path('tasks/move-to-backlog/', move_to_backlog, name='move_to_backlog'),
     path('projects/<str:label>/tasks/calendar/', CalendarView.as_view(), name='calendar_view'),
     path('notifications/mark_read/', mark_notifications_read, name='mark_notifications_read')
-
 
 ]

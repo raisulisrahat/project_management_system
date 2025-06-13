@@ -1,46 +1,58 @@
-    {% load static %}
-    {% load bootstrap5 %}
-    {% bootstrap_css %}
-    {% load bootstrap_icons %}
-    <link href="{% static 'css/coreui.min.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
-    <script src="{% static 'js/coreui.bundle.min.js' %}" type="text/javascript"></script>
+{% load static %}
+{# The main container for the navigation bar, styled as a card #}
+<div class="my-4 bg-white rounded-lg shadow-md">
+    <nav class="flex flex-wrap items-center divide-x divide-gray-200">
 
-    <div class="p-sm-3 my-sm-3 shadow-sm bg-white">
-        <div class="row mx-sm-1">
-            <div class="col-sm-2">
-                <a href="{% url 'project_detail' project.label %}" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
-                    <i class="me-1" aria-hidden="true">{% bs_icon 'layout-wtf' extra_classes='fw-semibold' %}</i>
-                    <span class="eme01">Summary</span>
-                </a>
-            </div>
-                <span class="vr vr-blurry"></span>
-            <div class="col-sm-2 text-center">
-                <a href="{% url 'task_lists' project.label %}" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
-                    <i class="me-1" aria-hidden="true">{% bs_icon 'card-list' extra_classes='fw-semibold' %}</i>
-                    <span class="eme01">Lists</span>
-                </a>
-            </div>
-                <span class="vr vr-blurry"></span>
-            <div class="col-sm-2 text-center">
-                <a href="{% url 'kanban_board' project.label %}" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
-                    <i class="me-1" aria-hidden="true">{% bs_icon 'kanban' %}</i>
-                    <span class="eme01">Board</span>
-                </a>
-            </div>
-                <span class="vr vr-blurry"></span>
-            <div class="col-sm-2 text-center">
-                <a href="{% url 'calendar_view' project.label %}" class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
-                    <i class="me-1" aria-hidden="true">{% bs_icon 'calendar' extra_classes='fw-semibold' %}</i>
-                    <span class="eme01">Calendar</span>
-                </a>
-            </div>
-            <span class="vr vr-blurry"></span>
-            <div class="col-sm-2  text-center">
-                <a href="{% url 'backlog' project.label %}" class="{% if request.resolver_match.url_name == 'backlog' %}active{% endif %} link-offset-3 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hovere text-secondary-emphasis">
-                    <i class="me-1" aria-hidden="true">{% bs_icon 'list-nested' extra_classes='fw-semibold' %}</i>
-                    <span class="eme01">Backlog</span>
-                </a>
-            </div>
-        </div>
-    </div>
+        {# Each link is now a flex item with consistent padding, styles, and hover effects #}
+        <a href="{% url 'project_detail' project.label %}" class="flex flex-grow items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-150
+            {% if request.resolver_match.url_name == 'project_detail' %}
+                bg-cyan-50 text-cyan-700
+            {% else %}
+                text-gray-600 hover:bg-gray-100
+            {% endif %}">
+            <i class="bi-layout-wtf text-base"></i>
+            <span>Summary</span>
+        </a>
+
+        <a href="{% url 'task_lists' project.label %}" class="flex flex-grow items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-150
+            {% if request.resolver_match.url_name == 'task_lists' %}
+                bg-cyan-50 text-cyan-700
+            {% else %}
+                text-gray-600 hover:bg-gray-100
+            {% endif %}">
+            <i class="bi-card-list text-base"></i>
+            <span>Lists</span>
+        </a>
+
+        <a href="{% url 'kanban_board' project.label %}" class="flex flex-grow items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-150
+            {% if request.resolver_match.url_name == 'kanban_board' %}
+                bg-cyan-50 text-cyan-700
+            {% else %}
+                text-gray-600 hover:bg-gray-100
+            {% endif %}">
+            <i class="bi-kanban text-base"></i>
+            <span>Board</span>
+        </a>
+
+        <a href="{% url 'calendar_view' project.label %}" class="flex flex-grow items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-150
+            {% if request.resolver_match.url_name == 'calendar_view' %}
+                bg-cyan-50 text-cyan-700
+            {% else %}
+                text-gray-600 hover:bg-gray-100
+            {% endif %}">
+            <i class="bi-calendar text-base"></i>
+            <span>Calendar</span>
+        </a>
+
+        <a href="{% url 'backlog' project.label %}" class="flex flex-grow items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-150
+            {% if request.resolver_match.url_name == 'backlog' %}
+                bg-cyan-50 text-cyan-700
+            {% else %}
+                text-gray-600 hover:bg-gray-100
+            {% endif %}">
+            <i class="bi-list-nested text-base"></i>
+            <span>Backlog</span>
+        </a>
+
+    </nav>
+</div>

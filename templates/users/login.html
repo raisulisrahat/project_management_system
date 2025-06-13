@@ -1,61 +1,84 @@
 {% load static %}
-{% load bootstrap5 %}
-{% bootstrap_css %}
-<link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
-<link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
-<title>Flowtrex - Log In</title>
-<body class="vh-100 overflow-hidden">
-    <div class="container-fluid h-100">
-        <div class="row h-100">
-            <!-- Left Section (Logo and Text) -->
-            <div class="col-md-6 d-flex flex-column d-none d-md-flex align-items-center justify-content-center bg-success">
-                <div class="text-center">
-                    <!-- Replace with your logo path -->
-                    <img src="{% static 'image/flowtrex-icon-lg.png' %}" alt="Flowtrex" width="120">
-                    <p class="mb-1 fw-bold fs-2 text-white">Flowtrex</p>
-                    <p class="fw-normal text-white">Next Gen Project Management System</p>
-                </div>
-            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowtrex - Log In</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
+    {# Link to your compiled Tailwind CSS file #}
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
 
-            <!-- Right Section (Login Form) -->
-            <div class="col-md-6 d-flex align-items-center justify-content-center p-4">
-                <div class="w-100" style="max-width: 400px;">
-                    {% if messages %}
-                        <ul class="messages list-unstyled">
-                            {% for message in messages %}
-                                <li class="alert {{ message.tags }}" style="color: #3d99f5">{{ message }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                    
-                    <form method="POST"  action="{% url 'login' %}">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <p class="text-center fw-bold fs-3 text-dark">Sign In</p>
-                        </div>
-                        <!-- Username input -->
-                        <div class="form-floating mb-3">
-                          <input type="text" name="username" class="form-control" id="floatingInput" placeholder="Username">
-                          <label for="floatingInput" class="eme01">Enter your username</label>
-                        </div>
-                        <!-- Password input -->
-                        <div class="form-floating">
-                          <input name="password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                          <label for="floatingPassword" class="eme01">Enter your password</label>
-                        </div>
-                        
-                        <!-- Sign In Button -->
-                        <div class="d-flex my-3 justify-content-between">
-                            <a href="{% url 'register' %}" class="text-secondary-emphasis text-decoration-none">Register a new user</a>
-                            <a href="{% url 'password_reset' %}" class="text-secondary-emphasis text-decoration-none">Forgot Password?</a>
-                        </div>
-                        <input type="submit" value="Log In" class="btn btn-primary btn-sm px-3 py-2 btn-block">
-                    </form>
+    <div class="flex min-h-screen">
+        <div class="hidden md:flex flex-col w-1/2 items-center justify-center bg-cyan-600 p-12 text-white text-center">
+            <img src="{% static 'image/flowtrex-icon-lg.png' %}" alt="Flowtrex Logo" class="w-28 h-auto">
+            <h1 class="mt-4 text-4xl font-bold">Flowtrex</h1>
+            <p class="mt-2 text-lg text-cyan-100">Next Gen Project Management System</p>
+        </div>
+
+        <div class="flex w-full items-center justify-center p-8 md:w-1/2">
+            <div class="w-full max-w-sm">
+                <div class="md:hidden text-center mb-8">
+                    <img src="{% static 'image/flowtrex-icon-lg.png' %}" alt="Flowtrex Logo" class="w-20 h-auto mx-auto">
                 </div>
+
+                <h2 class="text-center text-3xl font-bold tracking-tight text-gray-900">
+                    Sign in to your account
+                </h2>
+
+                {% if messages %}
+                    <div class="mt-6 space-y-3">
+                    {% for message in messages %}
+                        {# The message.tags can be 'error', 'success', 'warning', etc. #}
+                        <div class="rounded-md p-4 text-sm
+                            {% if 'error' in message.tags %} bg-red-100 text-red-800 {% else %} bg-blue-100 text-blue-800 {% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form class="mt-8 space-y-6" method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+
+                    <div class="space-y-4 rounded-md shadow-sm">
+                        <div class="relative">
+                            <input id="username" name="username" type="text" required placeholder=" "
+                                   class="peer block w-full appearance-none rounded-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-transparent focus:border-cyan-500 focus:outline-none focus:ring-cyan-500 sm:text-sm">
+                            <label for="username"
+                                   class="absolute left-2 -top-2.5 z-10 origin-[0] bg-gray-50 px-1 text-sm text-gray-500 transition-all duration-300 peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">
+                                Username
+                            </label>
+                        </div>
+                        <div class="relative">
+                            <input id="password" name="password" type="password" required placeholder=" "
+                                   class="peer block w-full appearance-none rounded-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-transparent focus:border-cyan-500 focus:outline-none focus:ring-cyan-500 sm:text-sm">
+                             <label for="password"
+                                   class="absolute left-2 -top-2.5 z-10 origin-[0] bg-gray-50 px-1 text-sm text-gray-500 transition-all duration-300 peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">
+                                Password
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-sm">
+                        <a href="{% url 'register' %}" class="font-medium text-cyan-600 hover:text-cyan-500">
+                            Create an account
+                        </a>
+                        <a href="{% url 'password_reset' %}" class="font-medium text-cyan-600 hover:text-cyan-500">
+                            Forgot your password?
+                        </a>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="group relative flex w-full justify-center rounded-md border border-transparent bg-cyan-600 py-3 px-4 text-sm font-medium text-white hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
+                            Sign in
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-
-    <!-- Loading Bootstrap JavaScript -->
-    {% bootstrap_javascript %}
 </body>
+</html>
