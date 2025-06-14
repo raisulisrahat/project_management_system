@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'chat.apps.ChatConfig',
     'fontawesomefree',
-    'django_bootstrap_icons',
     'django_google_fonts',
     'ckeditor',
     'ckeditor_uploader',

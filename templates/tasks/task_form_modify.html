@@ -1,73 +1,84 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ form.instance.pk|yesno:"Edit Project,Create Project" }}{% endblock %}
+{% block title %}Edit Task - {{ task.summary }}{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <div class="card shadow rounded p-4">
-        <h4 class="mb-4">{{ form.instance.pk|yesno:"Edit Project,Create Project" }}</h4>
+<div class="max-w-4xl mx-auto my-8">
+    <form method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
+        {% csrf_token %}
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+        <div class="border-b pb-4 mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Edit Task</h1>
+            <p class="text-sm text-gray-500">
+                Editing task <span class="font-semibold">{{ task.unique_id }}</span> in project <span class="font-semibold">{{ task.project.name }}</span>
+            </p>
+        </div>
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.name.id_for_label }}" class="form-label">Project Name</label>
-                    {{ form.name }}
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.code.id_for_label }}" class="form-label">Project Code</label>
-                    {{ form.code }}
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.type.id_for_label }}" class="form-label">Project Type</label>
-                    {{ form.type }}
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.access.id_for_label }}" class="form-label">Access</label>
-                    {{ form.access }}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2">
+                <label for="{{ form.summary.id_for_label }}" class="block text-sm font-medium text-gray-700">Summary <span class="text-red-500">*</span></label>
+                <div class="mt-1">
+                    {{ form.summary }}
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-                {{ form.description }}
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.start_date.id_for_label }}" class="form-label">Start Date</label>
-                    {{ form.start_date }}
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.end_date.id_for_label }}" class="form-label">End Date</label>
-                    {{ form.end_date }}
+            <div class="md:col-span-2">
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">Description</label>
+                <div class="mt-1">
+                    {{ form.description }}
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">
-                {{ form.instance.pk|yesno:"Update Project,Create Project" }}
-            </button>
-            <a href="{% url 'projects' %}" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
+            <div>
+                <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700">Status</label>
+                <div class="mt-1">
+                    {{ form.status }}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.priority.id_for_label }}" class="block text-sm font-medium text-gray-700">Priority</label>
+                <div class="mt-1">
+                    {{ form.priority }}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.assigned_to.id_for_label }}" class="block text-sm font-medium text-gray-700">Assigned To</label>
+                <div class="mt-1">
+                    {{ form.assigned_to }}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.reporter.id_for_label }}" class="block text-sm font-medium text-gray-700">Reporter</label>
+                <div class="mt-1">
+                    {{ form.reporter }}
+                </div>
+            </div>
+
+            <div class="md:col-span-2">
+                <label for="{{ form.due_date.id_for_label }}" class="block text-sm font-medium text-gray-700">Due Date</label>
+                <div class="mt-1">
+                    {{ form.due_date }}
+                </div>
+            </div>
+        </div>
+
+        {{ form.media }} {# For CKEditor #}
+
+        <div class="mt-8 pt-5 border-t border-gray-200">
+            <div class="flex justify-end gap-3">
+                {# FIXED: The URL now correctly uses task.project.code and task.unique_id to go back to the detail view #}
+                <a href="{% url 'task_detail' label=task.project.code unique_id=task.unique_id %}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-cyan-600 border border-transparent rounded-md shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+                    Update Task
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
-
-<style>
-    input, select, textarea {
-        width: 100%;
-        padding: 0.5rem;
-        border-radius: 0.375rem;
-        border: 1px solid #ccc;
-        font-size: 1rem;
-    }
-
-    textarea {
-        resize: vertical;
-    }
-</style>
 {% endblock %}

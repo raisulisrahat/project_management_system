@@ -1,66 +1,74 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Team and User List{% endblock %}
+{% block title %}Teams and Users{% endblock %}
 
 {% block content %}
-
-
-    <!-- List of Users -->
-<p class="fw-semibold fs-5">Peoples</p>
-    <div class="d-flex justify-content-sm-between my-sm-2">
-
-        <div class="d-flex flex-wrap gap-3 mb-sm-3">
-            {% for user in user_list|slice:":5" %}
-                <a href="{% url 'user_profile' user.id %}" class="text-decoration-none">
-                    <div class="p-sm-3 card shadow-sm"  style="width: 180px; height: 130px;">
-                        <div class="col text-center">
-                            <img src="{{ user.profile.profile_image.url }}" class="rounded-circle" alt="{{ user.username }}" width="50" height="50">
-                            <p class="mt-sm-3 eme01">{{ user.profile.full_name }}</p>
+<div class="space-y-12">
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-bold text-gray-800">People</h2>
+            <a href="#" class="inline-flex items-center gap-1 text-sm font-medium text-cyan-600 hover:text-cyan-800">
+                View All
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {% for user in user_list|slice:":6" %}
+                <a href="{% url 'profile' user.profile.id %}" class="group block">
+                    <div class="space-y-3 rounded-lg border border-gray-200 bg-white p-4 text-center shadow-sm transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
+                        <img src="{{ user.profile.profile_image.url }}" class="mx-auto h-20 w-20 rounded-full object-cover ring-2 ring-white" alt="{{ user.profile.full_name }}">
+                        <div>
+                            <p class="font-semibold text-gray-900 truncate">{{ user.profile.full_name }}</p>
+                            <p class="text-sm text-gray-500 truncate">{{ user.email }}</p>
                         </div>
                     </div>
                 </a>
+            {% empty %}
+                <p class="col-span-full text-center text-gray-500">No users found.</p>
             {% endfor %}
-
         </div>
-        <a href="" class="text-decoration-none"><span class="">View more</span> <i class="bi btn bg-primary-subtle eme01 py-0 px-1 bi-arrow-right"></i></a>
     </div>
 
-    <!-- List of Teams -->
-<p class="fs-5 fw-semibold">Teams</p>
-    <div class="d-flex justify-content-sm-between my-sm-2">
-
-        <div class="d-flex  flex-wrap gap-3">
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-bold text-gray-800">Teams</h2>
+            <div class="flex items-center gap-4">
+                <a href="{% url 'teams' %}" class="inline-flex items-center gap-1 text-sm font-medium text-cyan-600 hover:text-cyan-800">
+                    View All Teams
+                </a>
+                <a href="{% url 'team_create' %}" class="inline-flex items-center gap-2 rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-700">
+                    <i class="bi bi-plus-lg"></i> Create Team
+                </a>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {% for team in team_list %}
-                <div class="card shadow-sm p-4 text-center">
-                    <!-- Team name link -->
-                    <a href="{% url 'team_detail' team.id %}" class="text-decoration-none fw-bold mb-3">{{ team.name }}</a>
+                <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                    <div class="flex flex-col items-center text-center">
+                        <a href="{% url 'team_detail' team.id %}" class="text-lg font-bold text-gray-900 hover:text-cyan-600">
+                            {{ team.name }}
+                        </a>
+                        <p class="text-sm text-gray-500 mt-1">
+                            {{ team.members.count }} Member{{ team.members.count|pluralize }}
+                        </p>
 
-                    <!-- User Avatars with Z-Index Stacking -->
-                    <div class="d-flex justify-content-center position-relative">
-                        {% for user in team.user_id.all|slice:":4" %}
-                            <div class="avatar-stack" style="z-index: {{ forloop.counter0 }};">
-                                <img src="{{ user.profile.profile_image.url }}" class="rounded-circle" alt="{{ user.username }}" width="40" height="40" style="border: 2px solid white;">
-                            </div>
-                        {% endfor %}
+                        <div class="mt-4 flex -space-x-3 overflow-hidden">
+                            {% for user in team.members.all|slice:":5" %}
+                                <img class="inline-block h-10 w-10 rounded-full object-cover ring-2 ring-white" src="{{ user.profile.profile_image.url }}" alt="{{ user.profile.full_name }}">
+                            {% endfor %}
+                            {% if team.members.count > 5 %}
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-600 ring-2 ring-white">
+                                    +{{ team.members.count|add:"-5" }}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
+            {% empty %}
+                <p class="col-span-full text-center text-gray-500">No teams have been created yet.</p>
             {% endfor %}
-
         </div>
-    <a href="" class="text-decoration-none">View more <i class="bi btn bg-primary-subtle eme01 py-0 px-1 bi-arrow-right"></i></a>
     </div>
-
-
-<!-- Optional Custom Styles -->
-<style>
-    .avatar-stack {
-        position: relative;
-        margin-left: -15px; /* Controls overlap (adjust as needed) */
-    }
-
-    .avatar-stack:first-child {
-        margin-left: 0; /* No margin for the first avatar */
-    }
-</style>
+</div>
 {% endblock %}
