@@ -122,9 +122,14 @@
                             <td class="px-6 py-4 whitespace-nowrap">{{ task.status }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ task.priority }}</td>
                             <td class="px-6 py-4">
-                                <a href="{% url 'profile' task.assigned_to.user.profile.id %}" class="hover:underline">
-                                    {{ task.assigned_to.full_name }}
-                                </a>
+                                {% if task.assigned_to %}
+                                    {# FIXED: The correct variable is task.assigned_to.id #}
+                                    <a href="{% url 'profile' task.assigned_to.id %}" class="hover:underline text-gray-700 font-medium">
+                                        {{ task.assigned_to.full_name }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-gray-400 italic">Unassigned</span>
+                                {% endif %}
                             </td>
                         </tr>
                     {% empty %}

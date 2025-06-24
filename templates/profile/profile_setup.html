@@ -1,73 +1,80 @@
-<html>
-    <head>
-    {% load static %}
-    {% load bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.first_name }}'s Profile Setup</title>
     <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
-        <title> {{ user.first_name }} Profile Setup </title>
-    </head>
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+</head>
+<body class="h-full">
 
-<body class="vh-100">
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid px-3">
-        <a class="navbar-brand" href="{% url 'profile_setup' user.username %}">
-            <img src="{% static 'image/flowtrex-icon.png' %}" alt="" width="30" height="24" class="d-inline-block align-text-top">
-        </a>
-    </div>
-
-</nav>
-<main class="container container-fluid p-sm-4">
-    <div class="my-sm-2">
-        <p class="fw-bold fs-4">Hi, {{ user.profile.full_name }}</p>
-    </div>
-        <div class="container px-sm-5">
-            <div class="row">
-                <div class="col">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="form-group my-sm-3">
-                            <div class="row mb-sm-3">
-                                <div class="col-sm-2">
-                                    <label for="{{ profile_form.profile_image.id_for_label }}" class="fs-5 fw-semibold">Your Profile Images:</label>
-                                </div>
-                                <div class="col-sm-5">
-                                    {{ profile_form.profile_image }}
-                                </div>
-                            </div>
-                            <div class="row mb-sm-3">
-                                <div class="col-sm-2">
-                                    <label for="{{ profile_form.country.id_for_label }}"  class="fs-5 fw-semibold">Your Country: </label>
-                                </div>
-                                <div class="col-sm-5">
-                                    {{ profile_form.country }}
-                                </div>
-                            </div>
-                            <div class="row mb-sm-3">
-                                <div class="col-sm-2">
-                                    <label for="{{ profile_form.address.id_for_label }}" class="fs-5 fw-semibold">Your Address: </label>
-                                </div>
-                                <div class="col-sm-5">
-                                    {{ profile_form.address }}
-                                </div>
-                            </div>
-                            <div class="row mb-sm-3">
-                                <div class="col-sm-2">
-                                    <label for="{{ profile_form.department.id_for_label }}" class="fs-5 fw-semibold">Your Departments: </label>
-                                </div>
-                                <div class="col-sm-5 fw-semibold">
-                                    {{ profile_form.department }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="py-3">
-                            <button type="submit" href="{% url 'dashboard' %}" class="btn btn-secondary">Save Profile</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<div class="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-2xl space-y-8">
+        <div class="text-center">
+            <img class="mx-auto h-20 w-auto" src="{% static 'image/flowtrex-icon-lg.png' %}" alt="Flowtrex">
+            <h2 class="mt-6 text-3xl font-bold tracking-tight text-gray-900">
+                Complete Your Profile
+            </h2>
+            <p class="mt-2 text-sm text-gray-600">
+                Hi, {{ user.profile.full_name }}! Let's get these last few details filled out.
+            </p>
         </div>
-    </main>
-</body>
-</html>
+
+        <div class="bg-white p-8 rounded-xl shadow-md border border-gray-200">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="space-y-6">
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Profile Photo</label>
+                        <div class="mt-2 flex items-center gap-5">
+                            <span class="inline-block h-16 w-16 overflow-hidden rounded-full bg-gray-100">
+                                {% if profile_form.instance.profile_image %}
+                                    <img id="image-preview" src="{{ profile_form.instance.profile_image.url }}" class="h-full w-full object-cover" alt="Current profile photo">
+                                {% else %}
+                                    <svg id="image-preview-placeholder" class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                {% endif %}
+                            </span>
+                            {{ profile_form.profile_image }}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="{{ profile_form.country.id_for_label }}" class="block text-sm font-medium text-gray-700">Country</label>
+                            <div class="mt-1">
+                                {{ profile_form.country }}
+                            </div>
+                        </div>
+                         <div>
+                            <label for="{{ profile_form.department.id_for_label }}" class="block text-sm font-medium text-gray-700">Department</label>
+                            <div class="mt-1">
+                                {{ profile_form.department }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="{{ profile_form.address.id_for_label }}" class="block text-sm font-medium text-gray-700">Address</label>
+                        <div class="mt-1">
+                            {{ profile_form.address }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <div class="flex justify-end">
+                        <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-cyan-600 py-2 px-6 text-sm font-medium text-white shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
+                            Save and Continue
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

@@ -11,60 +11,95 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 SELECT_CLASS = "block w-full p-2.5 rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
 FILE_INPUT_CLASS = "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100"
 TEXTAREA_CLASS = "block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
-FLOATING_LABEL_INPUT = "block w-100 p-3 rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
+BASE_INPUT_CLASS = (
+    "peer block w-full p-3 rounded-md border border-gray-300 shadow-sm "
+    "focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm bg-white"
+)
+FLOATING_LABEL_INPUT = (
+    "peer block w-full p-3 rounded-md border border-gray-300 shadow-sm "
+    "focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm bg-white"
+)
 
+SELECT_CLASS = (
+    "block w-full p-3 rounded-md border border-gray-300 shadow-sm "
+    "focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm bg-white"
+)
 
+FILE_INPUT_CLASS = (
+    "block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 "
+    "file:rounded-md file:border-0 file:bg-cyan-600 file:text-white "
+    "hover:file:bg-cyan-700"
+)
 
 
 class SignUpForm(UserCreationForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=True, label="Email")
+    first_name = forms.CharField(required=True, label="First Name")
+    last_name = forms.CharField(required=False, label="Last Name")
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
-        labels = {
-            'username': '',
-            'email': '',
-            'first_name': '',
-            'last_name': '',
-            'password1': '',
-            'password2': '',
-        }
-        widgets = {
-            'username': forms.TextInput(attrs={'class': FLOATING_LABEL_INPUT, 'placeholder': 'Username'}),
-            'email': forms.EmailInput(attrs={'class': FLOATING_LABEL_INPUT, 'id':'exampleInputEmail1', 'type':'email', 'placeholder': 'Email Address'}),
-            'first_name': forms.TextInput(attrs={'class': FLOATING_LABEL_INPUT, 'placeholder': 'First Name'}),
-            'last_name': forms.TextInput(attrs={'class': FLOATING_LABEL_INPUT, 'placeholder': 'Last Name'}),
-            'password1': forms.TextInput(attrs={'class': FLOATING_LABEL_INPUT, 'id':'inputPassword3', 'type':'password', 'placeholder': 'Password'}),
-            'password2': forms.TextInput(attrs={'class': FLOATING_LABEL_INPUT, 'id':'inputPassword3', 'type':'password', 'placeholder': 'Confirm Password'}),
-        }
+        fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Customize widget attributes
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': BASE_INPUT_CLASS,
+                'placeholder': field.label,
+                'id': f'id_{field_name}',
+                'autocomplete': 'off',
+            })
+
+        # Clear default help texts
+        for field in ['username', 'password1', 'password2']:
+            self.fields[field].help_text = ""
 
     def clean_password2(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
-
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Passwords don't match")
         return password2
 
     def save(self, commit=True):
-        user = super(SignUpForm, self).save(commit=False)
-        user.email = self.cleaned_data['email']
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"]
         if commit:
             user.save()
         return user
+
 
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('profile_image', 'address', 'country', 'department')
         widgets = {
-            'profile_image': forms.FileInput(attrs={'class': FILE_INPUT_CLASS, 'type': 'file', 'id':'formFile', 'placeholder': 'AddProfile Image'}),
-            'address': forms.Textarea(attrs={'class': FLOATING_LABEL_INPUT, 'placeholder': 'Address', 'rows': 5}),
-            'country': forms.Select(attrs={'class': SELECT_CLASS, 'placeholder': "Select Country"}),
-            'department': forms.Select(attrs={'class': SELECT_CLASS, 'placeholder': "Select Department"}),
+            'profile_image': forms.FileInput(attrs={
+                'class': FILE_INPUT_CLASS,
+                'type': 'file',
+                'id': 'formFile',
+                'placeholder': 'Add Profile Image'
+            }),
+            'address': forms.Textarea(attrs={
+                'class': FLOATING_LABEL_INPUT,
+                'placeholder': 'Address',
+                'rows': 5,
+                'id': 'id_address'
+            }),
+            'country': forms.Select(attrs={
+                'class': SELECT_CLASS,
+                'placeholder': "Select Country",
+                'id': 'id_country'
+            }),
+            'department': forms.Select(attrs={
+                'class': SELECT_CLASS,
+                'placeholder': "Select Department",
+                'id': 'id_department'
+            }),
         }
-
 
 class InvitationForm(forms.ModelForm):
     class Meta:

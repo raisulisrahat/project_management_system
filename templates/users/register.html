@@ -5,22 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create an Account - Flowtrex</title>
-    <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}"/>
+    <link rel="shortcut icon" href="{% static 'icons/favicon.ico' %}" type="image/png">
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
 </head>
 <body class="h-full bg-gray-50">
-
     <div class="flex min-h-full">
+        <!-- Left Side Branding -->
         <div class="hidden md:flex flex-col w-1/2 items-center justify-center bg-cyan-600 p-12 text-white text-center">
             <img src="{% static 'image/flowtrex-icon-lg.png' %}" alt="Flowtrex Logo" class="w-28 h-auto">
             <h1 class="mt-4 text-4xl font-bold">Flowtrex</h1>
             <p class="mt-2 text-lg text-cyan-100">Next Gen Project Management System</p>
         </div>
 
+        <!-- Right Side Form -->
         <div class="flex w-full items-center justify-center p-8 md:w-1/2">
             <div class="w-full max-w-md">
                 <div>
-                    <h2 class="text-center text-3xl font-bold tracking-tight text-gray-900">
+                    <h2 class="text-center text-3xl font-bold text-gray-900">
                         Create your account
                     </h2>
                     <p class="mt-2 text-center text-sm text-gray-600">
@@ -32,60 +33,121 @@
                 {% if form.errors %}
                     <div class="mt-6 rounded-md bg-red-50 p-4">
                         <h3 class="text-sm font-medium text-red-800">Please correct the errors below:</h3>
-                        <div class="mt-2 text-sm text-red-700">
-                            <ul role="list" class="list-disc space-y-1 pl-5">
-                                {% for field, errors in form.errors.items %}
-                                    <li>{{ errors|striptags }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+                        <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-red-700">
+                            {% for field, errors in form.errors.items %}
+                                <li>{{ errors|striptags }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 {% endif %}
 
-                <form class="mt-8 space-y-5" method="POST" action="{% url 'register' %}">
-                    {% csrf_token %}
+                <form method="POST" action="{% url 'register' %}" class="mt-8 space-y-6">
+    {% csrf_token %}
+    
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <!-- First Name -->
+        <div class="relative">
+            <input type="text" name="first_name" id="id_first_name"
+                value="{{ form.first_name.value|default_if_none:'' }}"
+                class="peer block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm bg-white"
+                placeholder=" " />
+            <label for="id_first_name"
+                   class="absolute pointer-events-none left-3 -top-2.5 bg-gray-50 px-1 text-sm text-gray-500
+                          peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base
+                          peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">
+                First Name <span class="text-red-500">*</span>
+            </label>
+            {% if form.first_name.errors %}
+                <p class="text-sm text-red-600 mt-1">{{ form.first_name.errors.0 }}</p>
+            {% endif %}
+        </div>
 
-                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                        <div class="relative">
-                        {{ form.first_name }}
-                        <label for="{{ form.first_name.id_for_label }}" class="absolute left-2 -top-2.5 z-10 origin-[0] bg-gray-50 px-1 text-sm text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">
-                            First Name <span class="text-red-500">*</span>
-                        </label>
-                        </div>
-                        <div class="relative">
-                            {{ form.last_name }}
-                             <label for="id_last_name" class="absolute left-2 -top-2.5 z-10 origin-[0] bg-gray-50 px-1 text-sm text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">Last Name</label>
-                        </div>
-                    </div>
+        <!-- Last Name -->
+        <div class="relative">
+            <input type="text" name="last_name" id="id_last_name"
+                value="{{ form.last_name.value|default_if_none:'' }}"
+                class="peer block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm bg-white"
+                placeholder=" " />
+            <label for="id_last_name"
+                   class="absolute pointer-events-none left-3 -top-2.5 bg-gray-50 px-1 text-sm text-gray-500
+                          peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base
+                          peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">
+                Last Name
+            </label>
+            {% if form.last_name.errors %}
+                <p class="text-sm text-red-600 mt-1">{{ form.last_name.errors.0 }}</p>
+            {% endif %}
+        </div>
+    </div>
 
-                    <div class="relative">
-                        {{ form.username }}
-                        <label for="id_username" class="absolute left-2 -top-2.5 z-10 origin-[0] bg-gray-50 px-1 text-sm text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">Username</label>
-                    </div>
+    <!-- Username -->
+    <div class="relative">
+        <input type="text" name="username" id="id_username"
+            value="{{ form.username.value|default_if_none:'' }}"
+            class="peer block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm bg-white"
+            placeholder=" " />
+        <label for="id_username" class="absolute pointer-events-none left-3 -top-2.5 bg-gray-50 px-1 text-sm text-gray-500
+                                         peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base
+                                         peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">
+            Username
+        </label>
+        {% if form.username.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ form.username.errors.0 }}</p>
+        {% endif %}
+    </div>
 
-                    <div class="relative">
-                        {{ form.email }}
-                        <label for="id_email" class="absolute left-2 -top-2.5 z-10 origin-[0] bg-gray-50 px-1 text-sm text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">Email Address</label>
-                    </div>
+    <!-- Email -->
+    <div class="relative">
+        <input type="email" name="email" id="id_email"
+            value="{{ form.email.value|default_if_none:'' }}"
+            class="peer block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm bg-white"
+            placeholder=" " />
+        <label for="id_email" class="absolute pointer-events-none left-3 -top-2.5 bg-gray-50 px-1 text-sm text-gray-500
+                                        peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base
+                                        peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">
+            Email Address
+        </label>
+        {% if form.email.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ form.email.errors.0 }}</p>
+        {% endif %}
+    </div>
 
-                    {# FIXED: Changed form.password to form.password1 #}
-                    <div class="relative">
-                        {{ form.password1 }}
-                        <label for="id_password1" class="absolute left-2 -top-2.5 z-10 origin-[0] bg-gray-50 px-1 text-sm text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">Password</label>
-                    </div>
+    <!-- Password1 -->
+    <div class="relative">
+        <input type="password" name="password1" id="id_password1"
+            class="peer block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm bg-white"
+            placeholder=" " />
+        <label for="id_password1" class="absolute pointer-events-none left-3 -top-2.5 bg-gray-50 px-1 text-sm text-gray-500
+                                          peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base
+                                          peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">
+            Password
+        </label>
+        {% if form.password1.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ form.password1.errors.0 }}</p>
+        {% endif %}
+    </div>
 
-                    {# FIXED: Changed form.password2 to form.password2 #}
-                    <div class="relative">
-                        {{ form.password2 }}
-                        <label for="id_password2" class="absolute left-2 -top-2.5 z-10 origin-[0] bg-gray-50 px-1 text-sm text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">Confirm Password</label>
-                    </div>
+    <!-- Password2 -->
+    <div class="relative">
+        <input type="password" name="password2" id="id_password2"
+            class="peer block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm bg-white"
+            placeholder=" " />
+        <label for="id_password2" class="absolute pointer-events-none left-3 -top-2.5 bg-gray-50 px-1 text-sm text-gray-500
+                                          peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base
+                                          peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-600">
+            Confirm Password
+        </label>
+        {% if form.password2.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ form.password2.errors.0 }}</p>
+        {% endif %}
+    </div>
 
-                    <div>
-                        <button type="submit" class="group relative flex w-full justify-center rounded-md border border-transparent bg-cyan-600 py-3 px-4 text-sm font-medium text-white hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
-                            Create Account
-                        </button>
-                    </div>
-                </form>
+    <button type="submit"
+            class="w-full rounded-md bg-cyan-600 py-3 px-4 text-sm font-medium text-white hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
+        Create Account
+    </button>
+</form>
+
             </div>
         </div>
     </div>

@@ -1,44 +1,73 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
-{% block title %} {{ user.profile.full_name }} - Profile View {% endblock %}
+
+{% block title %} {{ user.profile.full_name }} - Profile {% endblock %}
 
 {% block content %}
-    <p class="text-dark fw-semibold eme01"><a href="{% url 'dashboard' %}" class="text-primary text-dark text-decoration-none">Home</a> / User Profile</p>
-    <div class="container">
-        <div class="row">
-            <div class="col-1 col-md-4">
-                <div class="p-5 text-center bg-white shadow rounded">
-                    {% if user.is_authenticated %}
-                        {% if user.profile.profile_image and user.profile.profile_image.url %}
-                            <img src="{{ user.profile.profile_image.url }}" class="rounded-circle" alt="{{ user.full_name }}" height="150px" width="150px">
-                        {% endif %}
-                    {% endif %}
-                <div class="mt-3">
-                    <p class="mt-3 fw-semibold mb-0 text-secondary">{{ user.profile.full_name }}</p>
-                    <p class="fw-light mt-0 eme01 text-secondary">{{ user.profile.department }}</p>
-                </div>
+    <nav class="flex items-center text-sm font-medium text-gray-500 mb-6">
+        <a href="{% url 'dashboard' %}" class="hover:text-gray-700">Home</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-800">User Profile</span>
+    </nav>
 
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex flex-col items-center sm:flex-row sm:items-start sm:gap-6">
+            <div class="flex-shrink-0">
+                {% if user.profile.profile_image %}
+                    <img class="h-32 w-32 rounded-full object-cover border-4 border-white shadow-lg" src="{{ user.profile.profile_image.url }}" alt="{{ user.profile.full_name }}">
+                {% else %}
+                    <div class="h-32 w-32 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span class="text-4xl text-gray-500">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="mt-4 sm:mt-0 flex-1 text-center sm:text-left">
+                <h1 class="text-3xl font-bold text-gray-900">{{ user.profile.full_name }}</h1>
+                <p class="text-md font-semibold text-cyan-600">{{ user.profile.department|default:"No department assigned" }}</p>
+                <p class="text-sm text-gray-500 mt-1">{{ user.email }}</p>
+                
+                <div class="mt-4 flex justify-center sm:justify-start gap-3">
+                     <a href="#" class="inline-flex items-center rounded-md bg-cyan-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-700">
+                        Edit Profile
+                    </a>
+                     <a href="#" class="inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                        Contact
+                    </a>
                 </div>
             </div>
-            <div class="col-md-8">
-                <div class="p-5 m-auto bg-white shadow rounded">
-                    <div class="row">
-                        <p class="col-sm-2 my-0 fw-semibold">Full Name:</p> <p class="col-sm-9 my-0 fw-medium">{{ user.profile.full_name }}</p>
-                    </div>
-                        <hr>
-                    <div class="row">
-                        <p class="col-sm-2 fw-semibold my-0">Email:</p> <p class="col-sm-9 my-0 fw-medium">{{ user.email }}</p>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <p class="col-sm-2 my-0 fw-semibold">Address:</p> <p class="col-sm-9 my-0 fw-medium">{{ user.profile.address }} {{ user.profile.country.code2 }}</p>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <p class="col-sm-2 my-0 fw-semibold">Department:</p> <p class="col-sm-9 my-0 fw-medium">{{ user.profile.department}}</p>
-                    </div>
+        </div>
+    </div>
+
+    <div class="mt-8 bg-white rounded-lg shadow-md border border-gray-200">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg font-semibold leading-6 text-gray-900">User Information</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Personal details and contact information.</p>
+        </div>
+        <div class="border-t border-gray-200">
+            <dl class="divide-y divide-gray-200">
+                <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Full name</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ user.profile.full_name }}</dd>
                 </div>
-            </div>
+                <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Email address</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ user.email }}</dd>
+                </div>
+                <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Department</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ user.profile.department|default:"Not specified" }}</dd>
+                </div>
+                <div class="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Address</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                        {{ user.profile.address|default:"Not specified" }}
+                        {% if user.profile.country %}
+                            , {{ user.profile.country.name }}
+                        {% endif %}
+                    </dd>
+                </div>
+            </dl>
         </div>
     </div>
 {% endblock %}
